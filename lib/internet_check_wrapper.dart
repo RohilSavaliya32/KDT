@@ -24,8 +24,13 @@ class _InternetCheckWrapperState extends State<InternetCheckWrapper> {
   @override
   void initState() {
     super.initState();
-    _checkConnectivity();
-    _listenInternetChanges();
+    // 🛡️ Delay the initial connectivity check to ensure the first build of the 
+    // widget tree (including the Navigator) is completed. This prevents 
+    // "elements.contains(element): is not true" assertion crashes during startup.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkConnectivity();
+      _listenInternetChanges();
+    });
   }
 
   Future<void> _checkConnectivity() async {

@@ -156,20 +156,28 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _initDeepLinks() async {
     try {
-      // Get initial link if app was closed
+      // 1. Handle link that opened the app (Cold Start)
       final initialUri = await _appLinks.getInitialLink();
       if (initialUri != null) {
         debugPrint("🔗 Initial Deep Link Found: $initialUri");
         _pendingDeepLink = initialUri;
-        // Wait for first frame to be rendered
+        
+        // Wait for the app to be fully mounted before consuming
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _consumePendingDeepLink();
+          Future.delayed(const Duration(milliseconds: 500), () {
+            _consumePendingDeepLink();
+          });
         });
       }
 
-      // Listen for links when app is in background/foreground
+      // 2. Handle links while app is running (Foreground/Background)
       _appLinks.uriLinkStream.listen(
-            (uri) {
+        (uri) {
+          // Prevent double-handling of the initial link
+          if (_pendingDeepLink?.toString() == uri.toString()) {
+            debugPrint("ℹ️ Stream Deep Link ignored (already pending/handled)");
+            return;
+          }
           debugPrint("🔗 Stream Deep Link: $uri");
           _handleDeepLink(uri);
         },
@@ -193,12 +201,6 @@ class _MyAppState extends State<MyApp> {
     debugPrint("========== HANDLING DEEP LINK ==========");
     debugPrint("URI: ${uri.toString()}");
     
-    // Basic host verification (Optional but recommended)
-    if (uri.host.isNotEmpty && !uri.host.contains('kdtdiamond.com')) {
-      debugPrint("ℹ️ Host ${uri.host} ignored");
-      // return; // Uncomment if you want strict domain matching
-    }
-
     if (uri.pathSegments.isEmpty) return;
 
     if (_isNavigatingDeepLink) {
@@ -207,7 +209,7 @@ class _MyAppState extends State<MyApp> {
     }
     _isNavigatingDeepLink = true;
 
-    // Extract slug: support /slug and /diamonds-details/slug
+    // Support both /slug and /diamonds-details/slug
     String slug = "";
     if (uri.pathSegments.contains('diamonds-details')) {
       final index = uri.pathSegments.indexOf('diamonds-details');
@@ -225,9 +227,9 @@ class _MyAppState extends State<MyApp> {
     }
 
     try {
-      // Navigator ready hone ka intezar (Max 10 seconds for cold start)
+      // 1. Wait for Navigator to be ready
       int attempts = 0;
-      final maxAttempts = isInitial ? 100 : 50; 
+      final maxAttempts = isInitial ? 200 : 60; 
       
       while (Get.key.currentState == null && attempts < maxAttempts) {
         await Future.delayed(const Duration(milliseconds: 100));
@@ -240,26 +242,55 @@ class _MyAppState extends State<MyApp> {
         return;
       }
 
-      // Agar app fresh open hui hai (Cold Start), toh enough delay dena zaroori hai
-      // taake initialRoute (navigation) fully load ho jaye aur stack settle ho jaye.
+      // 2. Additional stability check for Cold Start.
+      // We wait until NavigationController is registered, which means the initial route's 
+      // bindings have completed. This is crucial for tree stability.
       if (isInitial) {
+        int bindingAttempts = 0;
+        while (!Get.isRegistered<NavigationController>() && bindingAttempts < 50) {
+          await Future.delayed(const Duration(milliseconds: 100));
+          bindingAttempts++;
+        }
+        
+        // Final rest period to allow the first build cycle to fully settle
         await Future.delayed(const Duration(milliseconds: 1500));
       } else {
         await Future.delayed(const Duration(milliseconds: 300));
       }
 
+      // 3. Perform Navigation outside of the build phase
+      // Using SchedulerBinding to ensure we are in a safe phase of the frame pipeline.
       debugPrint("🚀 Navigating to Diamond Details: $slug");
       
-      // Use preventDuplicates to avoid opening multiple screens for same link
-      Get.toNamed(
-        AppRoutes.DIAMONDS_DETAILS,
-        arguments: {"slug": slug},
-        preventDuplicates: true,
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (Get.key.currentState != null) {
+          try {
+            // Cold Start solution: Use offAllNamed to replace the potentially unstable 
+            // initial tree with a clean navigation stack. The DiamondDetailView back 
+            // button is already configured to return to /navigation if it can't pop.
+            if (isInitial) {
+              Get.offAllNamed(
+                AppRoutes.DIAMONDS_DETAILS,
+                arguments: {"slug": slug},
+              );
+            } else {
+              Get.toNamed(
+                AppRoutes.DIAMONDS_DETAILS,
+                arguments: {"slug": slug},
+                preventDuplicates: true,
+              );
+            }
+          } catch (e) {
+            debugPrint("❌ Navigation failed: $e");
+          }
+        }
+      });
       
     } catch (e) {
       debugPrint("❌ Deep link navigation error: $e");
     } finally {
+      // Safety gap
+      await Future.delayed(const Duration(milliseconds: 1000));
       _isNavigatingDeepLink = false;
     }
   }
