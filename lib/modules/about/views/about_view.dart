@@ -1,3 +1,4 @@
+import 'package:kdt/modules/fade_slide_in.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kdt/utils/app_colors.dart';
@@ -46,10 +47,11 @@ class AboutView extends GetView<AboutController> {
       appBar: _buildAppBar(),
       body: SafeArea(
         top: false,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            children: [
+        child: FadeSlideIn(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: [
               const _HeroSection(),
               _Section(
                 title: controller.storySectionTitle,

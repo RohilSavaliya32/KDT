@@ -129,111 +129,92 @@ class _LoginModalDialogState extends State<LoginModalDialog> {
               ),
 
               child: Obx(() {
-                final showPassword =
-                    controller.showPasswordScreen.value;
+                final showPassword = controller.showPasswordScreen.value;
+                final showForgot = controller.showForgotPasswordScreen.value;
+                final showRegister = controller.showRegisterScreen.value;
+                final showOtp = controller.showOtpScreen.value;
+                final isEmail = controller.useEmail.value;
 
-                final showForgot =
-                    controller.showForgotPasswordScreen.value;
-
-                final showRegister =
-                    controller.showRegisterScreen.value;
-
-                final showOtp =
-                    controller.showOtpScreen.value;
-
-                final isEmail =
-                    controller.useEmail.value;
-
-                // =====================================================
-                // OTP SCREEN
-                // =====================================================
+                Widget currentScreen;
 
                 if (showOtp) {
-                  return SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                    child: isEmail
-                        ? const EmailLoginDialog()
-                        : const PhoneLoginDialog(),
+                  currentScreen = KeyedSubtree(
+                    key: const ValueKey('otp_screen'),
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      child: isEmail ? const EmailLoginDialog() : const PhoneLoginDialog(),
+                    ),
                   );
-                }
-
-                // =====================================================
-                // REGISTER SCREEN
-                // =====================================================
-
-                if (showRegister) {
-                  // RegisterDialog ke andar already ScrollView hai.
-                  // Isliye yaha outer SingleChildScrollView nahi hai.
-                  return const RegisterDialog();
-                }
-
-                // =====================================================
-                // FORGOT PASSWORD
-                // =====================================================
-
-                if (showForgot) {
-                  return SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                    child: const ForgotPasswordDialog(),
+                } else if (showRegister) {
+                  currentScreen = const KeyedSubtree(
+                    key: ValueKey('register_screen'),
+                    child: RegisterDialog(),
                   );
-                }
-
-                // =====================================================
-                // PASSWORD SCREEN
-                // =====================================================
-
-                if (showPassword) {
-                  return SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                    child: PasswordLoginDialog(
-                      onLoginSuccess: () {
-                        Navigator.of(
-                          context,
-                          rootNavigator: true,
-                        ).pop();
-
-                        widget.onLoginSuccess?.call();
-                      },
+                } else if (showForgot) {
+                  currentScreen = KeyedSubtree(
+                    key: const ValueKey('forgot_screen'),
+                    child: const SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      child: ForgotPasswordDialog(),
+                    ),
+                  );
+                } else if (showPassword) {
+                  currentScreen = KeyedSubtree(
+                    key: const ValueKey('password_screen'),
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      child: PasswordLoginDialog(
+                        onLoginSuccess: () {
+                          Navigator.of(context, rootNavigator: true).pop();
+                          widget.onLoginSuccess?.call();
+                        },
+                      ),
+                    ),
+                  );
+                } else {
+                  currentScreen = KeyedSubtree(
+                    key: const ValueKey('login_screen'),
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _HeaderSection(
+                            isSmallScreen: isSmallScreen,
+                            onClose: () {
+                              controller.resetLoginForm();
+                              Navigator.of(context, rootNavigator: true).pop();
+                            },
+                          ),
+                          const SizedBox(height: 4),
+                          isEmail ? const EmailLoginDialog() : const PhoneLoginDialog(),
+                        ],
+                      ),
                     ),
                   );
                 }
 
-                // =====================================================
-                // LOGIN SCREEN
-                // =====================================================
-
-                return SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior:
-                  ScrollViewKeyboardDismissBehavior.onDrag,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _HeaderSection(
-                        isSmallScreen: isSmallScreen,
-                        onClose: () {
-                          controller.resetLoginForm();
-
-                          Navigator.of(
-                            context,
-                            rootNavigator: true,
-                          ).pop();
-                        },
+                return AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 400),
+                  switchInCurve: Curves.easeOutCubic,
+                  switchOutCurve: Curves.easeInCubic,
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0.05, 0),
+                          end: Offset.zero,
+                        ).animate(animation),
+                        child: child,
                       ),
-
-                      const SizedBox(height: 4),
-
-                      isEmail
-                          ? const EmailLoginDialog()
-                          : const PhoneLoginDialog(),
-                    ],
-                  ),
+                    );
+                  },
+                  child: currentScreen,
                 );
               }),
             ),

@@ -1,3 +1,4 @@
+import 'package:kdt/modules/fade_slide_in.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -302,10 +303,15 @@ class _DiamondCardViewState extends State<DiamondCardView> {
       ),
       itemBuilder: (context, index) {
         final diamond = displayList[index];
-        return InkWell(
-          borderRadius: BorderRadius.circular(vm.cardRadius),
-          onTap: () => AppNavigator.to("/diamonds-details", arguments: diamond.id),
-          child: _buildDiamondCard(diamond: diamond, controller: controller, vm: vm),
+        return FadeSlideIn(
+          delay: Duration(milliseconds: index < 6 ? index * 50 : 0),
+          duration: const Duration(milliseconds: 400),
+          slideOffset: 10,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(vm.cardRadius),
+            onTap: () => AppNavigator.to("/diamonds-details", arguments: diamond.id),
+            child: _buildDiamondCard(diamond: diamond, controller: controller, vm: vm),
+          ),
         );
       },
     );
@@ -475,20 +481,23 @@ class _DiamondCardViewState extends State<DiamondCardView> {
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(1),
-                child: imageUrl.isNotEmpty
-                    ? Image.network(
-                  imageUrl,
-                  width: double.infinity,
-                  height: double.infinity,
-                  fit: BoxFit.fill,
-                  errorBuilder: (context, error, stackTrace) => Padding(
+                child: Hero(
+                  tag: 'diamond_${diamond.id}',
+                  child: imageUrl.isNotEmpty
+                      ? Image.network(
+                    imageUrl,
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.fill,
+                    errorBuilder: (context, error, stackTrace) => Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Image.asset('assets/shapes/logo.png', fit: BoxFit.contain),
+                    ),
+                  )
+                      : Padding(
                     padding: const EdgeInsets.all(30.0),
                     child: Image.asset('assets/shapes/logo.png', fit: BoxFit.contain),
                   ),
-                )
-                    : Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: Image.asset('assets/shapes/logo.png', fit: BoxFit.contain),
                 ),
               ),
             ),

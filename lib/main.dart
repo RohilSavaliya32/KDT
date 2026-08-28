@@ -257,7 +257,7 @@ class _MyAppState extends State<MyApp> {
       locale: languageController.getCurrentLocale(),
       fallbackLocale: const Locale('en', 'US'),
 
-      defaultTransition: Transition.fadeIn,
+      defaultTransition: Transition.cupertino,
       transitionDuration: const Duration(milliseconds: 400),
 
       theme: ThemeData(

@@ -32,7 +32,7 @@ class NavigationView extends StatelessWidget {
   ];
 
   static const double _navBarContentHeight = 88;
-  static const double _navBarTopPadding = 10;
+  static const double _navBarTopPadding = 0;
   static const double _navBarBottomPadding = 0;
 
   @override
@@ -255,9 +255,31 @@ class NavigationView extends StatelessWidget {
   }
 
   Widget _buildBody() {
-    return Container(
-      color: Colors.white,
-      child: pages[controller.currentIndex.value],
+    return Obx(
+      () => AnimatedSwitcher(
+        duration: const Duration(milliseconds: 400),
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeInCubic,
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          final slideAnimation = Tween<Offset>(
+            begin: const Offset(0.05, 0),
+            end: Offset.zero,
+          ).animate(animation);
+
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: slideAnimation,
+              child: child,
+            ),
+          );
+        },
+        child: Container(
+          key: ValueKey<int>(controller.currentIndex.value),
+          color: Colors.white,
+          child: pages[controller.currentIndex.value],
+        ),
+      ),
     );
   }
 

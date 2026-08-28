@@ -1,3 +1,4 @@
+import 'package:kdt/modules/fade_slide_in.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
@@ -45,8 +46,9 @@ class PrivacyPolicyView extends GetView<PrivacyPolicyController> {
           ),
         ),
         body: SafeArea(
-          child: Obx(() {
-            if (controller.settingsController.isLoading.value) {
+          child: FadeSlideIn(
+            child: Obx(() {
+              if (controller.settingsController.isLoading.value) {
               return const Center(
                 child: CircularProgressIndicator(
                   color: AppColors.accent,
@@ -85,7 +87,8 @@ class PrivacyPolicyView extends GetView<PrivacyPolicyController> {
                 },
               ),
             );
-          }),
+            }),
+          ),
         ),
       ),
     );

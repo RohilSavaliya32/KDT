@@ -838,20 +838,35 @@ class _DiamondDetailBody extends StatelessWidget {
   }
 
   Widget _buildDiamondImage(String src, {Key? key}) {
+    final diamondId = controller.diamond.value?.id ?? '';
+    
+    Widget image;
     if (src.startsWith('assets/')) {
-      return Image.asset(src,
+      image = Image.asset(src,
           key: key, fit: BoxFit.contain, gaplessPlayback: true);
+    } else {
+      image = Image.network(
+        src,
+        key: key,
+        fit: BoxFit.contain,
+        gaplessPlayback: true,
+        errorBuilder: (context, error, stackTrace) => Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Image.asset('assets/shapes/logo.png', fit: BoxFit.contain),
+        ),
+      );
     }
-    return Image.network(
-      src,
-      key: key,
-      fit: BoxFit.contain,
-      gaplessPlayback: true,
-      errorBuilder: (context, error, stackTrace) => Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Image.asset('assets/shapes/logo.png', fit: BoxFit.contain),
-      ),
-    );
+
+    // Only apply Hero to the first image (or if there's only one image) 
+    // to match the list view's hero tag
+    if (diamondId.isNotEmpty && controller.images.isNotEmpty && src == controller.images.first) {
+      return Hero(
+        tag: 'diamond_$diamondId',
+        child: image,
+      );
+    }
+    
+    return image;
   }
 
   Widget _buildSpecItem(BuildContext context, String label, String value) {

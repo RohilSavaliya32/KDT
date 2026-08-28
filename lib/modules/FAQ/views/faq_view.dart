@@ -1,3 +1,4 @@
+import 'package:kdt/modules/fade_slide_in.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../utils/app_colors.dart';
@@ -19,9 +20,10 @@ class FaqView extends GetView<FaqController> {
         backgroundColor: AppColors.background,
         appBar: _buildAppBar(),
         body: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final screenWidth = constraints.maxWidth;
+          child: FadeSlideIn(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final screenWidth = constraints.maxWidth;
 
               return Obx(
                     () => controller.faqs.isEmpty
@@ -30,8 +32,8 @@ class FaqView extends GetView<FaqController> {
                   faqs: controller.faqs,
                   screenWidth: screenWidth,
                 ),
-              );
-            },
+              ),
+            ),
           ),
         ),
       ),
