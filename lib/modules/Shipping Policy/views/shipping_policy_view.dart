@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:kdt/utils/app_text_style.dart';
 
 import '../../../utils/app_colors.dart';
+import '../../translations/Translation_key/translation_keys.dart';
 import '../controllers/shipping_policy_controller.dart';
 
 class ShippingPolicyView extends GetView<ShippingPolicyController> {

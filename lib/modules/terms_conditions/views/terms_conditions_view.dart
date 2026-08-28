@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:kdt/utils/app_text_style.dart';
 
 import '../../../utils/app_colors.dart';
+import '../../translations/Translation_key/translation_keys.dart';
 import '../controllers/terms_conditions_controller.dart';
 
 class TermsConditionsView extends GetView<TermsConditionsController> {
