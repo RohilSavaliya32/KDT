@@ -283,11 +283,20 @@ class NavigationView extends StatelessWidget {
             // - Android 3-button nav: 0 (system nav bar handles it)
             final double bottomInset = MediaQuery.of(context).padding.bottom;
 
+            // On devices with a big bottom inset (iPhone home
+            // indicator), that inset already provides enough
+            // breathing room below the labels — adding our own
+            // fixed padding on top of it made iOS look like it
+            // had a huge extra margin. Only add the extra padding
+            // when there's little/no system inset (Android
+            // 3-button nav, iPhones with a home button).
+            final double effectiveBottomPadding =
+            bottomInset > 0 ? bottomInset : _navBarBottomPadding;
+
             return Container(
               height: _navBarContentHeight +
                   _navBarTopPadding +
-                  _navBarBottomPadding +
-                  bottomInset,
+                  effectiveBottomPadding,
               decoration: _buildBottomNavDecoration(),
               child: ClipRRect(
                 borderRadius: const BorderRadius.only(
@@ -302,7 +311,7 @@ class NavigationView extends StatelessWidget {
                   // breathing room top and bottom.
                   padding: EdgeInsets.only(
                     top: _navBarTopPadding,
-                    bottom: _navBarBottomPadding + bottomInset,
+                    bottom: effectiveBottomPadding,
                   ),
                   child: SizedBox(
                     height: _navBarContentHeight,
@@ -528,7 +537,7 @@ class NavigationView extends StatelessWidget {
       return;
     }
 
-    // If logged in, navigate to profile Test
+    // If logged in, navigate to profile
     controller.changeTab(4);
   }
 }
