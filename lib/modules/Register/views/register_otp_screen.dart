@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:kdt/utils/app_colors.dart';
 import '../controllers/register_controller.dart';
 
 class RegisterOtpScreen extends StatelessWidget {
@@ -112,8 +113,8 @@ class RegisterOtpScreen extends StatelessWidget {
                         width: c.otpError.value.isNotEmpty ? 2 : 1,
                       ),
                     ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(Radius.circular(4)),
                       borderSide: BorderSide(
                         color: AppColors.accent,
                         width: 2,
@@ -121,11 +122,11 @@ class RegisterOtpScreen extends StatelessWidget {
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
-                      borderSide: const BorderSide(color: AppColors.error, width: 1),
+                      borderSide: BorderSide(color: AppColors.error, width: 1),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
-                      borderSide: const BorderSide(color: AppColors.error, width: 2),
+                      borderSide: BorderSide(color: AppColors.error, width: 2),
                     ),
                   ),
                   onChanged: (value) {

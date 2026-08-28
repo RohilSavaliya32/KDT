@@ -56,10 +56,18 @@ import '../modules/terms_conditions/bindings/terms_conditions_bindings.dart';
 import '../modules/terms_conditions/views/terms_conditions_view.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/login/bindings/login_binding.dart';
+import '../modules/splash/views/splash_view.dart';
 import 'app_routes.dart';
 
 abstract class AppPages {
   static final routes = [
+
+    GetPage(
+      name: AppRoutes.SPLASH,
+      page: () => const SplashView(),
+      transition: Transition.fade,
+      transitionDuration: const Duration(milliseconds: 500),
+    ),
 
     GetPage(
       name: AppRoutes.HOME,

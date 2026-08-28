@@ -25,6 +25,7 @@ import 'modules/wishlist/bindings/wishlist_binding.dart';
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 import 'modules/firebase/bindings/firebase_binding.dart';
+import 'services_controller.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -40,34 +41,33 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  FlutterError.onError = (FlutterErrorDetails details) {
-    FlutterError.presentError(details);
-    debugPrint("❌ FLUTTER BUILD ERROR: ${details.exceptionAsString()}");
-  };
-  PlatformDispatcher.instance.onError = (error, stack) {
-    debugPrint("❌ UNCAUGHT PLATFORM ERROR: $error");
-    return true; // handled — don't crash the isolate
-  };
+  // Initialize essential storage and language first (fast)
+  await GetStorage.init();
+  LanguageBinding().dependencies();
+  
+  // Track readiness
+  Get.put(ServicesController());
 
+  runApp(const MyApp());
+
+  // Initialize heavy services in background
+  await _initServices();
+  
+  // Mark as ready
+  Get.find<ServicesController>().markReady();
+}
+
+Future<void> _initServices() async {
   try {
     await Firebase.initializeApp();
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-    if (kDebugMode) {
-      debugPrint("🔥 FIREBASE CONNECTED");
-      debugPrint("🔥 Firebase Apps: ${Firebase.apps}");
-    }
   } catch (e) {
     if (kDebugMode) debugPrint("❌ FIREBASE ERROR: $e");
   }
 
-  await GetStorage.init();
-
-  // Initialize Dependencies
-  LanguageBinding().dependencies();
+  // Initialize remaining Dependencies
   FirebaseBinding().dependencies();
-  Get.find<FirebaseController>();
-
+  
   // Initialize Dio
   Get.put<Dio>(
     Dio(
@@ -92,8 +92,6 @@ void main() async {
   Get.put<LoginController>(LoginController(), permanent: true);
   Get.put<CartController>(CartController(), permanent: true);
   Get.put<CurrencyController>(CurrencyController(), permanent: true);
-
-  runApp(const MyApp());
 }
 
 void _handleNotificationTap(RemoteMessage message) {
@@ -216,7 +214,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
 
-      initialRoute: AppRoutes.navigation,
+      initialRoute: AppRoutes.SPLASH,
       getPages: AppPages.routes,
 
       builder: (context, child) {

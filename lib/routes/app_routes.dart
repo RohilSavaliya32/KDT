@@ -14,6 +14,7 @@ abstract class AppRoutes {
   static const PROFILE = '/profile';
   static const SETTINGS = '/settings';
   static const navigation = '/navigation';
+  static const SPLASH = '/splash';
 
   // Setting & Profile Routes Comme test
   static const ORDERS = '/orders';
