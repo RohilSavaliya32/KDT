@@ -220,8 +220,7 @@ class _MyAppState extends State<MyApp> {
       getPages: AppPages.routes,
 
       builder: (context, child) {
-        if (child == null) return const SizedBox.shrink();
-        return InternetCheckWrapper(child: child);
+        return child ?? const SizedBox.shrink();
       },
     );
   }

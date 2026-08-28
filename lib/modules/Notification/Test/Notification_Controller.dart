@@ -96,7 +96,7 @@ class NotificationPreferencesController extends GetxController with WidgetsBindi
         Get.snackbar(
           "Action Required",
           "Notifications are disabled in your phone settings. Please enable them to turn this on.",
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           duration: const Duration(seconds: 4),
         );
         return;
@@ -121,14 +121,14 @@ class NotificationPreferencesController extends GetxController with WidgetsBindi
       Get.snackbar(
         "Success",
         "Notification preferences updated successfully.",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
     } catch (e) {
       Get.snackbar(
         "Error",
         "Failed to save preferences.",
         messageText: Text(e.toString()),
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
     } finally {
       isSaving.value = false;

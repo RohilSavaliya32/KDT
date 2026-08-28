@@ -272,7 +272,7 @@ class RegisterController extends GetxController {
           Get.snackbar(
             'OTP Sent',
             'Verification code sent to your phone',
-            snackPosition: SnackPosition.BOTTOM,
+            snackPosition: SnackPosition.TOP,
           );
         },
         codeAutoRetrievalTimeout: (String verificationId) {
@@ -319,7 +319,7 @@ class RegisterController extends GetxController {
           Get.snackbar(
             'OTP Resent',
             'Verification code resent successfully',
-            snackPosition: SnackPosition.BOTTOM,
+            snackPosition: SnackPosition.TOP,
           );
         },
         codeAutoRetrievalTimeout: (String verificationId) {
@@ -427,7 +427,7 @@ class RegisterController extends GetxController {
         Get.snackbar(
           'Success 🎉',
           'Account created successfully! Welcome to KDT Diamonds.',
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           duration: const Duration(seconds: 3),
         );
 

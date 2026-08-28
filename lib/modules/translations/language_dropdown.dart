@@ -92,7 +92,7 @@ class LanguageBottomSheet extends StatelessWidget {
                 Get.snackbar(
                   'Language Changed',
                   'Language changed to $nativeName',
-                  snackPosition: SnackPosition.BOTTOM,
+                  snackPosition: SnackPosition.TOP,
                   backgroundColor: const Color(0xFF0F5B45),
                   colorText: Colors.white,
                   duration: const Duration(seconds: 2),

@@ -182,7 +182,7 @@ class OrderHistoryController extends GetxController {
             Get.snackbar(
               'Error',
               'Diamond details not available',
-              snackPosition: SnackPosition.BOTTOM,
+              snackPosition: SnackPosition.TOP,
             );
             return;
           }

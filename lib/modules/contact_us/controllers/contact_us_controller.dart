@@ -38,7 +38,7 @@ class ContactController extends GetxController {
       Get.snackbar(
         "Success",
         "",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
 
       clearForm();
@@ -48,7 +48,7 @@ class ContactController extends GetxController {
       Get.snackbar(
         "Error",
         e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
     } finally {
       isLoading.value = false;

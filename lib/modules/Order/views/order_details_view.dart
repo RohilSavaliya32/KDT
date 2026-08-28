@@ -356,7 +356,7 @@ class OrderDetailsView extends StatelessWidget {
                                               .tr,
                                           snackPosition:
                                           SnackPosition
-                                              .BOTTOM,
+                                              .TOP,
                                           backgroundColor:
                                           AppColors
                                               .accent,

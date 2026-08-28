@@ -242,7 +242,7 @@ class DiamondDetailViewController extends GetxController {
     Get.snackbar(
       'Added to Cart',
       'Diamond added successfully',
-      snackPosition: SnackPosition.BOTTOM,
+      snackPosition: SnackPosition.TOP,
     );
     AppNavigator.to("/navigation", arguments: {"tab": 3});
   }
@@ -301,7 +301,7 @@ class DiamondDetailViewController extends GetxController {
       Get.snackbar(
         "Error",
         "Contact settings not available",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -312,7 +312,7 @@ class DiamondDetailViewController extends GetxController {
       Get.snackbar(
         "Error",
         "WhatsApp number not available",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -338,7 +338,7 @@ class DiamondDetailViewController extends GetxController {
         Get.snackbar(
           "Error",
           "WhatsApp could not be opened",
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
         );
       }
     } catch (e) {
@@ -347,7 +347,7 @@ class DiamondDetailViewController extends GetxController {
       Get.snackbar(
         "Error",
         "Unable to open WhatsApp",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
     }
   }
@@ -516,7 +516,7 @@ class DiamondDetailViewController extends GetxController {
         Get.snackbar(
           'Error',
           'Failed to update wishlist',
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );
@@ -545,7 +545,7 @@ class DiamondDetailViewController extends GetxController {
       Get.snackbar(
         'Error',
         'Something went wrong',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -916,7 +916,7 @@ View more details on KDT Diamonds.
       Get.snackbar(
         "Not Available",
         "India appointment link is not available",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         duration: const Duration(seconds: 3),
         backgroundColor: Colors.orange,
         colorText: Colors.white,
@@ -933,7 +933,7 @@ View more details on KDT Diamonds.
       Get.snackbar(
         "Not Available",
         "Korea appointment link is not available",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         duration: const Duration(seconds: 3),
         backgroundColor: Colors.orange,
         colorText: Colors.white,
@@ -958,7 +958,7 @@ View more details on KDT Diamonds.
         Get.snackbar(
           "Error",
           "Unable to open browser",
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
         );
       }
     } catch (e) {
@@ -973,7 +973,7 @@ View more details on KDT Diamonds.
       Get.snackbar(
         "Error",
         "Contact settings not available",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -992,7 +992,7 @@ View more details on KDT Diamonds.
       Get.snackbar(
         "Not Available",
         "Kakao ID is not available",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -1008,7 +1008,7 @@ View more details on KDT Diamonds.
       Get.snackbar(
         "Not Available",
         "WeChat ID is not available",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }

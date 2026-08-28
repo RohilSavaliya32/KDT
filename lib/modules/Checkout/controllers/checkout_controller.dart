@@ -411,14 +411,14 @@ class CheckoutController extends GetxController {
         Get.snackbar(
           "Success",
           "Receipt selected successfully",
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
         );
       }
     } catch (e) {
       Get.snackbar(
         "Error",
         e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
     }
   }
@@ -446,7 +446,7 @@ class CheckoutController extends GetxController {
       Get.snackbar(
         "Error",
         "Please fill all required fields",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -458,7 +458,7 @@ class CheckoutController extends GetxController {
       Get.snackbar(
         "Error",
         "Please fill all required fields",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -573,7 +573,7 @@ class CheckoutController extends GetxController {
       Get.snackbar(
         "Success",
         "Order placed successfully!",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.green,
         colorText: Colors.white,
       );

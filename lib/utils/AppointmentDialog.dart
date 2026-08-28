@@ -99,7 +99,7 @@ class AppointmentDialog extends StatelessWidget {
                         Get.snackbar(
                           "Not Available",
                           "Korea appointment link is not available",
-                          snackPosition: SnackPosition.BOTTOM,
+                          snackPosition: SnackPosition.TOP,
                         );
                       }
                     },
@@ -127,7 +127,7 @@ class AppointmentDialog extends StatelessWidget {
                         Get.snackbar(
                           "Not Available",
                           "India appointment link is not available",
-                          snackPosition: SnackPosition.BOTTOM,
+                          snackPosition: SnackPosition.TOP,
                         );
                       }
                     },

@@ -17,6 +17,7 @@ import '../../translations/Translation_key/translation_keys.dart';
 import '../../translations/language_dropdown.dart';
 import '../controllers/navigation_controller.dart';
 import '../../cart/controllers/cart_controller.dart';
+import '../../../internet_check_wrapper.dart';
 
 class NavigationView extends StatelessWidget {
   NavigationView({super.key});
@@ -38,12 +39,14 @@ class NavigationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-        textScaler: const TextScaler.linear(1.0),
-        boldText: false,
+    return InternetCheckWrapper(
+      child: MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: const TextScaler.linear(1.0),
+          boldText: false,
+        ),
+        child: _buildScaffold(),
       ),
-      child: _buildScaffold(),
     );
   }
 

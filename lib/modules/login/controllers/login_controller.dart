@@ -221,7 +221,7 @@ class LoginController extends GetxController {
           errorText.contains('user not found')) {
         openRegisterScreen();
       } else {
-        Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.TOP);
       }
     } finally {
       isLoading.value = false;
@@ -268,10 +268,10 @@ class LoginController extends GetxController {
       // ✅ Close dialog before navigation
       await _closeLoginDialogAndNavigate();
 
-      Get.snackbar("Success", "Login successful!", snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Success", "Login successful!", snackPosition: SnackPosition.TOP);
       return true;
     } catch (e) {
-      Get.snackbar("Login Failed", e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Login Failed", e.toString(), snackPosition: SnackPosition.TOP);
       return false;
     } finally {
       isLoading.value = false;
@@ -312,7 +312,7 @@ class LoginController extends GetxController {
       checkedMobile.value = response.meta.mobile ?? fullPhoneNumber;
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.TOP);
       return;
     }
 
@@ -328,7 +328,7 @@ class LoginController extends GetxController {
         },
         verificationFailed: (FirebaseAuthException e) {
           isOtpLoading.value = false;
-          Get.snackbar("OTP Failed", e.message ?? e.code, snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar("OTP Failed", e.message ?? e.code, snackPosition: SnackPosition.TOP);
         },
         codeSent: (String verificationId, int? resendToken) {
           _verificationId = verificationId;
@@ -336,7 +336,7 @@ class LoginController extends GetxController {
           startOtpTimer();
           isOtpLoading.value = false;
           showOtpScreen.value = true;
-          Get.snackbar("Success", "OTP sent to $fullPhoneNumber", snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar("Success", "OTP sent to $fullPhoneNumber", snackPosition: SnackPosition.TOP);
         },
         codeAutoRetrievalTimeout: (String verificationId) {
           _verificationId = verificationId;
@@ -345,7 +345,7 @@ class LoginController extends GetxController {
       );
     } catch (e) {
       isOtpLoading.value = false;
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.TOP);
     }
   }
 
@@ -385,7 +385,7 @@ class LoginController extends GetxController {
           debugPrint("ERROR CODE    : ${e.code}");
           debugPrint("ERROR MESSAGE : ${e.message}");
           isOtpLoading.value = false;
-          Get.snackbar("OTP Failed", e.message ?? e.code, snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar("OTP Failed", e.message ?? e.code, snackPosition: SnackPosition.TOP);
         },
         codeSent: (String verificationId, int? resendToken) {
           debugPrint("OTP RESENT SUCCESS");
@@ -395,7 +395,7 @@ class LoginController extends GetxController {
           _resendToken = resendToken;
           startOtpTimer();
           isOtpLoading.value = false;
-          Get.snackbar("Success", "OTP resent successfully", snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar("Success", "OTP resent successfully", snackPosition: SnackPosition.TOP);
         },
         codeAutoRetrievalTimeout: (String verificationId) {
           debugPrint("AUTO RETRIEVAL TIMEOUT");
@@ -407,14 +407,14 @@ class LoginController extends GetxController {
       debugPrint("EXCEPTION : $e");
       debugPrint("STACK : $s");
       isOtpLoading.value = false;
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.TOP);
     }
   }
 
   Future<void> verifyPhoneOtp(String otp) async {
     if (_verificationId == null) {
       otpError.value = "OTP session expired. Please resend code.";
-      Get.snackbar("Error", "OTP session expired. Please resend code.", snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Error", "OTP session expired. Please resend code.", snackPosition: SnackPosition.TOP);
       return;
     }
 
@@ -427,9 +427,9 @@ class LoginController extends GetxController {
       await _signInWithPhoneCredential(credential);
     } on FirebaseAuthException catch (e) {
       otpError.value = e.message ?? e.code;
-      Get.snackbar("Invalid OTP", e.message ?? e.code, snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Invalid OTP", e.message ?? e.code, snackPosition: SnackPosition.TOP);
     } catch (e) {
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.TOP);
     } finally {
       isOtpLoading.value = false;
     }
@@ -490,7 +490,7 @@ class LoginController extends GetxController {
 
     } catch (e) {
       debugPrint("❌ _signInWithPhoneCredential error: $e");
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.TOP);
       rethrow;
     } finally {
       isOtpLoading.value = false;
@@ -602,7 +602,7 @@ class LoginController extends GetxController {
       Get.snackbar(
         "Error",
         "OTP session expired. Please resend code.",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
       return false;
     }
@@ -643,7 +643,7 @@ class LoginController extends GetxController {
       Get.snackbar(
         "Success",
         "Password updated successfully",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
 
       return true;
@@ -655,7 +655,7 @@ class LoginController extends GetxController {
       Get.snackbar(
         "Error",
         e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
 
       return false;
@@ -723,7 +723,7 @@ class LoginController extends GetxController {
       Get.snackbar(
         "Success",
         "Google Login Successful",
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
 
       return true;
@@ -740,7 +740,7 @@ class LoginController extends GetxController {
       Get.snackbar(
         "Google Login Failed",
         e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
       );
 
       return false;
