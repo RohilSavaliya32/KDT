@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kdt/utils/app_text_style.dart';
 
+import 'package:kdt/widgets/kdt_shimmer.dart';
 import '../../../utils/app_colors.dart';
 import '../../Client_Review/widgets/testimonials_widget.dart';
 import '../../KDTDiamondLoader.dart';
@@ -31,20 +32,25 @@ class HomeView extends GetView<HomeController> {
       child: Scaffold(
         backgroundColor: AppColors.app_back,
         body: SafeArea(
-          child: RefreshIndicator(
-            onRefresh: () async {
-              await Future.wait([
-                controller.refreshHomeData(),
-                Get.find<DiamondCardController>().refreshDiamonds(),
-              ]);
-            },
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final vm = _ViewModel(constraints.maxWidth);
+          child: Obx(() {
+            if (controller.isLoading.value && controller.bestSellerDiamonds.isEmpty) {
+              return _HomeShimmer();
+            }
 
-                return CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  slivers: [
+            return RefreshIndicator(
+              onRefresh: () async {
+                await Future.wait([
+                  controller.refreshHomeData(),
+                  Get.find<DiamondCardController>().refreshDiamonds(),
+                ]);
+              },
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final vm = _ViewModel(constraints.maxWidth);
+
+                  return CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
                     // ---------------------------------------------------------
                     // BANNER
                     // ---------------------------------------------------------
@@ -299,8 +305,8 @@ class HomeView extends GetView<HomeController> {
                 );
               },
             ),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }
@@ -691,4 +697,96 @@ class _ViewModel {
           : (isTablet
           ? 6
           : 8));
+}
+
+class _HomeShimmer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final vm = _ViewModel(constraints.maxWidth);
+        return KdtShimmer(
+          child: SingleChildScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Banner Shimmer
+                KdtSkeleton(
+                  height: 200,
+                  width: double.infinity,
+                  borderRadius: 12,
+                ),
+                SizedBox(height: vm.sectionSpacing),
+
+                // Feature Row Shimmer
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(
+                    3,
+                    (index) => KdtSkeleton(
+                      width: (constraints.maxWidth - 64) / 3,
+                      height: 80,
+                      borderRadius: 12,
+                    ),
+                  ),
+                ),
+                SizedBox(height: vm.sectionSpacing),
+
+                // Shape Grid Shimmer
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    mainAxisExtent: 100,
+                  ),
+                  itemCount: 6,
+                  itemBuilder: (_, __) => KdtSkeleton(borderRadius: 12),
+                ),
+                SizedBox(height: vm.sectionSpacing),
+
+                // Collection Banner Shimmer
+                KdtSkeleton(
+                  height: 150,
+                  width: double.infinity,
+                  borderRadius: 12,
+                ),
+                SizedBox(height: vm.sectionSpacing),
+
+                // Section Title Shimmer
+                Center(
+                  child: Column(
+                    children: [
+                      KdtSkeleton(width: 150, height: 12),
+                      const SizedBox(height: 8),
+                      KdtSkeleton(width: 200, height: 24),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Diamond Cards Shimmer
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    mainAxisExtent: 340,
+                  ),
+                  itemCount: 4,
+                  itemBuilder: (_, __) => const DiamondCardSkeleton(),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
