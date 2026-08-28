@@ -433,6 +433,7 @@ class EditProfilePage extends GetView<EditProfileController> {
                 ? Colors.white
                 : Colors.grey.shade50,
             errorText: error,
+            errorStyle: AppTextStyles.poppins(fontSize: 12, color: AppColors.error),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 15,
               vertical: 12,
@@ -455,6 +456,14 @@ class EditProfilePage extends GetView<EditProfileController> {
                 color: AppColors.accent,
                 width: 1.5,
               ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: AppColors.error, width: 1),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: AppColors.error, width: 1.5),
             ),
           ),
         ),
@@ -545,6 +554,7 @@ class EditProfilePage extends GetView<EditProfileController> {
               fillColor: controller.isPhoneEditable
                   ? Colors.white
                   : Colors.grey.shade50,
+              errorStyle: AppTextStyles.poppins(fontSize: 12, color: AppColors.error),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 15,
                 vertical: 12,
@@ -567,6 +577,14 @@ class EditProfilePage extends GetView<EditProfileController> {
                   color: AppColors.accent,
                   width: 1.5,
                 ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: AppColors.error, width: 1),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: AppColors.error, width: 1.5),
               ),
             ),
             style: AppTextStyles.poppins(

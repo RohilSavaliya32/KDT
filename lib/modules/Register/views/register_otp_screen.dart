@@ -107,7 +107,7 @@ class RegisterOtpScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                       borderSide: BorderSide(
                         color: c.otpError.value.isNotEmpty
-                            ? Colors.red
+                            ? AppColors.error
                             : Colors.grey.shade300,
                         width: c.otpError.value.isNotEmpty ? 2 : 1,
                       ),
@@ -115,13 +115,17 @@ class RegisterOtpScreen extends StatelessWidget {
                     focusedBorder: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                       borderSide: BorderSide(
-                        color: Color(0xFF005234),
+                        color: AppColors.accent,
                         width: 2,
                       ),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
-                      borderSide: const BorderSide(color: Colors.red, width: 2),
+                      borderSide: const BorderSide(color: AppColors.error, width: 1),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: const BorderSide(color: AppColors.error, width: 2),
                     ),
                   ),
                   onChanged: (value) {

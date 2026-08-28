@@ -411,8 +411,8 @@ class CheckoutController extends GetxController {
       }
     } catch (e) {
       Get.snackbar(
-        "Something Went Wrong",
-        "An unexpected error occurred. Please try again.",
+        "Upload Error",
+        "We couldn't select the image. Please try again or check your permissions.",
         snackPosition: SnackPosition.TOP,
       );
     }
@@ -452,7 +452,8 @@ class CheckoutController extends GetxController {
       isPlacingOrder.value = false;
       Get.snackbar(
         "Cart Empty",
-        "Your cart is empty. Add an item to continue.",
+        "Your shopping cart is empty. Please add items before placing an order.",
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -577,8 +578,9 @@ class CheckoutController extends GetxController {
       isPlacingOrder.value = false;
       errorMessage.value = e.toString();
       Get.snackbar(
-        "Something Went Wrong",
-        "An unexpected error occurred. Please try again.",
+        "Order Failed",
+        "We couldn't process your order. Please check your details and try again.",
+        snackPosition: SnackPosition.TOP,
       );
       debugPrint("PLACE ORDER ERROR => $e");
     } finally {

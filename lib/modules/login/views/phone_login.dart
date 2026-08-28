@@ -106,6 +106,7 @@ class PhoneLoginDialog extends StatelessWidget {
                 errorText: c.phoneError.value != null && c.phoneError.value!.isNotEmpty
                     ? c.phoneError.value
                     : null,
+                errorStyle: AppTextStyles.poppins(fontSize: 12, color: AppColors.error),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4),
                 ),
@@ -119,11 +120,11 @@ class PhoneLoginDialog extends StatelessWidget {
                 ),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4),
-                  borderSide: const BorderSide(color: Colors.red, width: 2),
+                  borderSide: const BorderSide(color: AppColors.error, width: 1),
                 ),
                 focusedErrorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4),
-                  borderSide: const BorderSide(color: Colors.red, width: 2),
+                  borderSide: const BorderSide(color: AppColors.error, width: 2),
                 ),
               ),
               initialCountryCode: 'IN',

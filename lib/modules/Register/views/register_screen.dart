@@ -219,6 +219,7 @@ class _RegisterForm extends StatelessWidget {
                   cursorColor: AppColors.accent,
                   decoration: InputDecoration(
                     hintText: "Enter first name",
+                    errorStyle: AppTextStyles.poppins(fontSize: 11, color: AppColors.error),
                     contentPadding:
                     const EdgeInsets.symmetric(
                       horizontal: 15,
@@ -244,6 +245,14 @@ class _RegisterForm extends StatelessWidget {
                       ),
                       borderRadius:
                       BorderRadius.circular(8),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: AppColors.error, width: 1),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: AppColors.error, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -282,6 +291,7 @@ class _RegisterForm extends StatelessWidget {
                   cursorColor: AppColors.accent,
                   decoration: InputDecoration(
                     hintText: "Enter last name",
+                    errorStyle: AppTextStyles.poppins(fontSize: 11, color: AppColors.error),
                     contentPadding:
                     const EdgeInsets.symmetric(
                       horizontal: 15,
@@ -307,6 +317,14 @@ class _RegisterForm extends StatelessWidget {
                       ),
                       borderRadius:
                       BorderRadius.circular(8),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: AppColors.error, width: 1),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: AppColors.error, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -355,6 +373,7 @@ class _RegisterForm extends StatelessWidget {
                     decoration: InputDecoration(
                       hintText:
                       "Enter email address",
+                      errorStyle: AppTextStyles.poppins(fontSize: 11, color: AppColors.error),
                       prefixIcon: const Icon(
                         Icons.email_outlined,
                         size: 20,
@@ -388,6 +407,14 @@ class _RegisterForm extends StatelessWidget {
                         ),
                         borderRadius:
                         BorderRadius.circular(8),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.error, width: 1),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.error, width: 2),
                       ),
                       errorText:
                       registerC
@@ -465,6 +492,7 @@ class _RegisterForm extends StatelessWidget {
                       InputDecoration(
                         hintText:
                         "Enter mobile number",
+                        errorStyle: AppTextStyles.poppins(fontSize: 11, color: AppColors.error),
                         filled:
                         registerC.isMobileLocked.value,
                         fillColor:
@@ -505,6 +533,14 @@ class _RegisterForm extends StatelessWidget {
                           BorderRadius.circular(
                             8,
                           ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: AppColors.error, width: 1),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: AppColors.error, width: 2),
                         ),
                       ),
                       onCountryChanged:
@@ -568,6 +604,7 @@ class _RegisterForm extends StatelessWidget {
                     decoration: InputDecoration(
                       hintText:
                       "Enter password (min 6 characters)",
+                      errorStyle: AppTextStyles.poppins(fontSize: 11, color: AppColors.error),
                       prefixIcon: const Icon(
                         Icons.lock_outline,
                         size: 22,
@@ -617,6 +654,14 @@ class _RegisterForm extends StatelessWidget {
                         ),
                         borderRadius:
                         BorderRadius.circular(8),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.error, width: 1),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.error, width: 2),
                       ),
                     ),
                     validator: (value) {

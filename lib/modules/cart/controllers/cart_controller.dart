@@ -171,7 +171,8 @@ class CartController extends GetxController {
           cartItems[index].availableQuantity) {
         Get.snackbar(
           "Stock Limit",
-          "Only ${cartItems[index].availableQuantity} item(s) available.",
+          "Only ${cartItems[index].availableQuantity} item(s) available in stock.",
+          snackPosition: SnackPosition.TOP,
         );
         return;
       }
@@ -187,7 +188,8 @@ class CartController extends GetxController {
     if (item.quantity.value >= item.availableQuantity) {
       Get.snackbar(
         "Stock Limit",
-        "Only ${item.availableQuantity} item(s) available.",
+        "Only ${item.availableQuantity} item(s) available in stock.",
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }

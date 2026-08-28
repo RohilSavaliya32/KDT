@@ -93,6 +93,8 @@ class EmailLoginDialog extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: TranslationKeys.emailAddress.tr,
                 hintStyle: const TextStyle(fontSize: 14),
+                errorText: c.emailError.value,
+                errorStyle: AppTextStyles.poppins(fontSize: 11, color: AppColors.error),
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 14,
@@ -105,42 +107,36 @@ class EmailLoginDialog extends StatelessWidget {
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4),
-                  borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4),
                   borderSide: BorderSide(
-                    color: c.emailError.value != null ? Colors.red : Colors.grey.shade300,
-                    width: c.emailError.value != null ? 2 : 1,
+                    color: Colors.grey.shade300,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4),
-                  borderSide: BorderSide(
-                    color: c.emailError.value != null ? Colors.red : AppColors.accent,
+                  borderSide: const BorderSide(
+                    color: AppColors.accent,
+                    width: 2,
+                  ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  borderSide: const BorderSide(
+                    color: AppColors.error,
+                    width: 1,
+                  ),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  borderSide: const BorderSide(
+                    color: AppColors.error,
                     width: 2,
                   ),
                 ),
               ),
             ),
-            if (c.emailError.value != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        c.emailError.value!,
-                        style: AppTextStyles.poppins(
-                          color: AppColors.error,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerRight,

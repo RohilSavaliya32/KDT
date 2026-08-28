@@ -130,7 +130,11 @@ class ReviewController extends GetxController {
       }
     } catch (e) {
       debugPrint('SUBMIT/UPDATE REVIEW ERROR => $e');
-      Get.snackbar('Error', 'Unable to save review');
+      Get.snackbar(
+        'Review Error',
+        'We couldn’t save your review. Please check your connection and try again.',
+        snackPosition: SnackPosition.TOP,
+      );
     } finally {
       isSubmitting.value = false;
     }

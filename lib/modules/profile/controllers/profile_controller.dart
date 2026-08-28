@@ -80,14 +80,16 @@ class ProfileController extends GetxController {
         await Get.find<AuthController>().logout();
 
         Get.snackbar(
-          'Success',
-          'Logged out successfully',
+          'Logged Out',
+          'You have been successfully logged out of your account.',
+          snackPosition: SnackPosition.TOP,
         );
       }
     } catch (e) {
       Get.snackbar(
-        'Error',
-        e.toString(),
+        'Logout Error',
+        'Something went wrong while logging out. Please try again.',
+        snackPosition: SnackPosition.TOP,
       );
     } finally {
       isLoggingOut.value = false;

@@ -204,6 +204,7 @@ class ContactView extends GetView<ContactController> {
                             hintStyle: AppTextStyles.poppins(
                               color: AppColors.mutedForeground,
                             ),
+                            errorStyle: AppTextStyles.poppins(fontSize: 12, color: AppColors.error),
 
                             // Normal Border
                             border: OutlineInputBorder(
@@ -416,6 +417,7 @@ class ContactView extends GetView<ContactController> {
             hintStyle: AppTextStyles.poppins(
               color: AppColors.mutedForeground,
             ),
+            errorStyle: AppTextStyles.poppins(fontSize: 12, color: AppColors.error),
 
             // Normal Border
             border: OutlineInputBorder(

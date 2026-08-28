@@ -221,7 +221,11 @@ class LoginController extends GetxController {
           errorText.contains('user not found')) {
         openRegisterScreen();
       } else {
-        Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.TOP);
+        Get.snackbar(
+          "Connection Error",
+          "We couldn't check your user status. Please check your internet connection and try again.",
+          snackPosition: SnackPosition.TOP,
+        );
       }
     } finally {
       isLoading.value = false;
@@ -353,11 +357,11 @@ class LoginController extends GetxController {
           startOtpTimer();
           isOtpLoading.value = false;
           showOtpScreen.value = true;
-          Get.snackbar(
-            "OTP Sent",
-            "OTP has been sent to $fullPhoneNumber",
-            snackPosition: SnackPosition.TOP,
-          );
+      Get.snackbar(
+        "OTP Sent",
+        "A verification code has been sent to $fullPhoneNumber.",
+        snackPosition: SnackPosition.TOP,
+      );
           },
         codeAutoRetrievalTimeout: (String verificationId) {
           _verificationId = verificationId;
@@ -545,7 +549,11 @@ class LoginController extends GetxController {
 
     } catch (e) {
       debugPrint("❌ _signInWithPhoneCredential error: $e");
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        "Verification Failed",
+        "We couldn't complete the sign-in process. Please try again.",
+        snackPosition: SnackPosition.TOP,
+      );
       rethrow;
     } finally {
       isOtpLoading.value = false;
@@ -793,8 +801,8 @@ class LoginController extends GetxController {
       debugPrint("==================================");
 
       Get.snackbar(
-        "Google Login Failed",
-        e.toString(),
+        "Google Sign-In Failed",
+        "We couldn't sign you in with Google. Please try another method or try again later.",
         snackPosition: SnackPosition.TOP,
       );
 

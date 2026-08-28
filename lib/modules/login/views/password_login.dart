@@ -175,7 +175,7 @@ class _PasswordLoginDialogState extends State<PasswordLoginDialog> {
               errorText: c.passwordError.value,
               errorStyle: AppTextStyles.poppins(
                 fontSize: 12,
-                color: Colors.red,
+                color: AppColors.error,
               ),
               prefixIcon: Icon(
                 Icons.lock_outline,
@@ -205,17 +205,17 @@ class _PasswordLoginDialogState extends State<PasswordLoginDialog> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(
-                  color: Color(0xff006241),
+                  color: AppColors.accent,
                   width: 2,
                 ),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.red, width: 2),
+                borderSide: const BorderSide(color: AppColors.error, width: 1),
               ),
               focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.red, width: 2),
+                borderSide: const BorderSide(color: AppColors.error, width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 14,

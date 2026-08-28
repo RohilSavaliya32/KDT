@@ -271,7 +271,7 @@ class RegisterController extends GetxController {
 
           Get.snackbar(
             'OTP Sent',
-            'Verification code sent to your phone',
+            'A verification code has been sent to your phone number.',
             snackPosition: SnackPosition.TOP,
           );
         },
@@ -318,7 +318,7 @@ class RegisterController extends GetxController {
 
           Get.snackbar(
             'OTP Resent',
-            'Verification code resent successfully',
+            'A new verification code has been sent to your phone number.',
             snackPosition: SnackPosition.TOP,
           );
         },

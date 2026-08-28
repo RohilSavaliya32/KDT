@@ -178,7 +178,11 @@ class EditProfileController extends GetxController {
       pickedImageFile.value = null;
       imageError.value = null;
 
-      Get.snackbar("Success", "Profile image removed");
+      Get.snackbar(
+        "Success",
+        "Your profile image has been removed successfully.",
+        snackPosition: SnackPosition.TOP,
+      );
     } catch (e) {
       print("REMOVE IMAGE ERROR => $e");
     } finally {
@@ -208,13 +212,21 @@ class EditProfileController extends GetxController {
         updatedUser['profileImage'] = imageUrl;
         await authController.box.write('user_data', jsonEncode(updatedUser));
 
-        Get.snackbar("Success", "Profile photo updated");
+        Get.snackbar(
+          "Success",
+          "Your profile photo has been updated successfully.",
+          snackPosition: SnackPosition.TOP,
+        );
       } else {
         throw Exception(response['message']?.toString() ?? 'Upload failed');
       }
     } catch (e) {
       print("UPLOAD IMAGE ERROR => $e");
-      Get.snackbar("Error", e.toString(), backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Upload Error",
+        "We couldn't upload your image. Please try again later.",
+        snackPosition: SnackPosition.TOP,
+      );
     } finally {
       isUploadingImage.value = false;
     }
@@ -253,7 +265,8 @@ class EditProfileController extends GetxController {
       if (isVerificationRequired.value) {
         Get.snackbar(
           'Verification Required',
-          'Please verify your mobile number before saving.',
+          'Please verify your mobile number before saving your profile changes.',
+          snackPosition: SnackPosition.TOP,
         );
         return;
       }
@@ -350,7 +363,11 @@ class EditProfileController extends GetxController {
     final countryCode = selectedCountryCode.value.trim();
 
     if (mobile.isEmpty) {
-      Get.snackbar('Error', 'Please enter mobile number');
+      Get.snackbar(
+        'Phone Error',
+        'Please enter your mobile number to proceed with verification.',
+        snackPosition: SnackPosition.TOP,
+      );
       return;
     }
 

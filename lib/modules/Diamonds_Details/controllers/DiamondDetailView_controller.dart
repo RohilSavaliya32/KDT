@@ -241,7 +241,7 @@ class DiamondDetailViewController extends GetxController {
 
     Get.snackbar(
       'Added to Cart',
-      'The diamond has been added to your cart.',
+      'This diamond has been successfully added to your shopping cart.',
       snackPosition: SnackPosition.TOP,
     );
     AppNavigator.to("/navigation", arguments: {"tab": 3});
@@ -306,7 +306,7 @@ class DiamondDetailViewController extends GetxController {
     if (rawPhone == null || rawPhone.isEmpty) {
       Get.snackbar(
         "WhatsApp Unavailable",
-        "The WhatsApp number is currently unavailable. Please try again later.",
+        "The WhatsApp contact number is currently not available. Please try again later.",
         snackPosition: SnackPosition.TOP,
       );
       return;
@@ -332,7 +332,7 @@ class DiamondDetailViewController extends GetxController {
       if (!launched) {
         Get.snackbar(
           "WhatsApp Unavailable",
-          "The WhatsApp number is currently unavailable. Please try again later.",
+          "We couldn't open WhatsApp. Please ensure it's installed on your device.",
           snackPosition: SnackPosition.TOP,
         );
       }
@@ -341,7 +341,7 @@ class DiamondDetailViewController extends GetxController {
 
       Get.snackbar(
         "WhatsApp Unavailable",
-        "The WhatsApp number is currently unavailable. Please try again later.",
+        "Something went wrong while opening WhatsApp. Please try again later.",
         snackPosition: SnackPosition.TOP,
       );
     }
@@ -349,8 +349,9 @@ class DiamondDetailViewController extends GetxController {
   Future<void> makePhoneCall() async {
     if (phoneNumbers.isEmpty) {
       Get.snackbar(
-        "Phone Number Unavailable",
-        "The phone number is currently unavailable. Please try again later.",
+        "Call Unavailable",
+        "The support phone number is currently not available. Please try again later.",
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -364,14 +365,16 @@ class DiamondDetailViewController extends GetxController {
       final launched = await launchUrl(uri);
       if (!launched) {
         Get.snackbar(
-          "Unable to Make Call",
-          "The phone dialer could not be opened. Please try again.",
+          "Dialer Error",
+          "We couldn't open the phone dialer. Please try dialing manually.",
+          snackPosition: SnackPosition.TOP,
         );
       }
     } catch (e) {
       Get.snackbar(
-        "Unable to Make Call",
-        "The phone dialer could not be opened. Please try again.",
+        "Dialer Error",
+        "An unexpected error occurred while trying to make a call.",
+        snackPosition: SnackPosition.TOP,
       );
     }
   }
@@ -518,8 +521,8 @@ class DiamondDetailViewController extends GetxController {
         wishlistIds.refresh();
 
         Get.snackbar(
-          'Wishlist Update Failed',
-          'We couldn’t update your wishlist. Please try again.',
+          'Wishlist Error',
+          'We couldn’t update your wishlist. Please check your connection and try again.',
           snackPosition: SnackPosition.TOP,
         );
       } else {
@@ -545,11 +548,9 @@ class DiamondDetailViewController extends GetxController {
       wishlistIds.refresh();
 
       Get.snackbar(
-        'Error',
-        'Something went wrong',
+        'Wishlist Error',
+        'Something went wrong while updating your wishlist. Please try again.',
         snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
       );
     }
   }
@@ -916,12 +917,9 @@ View more details on KDT Diamonds.
       await openAppointmentUrl(indiaLink);
     } else {
       Get.snackbar(
-        "Not Available",
-        "India appointment link is not available",
+        "Link Unavailable",
+        "The appointment link for India is currently not set. Please contact support.",
         snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
       );
     }
   }
@@ -933,12 +931,9 @@ View more details on KDT Diamonds.
       await openAppointmentUrl(koreaLink);
     } else {
       Get.snackbar(
-        "Not Available",
-        "Korea appointment link is not available",
+        "Link Unavailable",
+        "The appointment link for Korea is currently not set. Please contact support.",
         snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
       );
     }
   }
@@ -958,8 +953,8 @@ View more details on KDT Diamonds.
 
       if (!launched) {
         Get.snackbar(
-          "Error",
-          "Unable to open browser",
+          "Browser Error",
+          "We couldn't open the web browser. Please try again later.",
           snackPosition: SnackPosition.TOP,
         );
       }
@@ -973,8 +968,8 @@ View more details on KDT Diamonds.
 
     if (settings == null) {
       Get.snackbar(
-        "Error",
-        "Contact settings not available",
+        "Settings Error",
+        "Contact settings are currently unavailable. Please refresh and try again.",
         snackPosition: SnackPosition.TOP,
       );
       return;
@@ -992,8 +987,8 @@ View more details on KDT Diamonds.
 
     if (kakaoId == null || kakaoId.isEmpty) {
       Get.snackbar(
-        "Not Available",
-        "Kakao ID is not available",
+        "ID Unavailable",
+        "The Kakao ID is currently not available. Please contact support.",
         snackPosition: SnackPosition.TOP,
       );
       return;

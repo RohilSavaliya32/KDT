@@ -36,8 +36,8 @@ class ContactController extends GetxController {
       );
 
       Get.snackbar(
-        "Success",
-        "",
+        "Message Sent",
+        "Your message has been sent successfully. We will get back to you soon.",
         snackPosition: SnackPosition.TOP,
       );
 
@@ -46,8 +46,8 @@ class ContactController extends GetxController {
       autoValidate.value = AutovalidateMode.disabled;
     } catch (e) {
       Get.snackbar(
-        "Error",
-        e.toString(),
+        "Submission Failed",
+        "We couldn't send your message. Please check your connection and try again.",
         snackPosition: SnackPosition.TOP,
       );
     } finally {

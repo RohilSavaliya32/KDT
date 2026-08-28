@@ -90,12 +90,9 @@ class LanguageBottomSheet extends StatelessWidget {
                 Get.back();
                 // Show success snackbar
                 Get.snackbar(
-                  'Language Changed',
-                  'Language changed to $nativeName',
+                  'Language Updated',
+                  'The application language has been changed to $nativeName.',
                   snackPosition: SnackPosition.TOP,
-                  backgroundColor: const Color(0xFF0F5B45),
-                  colorText: Colors.white,
-                  duration: const Duration(seconds: 2),
                 );
               },
             );

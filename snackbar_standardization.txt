@@ -1,0 +1,134 @@
+Standardized Notifications & Error Messages for KDT Application:
+
+PART 1: Standardized Snackbars (TOP Position)
+
+1. AddressController:
+   - [Location Services Disabled]: "Please enable location services in your device settings to use this feature."
+   - [Location Permission Denied]: "Location access is required to automatically fill your address details."
+   - [Location Access Restricted]: "Location permissions are permanently denied. Please enable them in your app settings."
+   - [Location Error]: "We couldn't fetch your current location. Please enter the details manually."
+   - [Address Updated]: "Your address changes have been saved successfully."
+   - [Update Failed]: "We couldn’t save your changes. Please check your connection and try again."
+   - [Address Added]: "Your new delivery address has been saved successfully."
+   - [Address Failed]: "We couldn’t save your address. Please try again later."
+   - [Operation Failed]: "Could not set this address as default. Please try again."
+
+2. CartController:
+   - [Stock Limit]: "Only {availableQuantity} item(s) available in stock."
+
+3. RegisterController:
+   - [OTP Sent]: "A verification code has been sent to your phone number."
+   - [OTP Resent]: "A new verification code has been sent to your phone number."
+   - [Account Created]: "Welcome to KDT Diamonds! Your account has been created successfully."
+
+4. CheckoutController:
+   - [Upload Error]: "We couldn't select the image. Please try again or check your permissions."
+   - [Cart Empty]: "Your shopping cart is empty. Please add items before placing an order."
+   - [Order Confirmed]: "Your order has been placed successfully!"
+   - [Order Failed]: "We couldn't process your order. Please check your details and try again."
+
+5. DiamondDetailViewController:
+   - [Added to Cart]: "This diamond has been successfully added to your shopping cart."
+   - [WhatsApp Unavailable]: "The WhatsApp contact number is currently not available. Please try again later."
+   - [WhatsApp Unavailable]: "We couldn't open WhatsApp. Please ensure it's installed on your device."
+   - [Call Unavailable]: "The support phone number is currently not available. Please try again later."
+   - [Dialer Error]: "We couldn't open the phone dialer. Please try dialing manually."
+   - [Wishlist Error]: "We couldn’t update your wishlist. Please check your connection and try again."
+   - [Link Unavailable]: "The appointment link for India/Korea is currently not set. Please contact support."
+   - [Browser Error]: "We couldn't open the web browser. Please try again later."
+   - [Settings Error]: "Contact settings are currently unavailable. Please refresh and try again."
+   - [ID Unavailable]: "The Kakao ID is currently not available. Please contact support."
+
+6. EditProfileController:
+   - [Success]: "Your profile image has been removed successfully."
+   - [Success]: "Your profile photo has been updated successfully."
+   - [Upload Error]: "We couldn't upload your image. Please try again later."
+   - [Verification Required]: "Please verify your mobile number before saving your profile changes."
+   - [Phone Error]: "Please enter your mobile number to proceed with verification."
+
+7. ProfileController:
+   - [Logged Out]: "You have been successfully logged out of your account."
+   - [Logout Error]: "Something went wrong while logging out. Please try again."
+
+8. ReviewController:
+   - [Review Error]: "We couldn’t save your review. Please check your connection and try again."
+
+9. ContactController:
+   - [Message Sent]: "Your message has been sent successfully. We will get back to you soon."
+   - [Submission Failed]: "We couldn't send your message. Please check your connection and try again."
+
+10. DiamondCardController:
+    - [Load Error]: "We couldn’t fetch the diamonds. Please try again later."
+    - [Refresh Error]: "We couldn’t refresh the diamonds. Please check your connection."
+    - [Load More Error]: "An unexpected error occurred while loading more diamonds."
+
+11. LoginController:
+    - [Connection Error]: "We couldn't check your user status. Please check your internet connection and try again."
+    - [Welcome Back]: "You’ve been logged in successfully."
+    - [Login Failed]: "We couldn’t log you in. Please check your credentials and try again."
+    - [OTP Sent]: "A verification code has been sent to {phoneNumber}."
+    - [Verification Failed]: "The OTP is incorrect or has expired. Please try again."
+    - [OTP Resent]: "A new OTP has been sent successfully."
+    - [Invalid OTP]: "The OTP you entered is incorrect. Please try again."
+    - [Verification Failed]: "We couldn't complete the sign-in process. Please try again."
+    - [Success]: [Password Updated]: "Password updated successfully"
+    - [Google Sign-In Failed]: "We couldn't sign you in with Google. Please try another method or try again later."
+
+12. LanguageDropdown:
+    - [Language Updated]: "The application language has been changed to {LanguageName}."
+
+13. NotificationController:
+    - [Notifications Disabled]: "Please enable notifications in your phone settings to continue."
+    - [Preferences Updated]: "Your notification preferences have been updated successfully."
+    - [Preferences Update Failed]: "We couldn’t save your notification preferences. Please try again."
+
+14. OrderDetailsView:
+    - [Order Cancelled]: "Your order has been successfully cancelled."
+
+PART 2: Form Validation Error Messages (Displayed below fields)
+
+1. Login (Email/Phone/Password):
+   - [Email]: "Please enter your email address", "Please enter valid email address"
+   - [Phone]: "Please enter your phone number", "Phone number must be between 5 and 15 digits"
+   - [Password]: "Please enter your password"
+   - [OTP]: "OTP session expired. Please resend code.", "The OTP you entered is incorrect. Please try again."
+
+2. Register:
+   - [First Name]: "First name is required"
+   - [Last Name]: "Last name is required"
+   - [Email]: "Email address is required", "Please enter a valid email address"
+   - [Mobile]: "Mobile number is required", "Please enter a valid mobile number (minimum 10 digits)"
+   - [Password]: "Password is required", "Password must be at least 6 characters"
+   - [OTP]: "Please enter 6-digit OTP", "Invalid OTP. Please try again."
+
+3. Address Management:
+   - [Full Name]: "Please enter full name", "Full name must be at least 3 characters"
+   - [Phone]: "Please enter phone number", "Please enter a valid phone number"
+   - [Street]: "Please enter street address", "Street address is too short"
+   - [City]: "Please enter city"
+   - [State]: "Please enter state"
+   - [Zip Code]: "Please enter zip code", "Please enter a valid zip code"
+
+4. Edit Profile:
+   - [First Name]: "First Name is required"
+   - [Last Name]: "Last Name is required"
+   - [Image]: "Only PNG, JPG and JPEG images are allowed.", "Image size must be less than 12 MB."
+
+5. Contact Us:
+   - [Full Name]: "Full name is required", "Full name must be at least 3 characters"
+   - [Email]: "Email is required", "Please enter a valid email address"
+   - [Phone]: "Phone number is required", "Please enter a valid phone number"
+   - [Subject]: "Subject is required", "Subject must be at least 3 characters"
+   - [Message]: "Message is required", "Message must be at least 10 characters"
+
+6. Checkout (Payment Proof):
+   - [Transaction ID]: "Please enter transaction ID", "Transaction ID too long"
+   - [Bank Name]: "Please enter bank name", "Bank name too long"
+   - [Amount]: "Please enter transfer amount", "Enter valid amount"
+   - [Date]: "Please select transfer date"
+   - [Receipt]: "Please upload payment receipt image"
+
+UI STANDARDIZATION:
+- Error Text Style: AppTextStyles.poppins(fontSize: 12, color: AppColors.error)
+- Error Borders: Color: AppColors.error, Width: 1.5 (Focused) / 1.0 (Normal)
+- Validation Trigger: autovalidateMode: AutovalidateMode.onUserInteraction (where applicable)

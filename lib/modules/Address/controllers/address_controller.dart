@@ -63,8 +63,11 @@ class AddressController extends GetxController {
       // 1. Check if location services are enabled
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        Get.snackbar("Service Disabled", "Please enable location services in your settings",
-            snackPosition: SnackPosition.TOP);
+        Get.snackbar(
+          "Location Services Disabled",
+          "Please enable location services in your device settings to use this feature.",
+          snackPosition: SnackPosition.TOP,
+        );
         return;
       }
 
@@ -74,19 +77,25 @@ class AddressController extends GetxController {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          Get.snackbar("Permission Denied", "Location permission is required to autofill address",
-              snackPosition: SnackPosition.TOP);
+          Get.snackbar(
+            "Location Permission Denied",
+            "Location access is required to automatically fill your address details.",
+            snackPosition: SnackPosition.TOP,
+          );
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        Get.snackbar("Permission Restricted", "Location permissions are permanently denied. Please enable them in app settings.",
-            snackPosition: SnackPosition.TOP,
-            mainButton: TextButton(
-              onPressed: () => openAppSettings(),
-              child: const Text("Settings"),
-            ));
+        Get.snackbar(
+          "Location Access Restricted",
+          "Location permissions are permanently denied. Please enable them in your app settings.",
+          snackPosition: SnackPosition.TOP,
+          mainButton: TextButton(
+            onPressed: () => openAppSettings(),
+            child: const Text("Settings"),
+          ),
+        );
         return;
       }
 
@@ -116,14 +125,14 @@ class AddressController extends GetxController {
         stateController.text = place.administrativeArea ?? "";
         countryController.text = place.country ?? "";
         zipCodeController.text = place.postalCode ?? "";
-        
-        Get.snackbar("Success", "Address fetched from your current location",
-            snackPosition: SnackPosition.TOP);
       }
     } catch (e) {
       debugPrint("Location Error: $e");
-      Get.snackbar("Error", "Could not fetch location. Please enter manually.",
-          snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        "Location Error",
+        "We couldn't fetch your current location. Please enter the details manually.",
+        snackPosition: SnackPosition.TOP,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -209,13 +218,13 @@ class AddressController extends GetxController {
       Get.back();
       Get.snackbar(
         'Address Updated',
-        'Your address has been updated successfully.',
+        'Your address changes have been saved successfully.',
         snackPosition: SnackPosition.TOP,
       );
     } catch (e) {
       Get.snackbar(
         'Update Failed',
-        'We couldn’t update your address. Please try again.',
+        'We couldn’t save your changes. Please check your connection and try again.',
         snackPosition: SnackPosition.TOP,
       );
     } finally {
@@ -246,13 +255,13 @@ class AddressController extends GetxController {
       Get.back();
       Get.snackbar(
         'Address Added',
-        'Your address has been added successfully.',
+        'Your new delivery address has been saved successfully.',
         snackPosition: SnackPosition.TOP,
       );
     } catch (e) {
       Get.snackbar(
-        'Address Not Added',
-        'We couldn’t add your address. Please try again.',
+        'Address Failed',
+        'We couldn’t save your address. Please try again later.',
         snackPosition: SnackPosition.TOP,
       );
     } finally {
@@ -286,7 +295,11 @@ class AddressController extends GetxController {
       await repository.updateAddress(model);
       await getAddresses();
     } catch (e) {
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Operation Failed',
+        'Could not set this address as default. Please try again.',
+        snackPosition: SnackPosition.TOP,
+      );
     }
   }
 

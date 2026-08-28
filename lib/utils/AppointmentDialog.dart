@@ -97,8 +97,8 @@ class AppointmentDialog extends StatelessWidget {
                         );
                       } else {
                         Get.snackbar(
-                          "Not Available",
-                          "Korea appointment link is not available",
+                          "Link Unavailable",
+                          "The Korea appointment link is currently not set. Please contact support.",
                           snackPosition: SnackPosition.TOP,
                         );
                       }
@@ -125,8 +125,8 @@ class AppointmentDialog extends StatelessWidget {
                         );
                       } else {
                         Get.snackbar(
-                          "Not Available",
-                          "India appointment link is not available",
+                          "Link Unavailable",
+                          "The India appointment link is currently not set. Please contact support.",
                           snackPosition: SnackPosition.TOP,
                         );
                       }

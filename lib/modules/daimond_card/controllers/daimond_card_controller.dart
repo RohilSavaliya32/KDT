@@ -335,7 +335,11 @@
         _applyFilters();
       } catch (e) {
         errorMessage.value = e.toString();
-        Get.snackbar('Error', e.toString());
+        Get.snackbar(
+          'Load Error',
+          'We couldn’t fetch the diamonds. Please try again later.',
+          snackPosition: SnackPosition.TOP,
+        );
       } finally {
         isLoading.value = false;
       }
@@ -349,7 +353,11 @@
         hasMore.value = result.length >= limit;
         _applyFilters();
       } catch (e) {
-        Get.snackbar('Error', e.toString());
+        Get.snackbar(
+          'Refresh Error',
+          'We couldn’t refresh the diamonds. Please check your connection.',
+          snackPosition: SnackPosition.TOP,
+        );
       }
     }
 
@@ -390,7 +398,11 @@
         _applyFilters();
       } catch (e) {
         currentPage.value--;
-        Get.snackbar("Error", e.toString());
+        Get.snackbar(
+          'Load More Error',
+          'An unexpected error occurred while loading more diamonds.',
+          snackPosition: SnackPosition.TOP,
+        );
       } finally {
         isLoading.value = false;
       }
