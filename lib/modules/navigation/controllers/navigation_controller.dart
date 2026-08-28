@@ -22,24 +22,31 @@ class NavigationController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    handlePendingDeepLink();
+    // 🛡️ Cold Start stability: Wait for 2 seconds to ensure Home screen is fully built
+    // before trying to push the Diamond Details screen.
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      handlePendingDeepLink();
+    });
   }
 
   void handlePendingDeepLink() {
     if (Get.isRegistered<String>(tag: 'pending_deeplink')) {
       final slug = Get.find<String>(tag: 'pending_deeplink');
-      Get.delete<String>(tag: 'pending_deeplink', force: true);
       
       if (slug.isNotEmpty) {
-        debugPrint("🚀 NavigationController: Processing Deep Link Slug: $slug");
+        debugPrint("🚀 Deep Link Processing: $slug");
         
-        // Use postFrameCallback to ensure the navigation is safe
+        // Final safety check before navigation
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          Get.toNamed(
-            AppRoutes.DIAMONDS_DETAILS,
-            arguments: {"slug": slug},
-            preventDuplicates: true,
-          );
+          if (Get.key.currentState != null) {
+            Get.toNamed(
+              AppRoutes.DIAMONDS_DETAILS,
+              arguments: {"slug": slug},
+              preventDuplicates: true,
+            );
+            // Delete only after successful trigger
+            Get.delete<String>(tag: 'pending_deeplink', force: true);
+          }
         });
       }
     }

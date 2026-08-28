@@ -72,8 +72,7 @@ class _InternetCheckWrapperState extends State<InternetCheckWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    // 🛡️ Clean, stable structure. widget.child (the Navigator) is always built.
-    // Overlay is only added when there's no internet.
+    // 🛡️ Tree corruption fix: Always keep the same structure in the Stack.
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Stack(
@@ -82,10 +81,17 @@ class _InternetCheckWrapperState extends State<InternetCheckWrapper> {
           ValueListenableBuilder<bool>(
             valueListenable: _isConnected,
             builder: (context, connected, _) {
-              if (connected) return const SizedBox.shrink();
-              return Material(
-                child: NoInternetScreen(
-                  onRetry: _checkConnectivity,
+              // Using Visibility with maintainState: true keeps the tree identical
+              // preventing the "_elements.contains(element): is not true" crash.
+              return Visibility(
+                visible: !connected,
+                maintainState: true,
+                maintainAnimation: true,
+                maintainSize: true,
+                child: Material(
+                  child: NoInternetScreen(
+                    onRetry: _checkConnectivity,
+                  ),
                 ),
               );
             },

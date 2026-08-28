@@ -179,13 +179,16 @@ class _MyAppState extends State<MyApp> {
 
     debugPrint("🔗 Link detected, storing slug: $slug");
 
-    // Use a Global static variable or Get.put to store the slug
+    // Permanent store for NavigationController to pick up
     Get.put<String>(slug, tag: 'pending_deeplink', permanent: true);
     
-    // If navigation is already ready, try to trigger it
+    // If the app is already stable and controller is ready, trigger immediately
     if (Get.isRegistered<NavigationController>()) {
       final nav = Get.find<NavigationController>();
-      nav.handlePendingDeepLink();
+      // Small delay for safety even on warm start
+      Future.delayed(const Duration(milliseconds: 300), () {
+        nav.handlePendingDeepLink();
+      });
     }
   }
 
