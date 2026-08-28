@@ -266,11 +266,10 @@ class _MyAppState extends State<MyApp> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (Get.key.currentState != null) {
           try {
-            // Cold Start solution: Use offAllNamed to replace the potentially unstable 
-            // initial tree with a clean navigation stack. The DiamondDetailView back 
-            // button is already configured to return to /navigation if it can't pop.
+            // Cold Start solution: We use toNamed with a stable stack. 
+            // offAllNamed was causing tree instability during initial build.
             if (isInitial) {
-              Get.offAllNamed(
+              Get.toNamed(
                 AppRoutes.DIAMONDS_DETAILS,
                 arguments: {"slug": slug},
               );
@@ -327,7 +326,14 @@ class _MyAppState extends State<MyApp> {
 
       builder: (context, child) {
         if (child == null) return const SizedBox.shrink();
-        return InternetCheckWrapper(child: child);
+        
+        // Return child directly if InternetCheckWrapper is still causing issues.
+        // But we wrap it in a stable structure to prevent tree fragmentation.
+        return Material(
+          child: InternetCheckWrapper(
+            child: child,
+          ),
+        );
       },
     );
   }
