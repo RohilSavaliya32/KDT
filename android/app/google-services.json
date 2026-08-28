@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "434558202880",
+    "project_id": "kdt-diamonds",
+    "storage_bucket": "kdt-diamonds.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434558202880:android:6a4b375dd19de10ede14e5",
+        "android_client_info": {
+          "package_name": "com.kdtdiamonds.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "434558202880-n65v4q496c74q8989is6npiqsj530r5n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kdtdiamonds.app",
+            "certificate_hash": "4459e1f51b5db27b134c515ff3eccf3ab1b8c0db"
+          }
+        },
+        {
+          "client_id": "434558202880-72o3opjtjtig2fi90ve21c564oaa42io.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiPxpXhmH0e2JuV1ie1uNTZ35M9iOj5cI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "434558202880-72o3opjtjtig2fi90ve21c564oaa42io.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "434558202880-9tm5b6l2a93f1oj4023hce9n70bdpcqn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kdtdiamonds.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
