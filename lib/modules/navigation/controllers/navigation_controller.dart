@@ -22,8 +22,7 @@ class NavigationController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    // 🛡️ Cold Start stability: Wait for 2 seconds to ensure Home screen is fully built
-    // before trying to push the Diamond Details screen.
+    // 🛡️ Safe Delay: Allow the initial tree to settle completely.
     Future.delayed(const Duration(milliseconds: 2000), () {
       handlePendingDeepLink();
     });

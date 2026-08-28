@@ -16,88 +16,86 @@ class InternetCheckWrapper extends StatefulWidget {
 }
 
 class _InternetCheckWrapperState extends State<InternetCheckWrapper> {
-  // Use a ValueNotifier to prevent the entire widget tree (Navigator) from rebuilding.
-  // We initialize with 'true' to ensure the app starts with the Navigator visible.
   final ValueNotifier<bool> _isConnected = ValueNotifier<bool>(true);
   late final StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
     super.initState();
-    // 🛡️ CRITICAL: Do NOT check connectivity during initState. 
-    // This avoids race conditions during the very first build cycle.
+    // Delay connectivity check to ensure the initial frame is safe
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkConnectivity();
       _listenInternetChanges();
     });
+
+    _isConnected.addListener(_handleConnectionChange);
+  }
+
+  void _handleConnectionChange() {
+    if (!_isConnected.value) {
+      _showNoInternetOverlay();
+    } else {
+      _hideNoInternetOverlay();
+    }
+  }
+
+  void _showNoInternetOverlay() {
+    if (_overlayEntry != null) return;
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Material(
+        color: Colors.black.withOpacity(0.5),
+        child: NoInternetScreen(
+          onRetry: _checkConnectivity,
+        ),
+      ),
+    );
+
+    // Find the overlay and insert
+    final overlay = Overlay.of(context, debugRequiredFor: widget);
+    overlay.insert(_overlayEntry!);
+  }
+
+  void _hideNoInternetOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   Future<void> _checkConnectivity() async {
     try {
       final result = await Connectivity().checkConnectivity();
-      final hasNet = _hasInternet(result);
-      if (_isConnected.value != hasNet) {
-        _isConnected.value = hasNet;
-      }
+      _updateStatus(result);
     } catch (e) {
       debugPrint("Connectivity Check Error: $e");
     }
   }
 
   void _listenInternetChanges() {
-    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((result) {
-      final hasNet = _hasInternet(result);
-      if (_isConnected.value != hasNet) {
-        _isConnected.value = hasNet;
-      }
-    });
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen(_updateStatus);
   }
 
-  bool _hasInternet(List<ConnectivityResult> result) {
-    if (result.isEmpty || result.contains(ConnectivityResult.none)) {
-      return false;
+  void _updateStatus(List<ConnectivityResult> result) {
+    final hasNet = result.isNotEmpty && !result.contains(ConnectivityResult.none);
+    if (_isConnected.value != hasNet) {
+      _isConnected.value = hasNet;
     }
-    return result.contains(ConnectivityResult.mobile) ||
-        result.contains(ConnectivityResult.wifi) ||
-        result.contains(ConnectivityResult.ethernet) ||
-        result.contains(ConnectivityResult.vpn);
   }
 
   @override
   void dispose() {
     _connectivitySubscription.cancel();
+    _isConnected.removeListener(_handleConnectionChange);
     _isConnected.dispose();
+    _hideNoInternetOverlay();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // 🛡️ Tree corruption fix: Always keep the same structure in the Stack.
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Stack(
-        children: [
-          widget.child,
-          ValueListenableBuilder<bool>(
-            valueListenable: _isConnected,
-            builder: (context, connected, _) {
-              // Using Visibility with maintainState: true keeps the tree identical
-              // preventing the "_elements.contains(element): is not true" crash.
-              return Visibility(
-                visible: !connected,
-                maintainState: true,
-                maintainAnimation: true,
-                maintainSize: true,
-                child: Material(
-                  child: NoInternetScreen(
-                    onRetry: _checkConnectivity,
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
+    // 🛡️ CRITICAL: Return the child (Navigator) directly. 
+    // Do NOT wrap it in a Stack or any other layout widget.
+    // This prevents the "_elements.contains(element)" crash.
+    return widget.child;
   }
 }

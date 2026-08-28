@@ -177,19 +177,17 @@ class _MyAppState extends State<MyApp> {
     final slug = segments.last.trim();
     if (slug == 'navigation' || slug == 'home') return;
 
-    debugPrint("🔗 Link detected, storing slug: $slug");
+    debugPrint("🔗 Deep Link Slug Stored: $slug");
 
-    // Permanent store for NavigationController to pick up
+    // Store slug globally
     Get.put<String>(slug, tag: 'pending_deeplink', permanent: true);
     
-    // If the app is already stable and controller is ready, trigger immediately
-    if (Get.isRegistered<NavigationController>()) {
-      final nav = Get.find<NavigationController>();
-      // Small delay for safety even on warm start
-      Future.delayed(const Duration(milliseconds: 300), () {
-        nav.handlePendingDeepLink();
-      });
-    }
+    // Notify NavigationController if it's already running
+    try {
+      if (Get.isRegistered<NavigationController>()) {
+        Get.find<NavigationController>().handlePendingDeepLink();
+      }
+    } catch (_) {}
   }
 
   @override
