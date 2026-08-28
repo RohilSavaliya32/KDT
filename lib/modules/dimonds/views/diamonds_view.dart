@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kdt/modules/fade_slide_in.dart';
+import 'package:kdt/widgets/kdt_shimmer.dart';
+import 'package:kdt/utils/app_decorations.dart';
 import 'package:kdt/utils/app_colors.dart';
 import '../../../utils/app_text_style.dart';
 import '../../daimond_card/controllers/daimond_card_controller.dart';
@@ -202,73 +204,82 @@ class _DiamondsViewState extends State<DiamondsView> with AutomaticKeepAliveClie
             },
             child: SafeArea(
               bottom: false, // Remove bottom safe area to prevent white space
-              child: Stack(
-                children: [
-                  SingleChildScrollView(
-                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: EdgeInsets.only(
-                      left: 18,
-                      right: 18,
-                      top: 30,
-                      // Add extra bottom padding when keyboard is open
-                      bottom: viewInsets.bottom > 0
-                          ? viewInsets.bottom + 30
-                          : 30,
-                    ),
-                    child: FadeSlideIn(
-                      duration: const Duration(milliseconds: 500),
-                      slideOffset: 15,
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 1280),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 32),
-                              const DiamondsHeroSection(),
-                              const SizedBox(height: 48),
-                              _buildTypeFilter(),
-                              const SizedBox(height: 24),
-                              Divider(height: 1, thickness: 1, color: AppColors.borderGray),
-                              const SizedBox(height: 24),
-                              _buildShapeSection(width),
-                              const SizedBox(height: 24),
-                              _buildAdvancedFilters(width),
-                              const SizedBox(height: 12),
-                              const SizedBox(height: 24),
-                              Divider(height: 1, color: AppColors.borderGray),
-                              const SizedBox(height: 18),
-                              _buildHeaderRow(),
-                              const SizedBox(height: 20),
-                              DiamondCardView(
-                                isEmbedded: true,
-                                useFilters: true,
-                                sortIndex: selectedSortIndex,
-                                onClearFilters: _resetFilters,
-                                controller: controller,
-                                limit: 10,
-                                enableLoadMore: true,
-                              ),
-                              // Add extra bottom space for scrolling
-                              const SizedBox(height: 120),
-                            ],
+              child: Obx(() {
+                final bool isInitialLoading = controller.isLoading.value &&
+                    controller.diamonds.isEmpty;
+
+                if (isInitialLoading) {
+                  return _DiamondsShimmer();
+                }
+
+                return Stack(
+                  children: [
+                    SingleChildScrollView(
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.only(
+                        left: 18,
+                        right: 18,
+                        top: 30,
+                        // Add extra bottom padding when keyboard is open
+                        bottom: viewInsets.bottom > 0
+                            ? viewInsets.bottom + 30
+                            : 30,
+                      ),
+                      child: FadeSlideIn(
+                        duration: const Duration(milliseconds: 500),
+                        slideOffset: 15,
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 1280),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 32),
+                                const DiamondsHeroSection(),
+                                const SizedBox(height: 48),
+                                _buildTypeFilter(),
+                                const SizedBox(height: 24),
+                                Divider(height: 1, thickness: 1, color: AppColors.borderGray),
+                                const SizedBox(height: 24),
+                                _buildShapeSection(width),
+                                const SizedBox(height: 24),
+                                _buildAdvancedFilters(width),
+                                const SizedBox(height: 12),
+                                const SizedBox(height: 24),
+                                Divider(height: 1, color: AppColors.borderGray),
+                                const SizedBox(height: 18),
+                                _buildHeaderRow(),
+                                const SizedBox(height: 20),
+                                DiamondCardView(
+                                  isEmbedded: true,
+                                  useFilters: true,
+                                  sortIndex: selectedSortIndex,
+                                  onClearFilters: _resetFilters,
+                                  controller: controller,
+                                  limit: 10,
+                                  enableLoadMore: true,
+                                ),
+                                // Add extra bottom space for scrolling
+                                const SizedBox(height: 120),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  if (_isRefreshing)
-                    Container(
-                      color: AppColors.primaryDark.withOpacity(0.3),
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.white,
+                    if (_isRefreshing)
+                      Container(
+                        color: AppColors.primaryDark.withOpacity(0.3),
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.white,
+                          ),
                         ),
                       ),
-                    ),
-                ],
-              ),
+                  ],
+                );
+              }),
             ),
           ),
         );
@@ -512,6 +523,94 @@ class _DiamondsViewState extends State<DiamondsView> with AutomaticKeepAliveClie
             color: AppColors.textSecondary,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _DiamondsShimmer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return KdtShimmer(
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 32),
+            // Hero Shimmer
+            Center(
+              child: Column(
+                children: [
+                  KdtSkeleton(width: 200, height: 35, borderRadius: 4),
+                  const SizedBox(height: 18),
+                  KdtSkeleton(width: 300, height: 40, borderRadius: 4),
+                ],
+              ),
+            ),
+            const SizedBox(height: 48),
+
+            // Type Filter Shimmer
+            Row(
+              children: [
+                KdtSkeleton(width: 60, height: 20, borderRadius: 4),
+                const SizedBox(width: 16),
+                KdtSkeleton(width: 80, height: 40, borderRadius: 30),
+                const SizedBox(width: 12),
+                KdtSkeleton(width: 100, height: 40, borderRadius: 30),
+              ],
+            ),
+            const SizedBox(height: 24),
+            const Divider(),
+            const SizedBox(height: 24),
+
+            // Shape Section Shimmer
+            KdtSkeleton(width: 80, height: 20, borderRadius: 4),
+            const SizedBox(height: 14),
+            SizedBox(
+              height: 100,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: 5,
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (_, __) => KdtSkeleton(width: 90, height: 100, borderRadius: 6),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Advanced Filters Shimmer
+            KdtSkeleton(width: double.infinity, height: 160, borderRadius: 12),
+            const SizedBox(height: 24),
+            const Divider(),
+            const SizedBox(height: 18),
+
+            // Header Row Shimmer
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                KdtSkeleton(width: 120, height: 16, borderRadius: 4),
+                KdtSkeleton(width: 180, height: 38, borderRadius: 0),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            // Grid Shimmer
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                mainAxisExtent: 340,
+              ),
+              itemCount: 4,
+              itemBuilder: (_, __) => const DiamondCardSkeleton(),
+            ),
+          ],
+        ),
       ),
     );
   }
