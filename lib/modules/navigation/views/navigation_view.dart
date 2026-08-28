@@ -264,44 +264,27 @@ class NavigationView extends StatelessWidget {
   Widget _buildBottomNavigationBar() {
     return GetBuilder<LanguageController>(
       builder: (langController) {
-        return Builder(
-          builder: (context) {
-            // Real device bottom safe-area inset:
-            // - iOS with home indicator: ~34
-            // - iOS with home button: 0
-            // - Android gesture nav: ~16-48 depending on device
-            // - Android 3-button nav: 0 (system nav bar handles it)
-            const double effectiveBottomPadding = 0;
-
-            return Container(
-              height: _navBarContentHeight +
-                  _navBarTopPadding +
-                  effectiveBottomPadding,
-              decoration: _buildBottomNavDecoration(),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(35),
-                  topRight: Radius.circular(35),
+        return MediaQuery.removePadding(
+          context: Get.context!,
+          removeBottom: true,
+          child: Container(
+            height: _navBarContentHeight + _navBarTopPadding,
+            decoration: _buildBottomNavDecoration(),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(35),
+                topRight: Radius.circular(35),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: _navBarTopPadding,
                 ),
-                child: Padding(
-                  // Push the actual nav bar content up above the
-                  // home indicator / gesture bar instead of
-                  // stacking a second SafeArea on top of a fixed
-                  // height container, plus a little extra
-                  // breathing room top and bottom.
-                  padding: EdgeInsets.only(
-                    top: _navBarTopPadding,
-                    bottom: effectiveBottomPadding,
-                  ),
-                  child: SizedBox(
-                    height: _navBarContentHeight,
+                child: SizedBox(
+                  height: _navBarContentHeight,
+                  child: MediaQuery.removePadding(
+                    context: Get.context!,
+                    removeBottom: true,
                     child: BottomNavigationBar(
-                      // Removed the fixed `height: 1.2` on label
-                      // styles — that was adding extra vertical
-                      // space to each label's line box, which
-                      // combined with the fixed SizedBox height
-                      // caused a ~2px RenderFlex bottom overflow
-                      // on iOS for every nav item.
                       selectedLabelStyle: const TextStyle(),
                       unselectedLabelStyle: const TextStyle(),
                       currentIndex: controller.currentIndex.value,
@@ -318,8 +301,8 @@ class NavigationView extends StatelessWidget {
                   ),
                 ),
               ),
-            );
-          },
+            ),
+          ),
         );
       },
     );
