@@ -36,7 +36,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Pre-register status controller (Synchronous, so no white flash)
-  Get.put(ServicesController());
+  Get.put(ServicesController(), permanent: true);
 
   runApp(const MyApp());
 

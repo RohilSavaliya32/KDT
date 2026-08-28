@@ -13,11 +13,17 @@ class SplashView extends StatefulWidget {
 class _SplashViewState extends State<SplashView> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  final ServicesController _servicesController = Get.find<ServicesController>();
+  ServicesController? _servicesController;
 
   @override
   void initState() {
     super.initState();
+    
+    // Safety check for controller
+    if (Get.isRegistered<ServicesController>()) {
+      _servicesController = Get.find<ServicesController>();
+    }
+
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
@@ -26,18 +32,24 @@ class _SplashViewState extends State<SplashView> with SingleTickerProviderStateM
 
     _animationController.forward();
 
-    // Listen to services readiness
-    ever(_servicesController.isReady, (bool ready) {
-      if (ready) {
-        _navigateToNext();
-      }
-    });
+    // Check if ready already
+    if (_servicesController?.isReady.value == true) {
+      _navigateToNext();
+      return;
+    }
 
-    // Fallback delay in case it's too fast or listener misses
-    Future.delayed(const Duration(seconds: 2), () {
-      if (_servicesController.isReady.value) {
-        _navigateToNext();
-      }
+    // Listen to services readiness
+    if (_servicesController != null) {
+      ever(_servicesController!.isReady, (bool ready) {
+        if (ready) {
+          _navigateToNext();
+        }
+      });
+    }
+
+    // Fallback delay (3 seconds max) to prevent getting stuck
+    Future.delayed(const Duration(seconds: 3), () {
+      _navigateToNext();
     });
   }
 
