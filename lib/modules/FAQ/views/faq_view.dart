@@ -25,15 +25,16 @@ class FaqView extends GetView<FaqController> {
               builder: (context, constraints) {
                 final screenWidth = constraints.maxWidth;
 
-              return Obx(
-                    () => controller.faqs.isEmpty
-                    ? const _EmptyState()
-                    : _FaqList(
-                  faqs: controller.faqs,
-                  screenWidth: screenWidth,
-                ),
-              ),
-            ),
+                return Obx(
+                      () =>
+                  controller.faqs.isEmpty
+                      ? const _EmptyState()
+                      : _FaqList(
+                    faqs: controller.faqs,
+                    screenWidth: screenWidth,
+                  ),
+                );
+              }),
           ),
         ),
       ),

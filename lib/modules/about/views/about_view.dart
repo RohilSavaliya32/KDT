@@ -86,7 +86,7 @@ class AboutView extends GetView<AboutController> {
           ),
         ),
       ),
-    );
+    ));
   }
 
   AppBar _buildAppBar() {
