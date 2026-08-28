@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:kdt/modules/Checkout/views/payment_method_section.dart';
 import 'package:kdt/modules/Checkout/views/user_information_section.dart';
 import 'package:kdt/modules/fade_slide_in.dart';
+import 'package:kdt/utils/app_decorations.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_text_style.dart';
 import '../../translations/Translation_key/translation_keys.dart';
@@ -28,7 +29,7 @@ class CheckoutView extends GetView<CheckoutController> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.appBack,
       body: KeyboardDismisser(
         child: RefreshIndicator(
           onRefresh: controller.refreshPage,
@@ -62,8 +63,8 @@ class CheckoutView extends GetView<CheckoutController> {
   SliverAppBar _buildAppBar(BuildContext context) {
     return SliverAppBar(
       pinned: true,
-      backgroundColor: AppColors.white,
-      surfaceTintColor: AppColors.white,
+      backgroundColor: AppColors.appBack,
+      surfaceTintColor: AppColors.appBack,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: true,
@@ -118,18 +119,7 @@ class CheckoutView extends GetView<CheckoutController> {
       key: controller.formKey,
       child: Container(
         padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.borderGray),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primaryDark.withOpacity(0.05),
-              blurRadius: 18,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
+        decoration: AppDecorations.cardDecoration(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -145,18 +135,7 @@ class CheckoutView extends GetView<CheckoutController> {
   Widget _buildSummaryContainer(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.borderGray),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryDark.withOpacity(0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
+      decoration: AppDecorations.cardDecoration(),
       child: const OrderSummarySection(),
     );
   }

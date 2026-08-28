@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide SearchController;
 import 'package:get/get.dart';
+import 'package:kdt/utils/app_colors.dart';
 
 import '../../daimond_card/controllers/daimond_card_controller.dart';
 import '../../daimond_card/views/daimond_card_view.dart';
@@ -19,7 +20,7 @@ class SearchView extends GetView<SearchController> {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Container(
-        color: Colors.white,
+        color: AppColors.appBack,
         child: SafeArea(
           top: false,
           bottom: true,

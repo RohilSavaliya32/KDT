@@ -194,7 +194,7 @@ class _DiamondsViewState extends State<DiamondsView> with AutomaticKeepAliveClie
       builder: (langController) {
         return Scaffold(
           resizeToAvoidBottomInset: true,
-          backgroundColor: AppColors.background,
+          backgroundColor: AppColors.appBack,
           body: GestureDetector(
             onTap: () {
               // Dismiss keyboard when tapping outside

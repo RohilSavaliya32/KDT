@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kdt/utils/app_decorations.dart';
 import '../../../data/Setting_Cont.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_text_style.dart';
@@ -59,10 +60,9 @@ class _PaymentMethodCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.borderGray),
+      decoration: AppDecorations.cardDecoration(
+        radius: AppDecorations.cardRadius,
+        shadow: AppDecorations.smoothShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,10 +118,10 @@ class _BankTransferDetailsCard extends StatelessWidget {
 
       return Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
+        decoration: AppDecorations.cardDecoration(
           color: AppColors.lightGray.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.borderGray),
+          radius: AppDecorations.cardRadius,
+          shadow: AppDecorations.smoothShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,10 +198,9 @@ class _ReceiptUploadCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.borderGray),
+      decoration: AppDecorations.cardDecoration(
+        radius: AppDecorations.cardRadius,
+        shadow: AppDecorations.smoothShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -445,9 +444,9 @@ class _FileUploadSection extends FormField<String> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(8),
+                  decoration: AppDecorations.cardDecoration(
+                    radius: AppDecorations.cardRadius,
+                    shadow: AppDecorations.smoothShadow,
                     border: Border.all(
                       color: hasError ? AppColors.error : AppColors.borderGray,
                       width: hasError ? 1.5 : 1,
@@ -492,7 +491,7 @@ class _FileUploadSection extends FormField<String> {
                               color: hasFile
                                   ? AppColors.success.withOpacity(0.05)
                                   : AppColors.lightGray,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(AppDecorations.buttonRadius),
                               border: Border.all(
                                 color: hasFile
                                     ? AppColors.success

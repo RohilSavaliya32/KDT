@@ -2,6 +2,7 @@ import 'package:kdt/modules/fade_slide_in.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:kdt/utils/app_decorations.dart';
 import 'package:kdt/utils/app_text_style.dart';
 
 import '../../../utils/app_colors.dart';
@@ -328,16 +329,9 @@ class _DiamondCardViewState extends State<DiamondCardView> {
     final roundedRating = avgRating == 0 ? '-' : avgRating.toStringAsFixed(1);
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: AppDecorations.cardDecoration(
         color: AppColors.cardBg,
-        borderRadius: BorderRadius.circular(vm.cardRadius),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        radius: vm.cardRadius,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -572,7 +566,7 @@ class _ViewModel {
   int get crossAxisCount => (isVerySmall || isMobile) ? 2 : (isTablet ? 3 : 4);
   double get gridSpacing => isVerySmall ? 8 : (isMobile ? 10 : 12);
   double get cardHeight => isVerySmall ? 325 : (isMobile ? 345 : 445);
-  double get cardRadius => isVerySmall ? 14 : (isMobile ? 16 : 20);
+  double get cardRadius => AppDecorations.cardRadius;
   double get contentPadding => isVerySmall ? 6 : (isMobile ? 8 : 10);
   double get tinySpacing => isVerySmall ? 2 : (isMobile ? 3 : 4);
   double get smallSpacing => isVerySmall ? 4 : (isMobile ? 6 : 8);

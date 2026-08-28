@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kdt/utils/app_decorations.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_text_style.dart';
 
@@ -134,7 +135,7 @@ class _OptimizedFieldState extends State<OptimizedField> {
       ),
 
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(AppDecorations.inputRadius),
         borderSide: BorderSide(
           color: _borderColor,
           width: 1,
@@ -142,7 +143,7 @@ class _OptimizedFieldState extends State<OptimizedField> {
       ),
 
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(AppDecorations.inputRadius),
         borderSide: BorderSide(
           color: _borderColor,
           width: 1,
@@ -150,7 +151,7 @@ class _OptimizedFieldState extends State<OptimizedField> {
       ),
 
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(AppDecorations.inputRadius),
         borderSide: BorderSide(
           color: _hasError
               ? AppColors.error
@@ -160,7 +161,7 @@ class _OptimizedFieldState extends State<OptimizedField> {
       ),
 
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(AppDecorations.inputRadius),
         borderSide: const BorderSide(
           color: AppColors.error,
           width: 1.5,
@@ -168,7 +169,7 @@ class _OptimizedFieldState extends State<OptimizedField> {
       ),
 
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(AppDecorations.inputRadius),
         borderSide: const BorderSide(
           color: AppColors.error,
           width: 1.5,

@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kdt/utils/app_decorations.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_text_style.dart';
 import '../../Address/address_model.dart';
@@ -55,7 +56,7 @@ class AddressSelector extends StatelessWidget {
             // ============================================================
             InkWell(
               onTap: () => _openAddressBottomSheet(context),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppDecorations.cardRadius),
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(
@@ -64,13 +65,14 @@ class AddressSelector extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: AppColors.white,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppDecorations.cardRadius),
                   border: Border.all(
                     color: controller.selectedAddressId.value != null
                         ? AppColors.primaryDark
                         : AppColors.borderGray,
                     width: controller.selectedAddressId.value != null ? 1.5 : 1,
                   ),
+                  boxShadow: AppDecorations.smoothShadow,
                 ),
                 child: Row(
                   children: [
@@ -149,7 +151,7 @@ class AddressSelector extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
         decoration: const BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppDecorations.cardRadius)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,7 +278,7 @@ class AddressSelector extends StatelessWidget {
       ),
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppDecorations.cardRadius)),
       ),
       backgroundColor: Colors.transparent,
       barrierColor: AppColors.primaryDark.withOpacity(0.3),
@@ -294,18 +296,19 @@ class AddressSelector extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppDecorations.cardRadius),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primaryDark.withOpacity(0.06)
               : AppColors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDecorations.cardRadius),
           border: Border.all(
             color: isSelected ? AppColors.primaryDark : AppColors.borderGray,
             width: isSelected ? 1.8 : 1,
           ),
+          boxShadow: isSelected ? null : AppDecorations.smoothShadow,
         ),
         child: Row(
           children: [

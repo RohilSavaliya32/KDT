@@ -1,6 +1,7 @@
 import 'package:kdt/modules/fade_slide_in.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kdt/utils/app_decorations.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_text_style.dart';
 import '../../translations/Translation_key/translation_keys.dart';
@@ -17,7 +18,7 @@ class FaqView extends GetView<FaqController> {
         boldText: false,
       ),
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.appBack,
         appBar: _buildAppBar(),
         body: SafeArea(
           child: FadeSlideIn(
@@ -43,8 +44,8 @@ class FaqView extends GetView<FaqController> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      backgroundColor: AppColors.background,
-      surfaceTintColor: AppColors.background,
+      backgroundColor: AppColors.appBack,
+      surfaceTintColor: AppColors.appBack,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: true,
@@ -213,21 +214,10 @@ class _FaqItem extends StatelessWidget {
       margin: EdgeInsets.only(
         bottom: bottomMargin,
       ),
-      decoration: BoxDecoration(
+      decoration: AppDecorations.cardDecoration(
         color: AppColors.cardBg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.border,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color:
-            AppColors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        radius: 12,
+        shadow: AppDecorations.smoothShadow,
       ),
       child: Theme(
         data: Theme.of(context).copyWith(

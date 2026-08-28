@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kdt/utils/app_decorations.dart';
 import 'package:kdt/modules/fade_slide_in.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_text_style.dart';
@@ -31,7 +32,7 @@ class _WishlistViewState extends State<WishlistView> {
         boldText: false,
       ),
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.appBack,
         appBar: _buildAppBar(),
         body: RefreshIndicator(
           color: AppColors.accent,
@@ -59,9 +60,9 @@ class _WishlistViewState extends State<WishlistView> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.appBack,
       foregroundColor: AppColors.foreground,
-      surfaceTintColor: AppColors.background,
+      surfaceTintColor: AppColors.appBack,
       elevation: 0,
       centerTitle: true,
       leading: IconButton(
@@ -316,18 +317,9 @@ class _WishlistDiamondCard extends StatelessWidget {
     );
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: AppDecorations.cardDecoration(
         color: AppColors.cardBg,
-        borderRadius:
-        BorderRadius.circular(vm.cardRadius),
-        boxShadow: [
-          BoxShadow(
-            color:
-            AppColors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        radius: vm.cardRadius,
       ),
       child: Column(
         crossAxisAlignment:
@@ -908,10 +900,7 @@ class _ViewModel {
   }
 
   double get cardRadius {
-    if (isVerySmall) return 14;
-    if (isMobile) return 16;
-
-    return 20;
+    return AppDecorations.cardRadius;
   }
 
   double get emptyIconSize {

@@ -18,10 +18,10 @@ class ShippingPolicyView extends GetView<ShippingPolicyController> {
         textScaler: const TextScaler.linear(1.0),
       ),
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.appBack,
         appBar: AppBar(
-          backgroundColor: AppColors.background,
-          surfaceTintColor: AppColors.background,
+          backgroundColor: AppColors.appBack,
+          surfaceTintColor: AppColors.appBack,
           elevation: 0,
           scrolledUnderElevation: 0,
           centerTitle: true,

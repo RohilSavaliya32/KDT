@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kdt/utils/app_decorations.dart';
 import 'package:kdt/utils/app_text_style.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../data/Setting_Cont.dart';
@@ -33,7 +34,7 @@ class AppointmentDialog extends StatelessWidget {
         vertical: 24,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppDecorations.cardRadius),
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 520),
@@ -173,12 +174,13 @@ class AppointmentDialog extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppDecorations.cardRadius),
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
+        decoration: AppDecorations.cardDecoration(
           color: const Color(0xFFF9F9F9),
-          borderRadius: BorderRadius.circular(16),
+          radius: AppDecorations.cardRadius,
+          shadow: AppDecorations.smoothShadow,
           border: Border.all(
             color: const Color(0xFFE8E8E8),
           ),

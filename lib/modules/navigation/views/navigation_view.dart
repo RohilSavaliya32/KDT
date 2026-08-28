@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kdt/modules/dimonds/views/diamonds_view.dart';
+import 'package:kdt/utils/app_decorations.dart';
 import 'package:kdt/utils/app_text_style.dart';
 import '../../../utils/app_colors.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -49,7 +50,7 @@ class NavigationView extends StatelessWidget {
   Widget _buildScaffold() {
     return Obx(
           () => Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.appBack,
         extendBody: true,
         resizeToAvoidBottomInset: false,
         appBar: _buildAppBar(),
@@ -78,7 +79,7 @@ class NavigationView extends StatelessWidget {
 
   PreferredSizeWidget _buildSearchAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.appBack,
       elevation: 0,
       scrolledUnderElevation: 0,
       toolbarHeight: 120,
@@ -89,7 +90,7 @@ class NavigationView extends StatelessWidget {
 
   PreferredSizeWidget _buildDefaultAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.appBack,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
@@ -276,7 +277,7 @@ class NavigationView extends StatelessWidget {
         },
         child: Container(
           key: ValueKey<int>(controller.currentIndex.value),
-          color: Colors.white,
+          color: AppColors.appBack,
           child: pages[controller.currentIndex.value],
         ),
       ),
@@ -331,19 +332,13 @@ class NavigationView extends StatelessWidget {
   }
 
   BoxDecoration _buildBottomNavDecoration() {
-    return const BoxDecoration(
+    return BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.only(
+      borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(35),
         topRight: Radius.circular(35),
       ),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black12,
-          blurRadius: 20,
-          offset: Offset(0, -5),
-        ),
-      ],
+      boxShadow: AppDecorations.softShadow,
     );
   }
 

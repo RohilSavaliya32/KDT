@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kdt/utils/app_decorations.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_text_style.dart';
 import '../../Profile & Settings/currency_price_text.dart';
@@ -313,7 +314,7 @@ class _PlaceOrderButton extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: canPlaceOrder ? AppColors.primaryDark : AppColors.disabledGray,
             foregroundColor: AppColors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDecorations.buttonRadius)),
             elevation: 0,
           ),
           onPressed: canPlaceOrder ? controller.placeOrder : null,
