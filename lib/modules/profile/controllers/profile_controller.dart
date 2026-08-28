@@ -12,6 +12,7 @@ class ProfileController extends GetxController {
   final mobile = ''.obs;
   final profileImage = ''.obs; // 🆕 added
   final isEditProfileOpening = false.obs;
+  final isLoading = false.obs;
 
   @override
   void onInit() {
@@ -97,6 +98,7 @@ class ProfileController extends GetxController {
     try {
       if (!authController.isLoggedIn.value) return;
 
+      isLoading.value = true;
       final authApi = AuthApiService();
       final response = await authApi.getProfile();
 
@@ -165,6 +167,8 @@ class ProfileController extends GetxController {
       update();
     } catch (e) {
       print("PROFILE REFRESH ERROR => $e");
+    } finally {
+      isLoading.value = false;
     }
   }
 }

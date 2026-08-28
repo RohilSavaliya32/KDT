@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kdt/modules/fade_slide_in.dart';
+import 'package:kdt/widgets/kdt_shimmer.dart';
 import '../../Loader/Helper/Loader_helper.dart';
 import '../../Profile & Settings/currency_price_text.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -40,6 +41,13 @@ class CartView extends GetView<CartController> {
                 child: ConstrainedBox(
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: Obx(() {
+                    if (controller.isLoading.value && controller.cartItems.isEmpty) {
+                      return _CartShimmer(
+                        horizontalPadding: horizontalPadding,
+                        isDesktop: isDesktop,
+                        constraints: constraints,
+                      );
+                    }
                     if (controller.cartItems.isEmpty) {
                       return _buildEmptyCart(horizontalPadding, constraints);
                     }
@@ -194,6 +202,84 @@ class CartView extends GetView<CartController> {
   }
 }
 
+class _CartShimmer extends StatelessWidget {
+  final double horizontalPadding;
+  final bool isDesktop;
+  final BoxConstraints constraints;
+
+  const _CartShimmer({
+    required this.horizontalPadding,
+    required this.isDesktop,
+    required this.constraints,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return KdtShimmer(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 20),
+        child: Column(
+          children: [
+            if (isDesktop)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: List.generate(3, (index) => _itemShimmer()),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  const KdtSkeleton(width: 380, height: 400, borderRadius: 12),
+                ],
+              )
+            else
+              Column(
+                children: [
+                  ...List.generate(2, (index) => _itemShimmer()),
+                  const SizedBox(height: 20),
+                  const KdtSkeleton(width: double.infinity, height: 300, borderRadius: 12),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _itemShimmer() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const KdtSkeleton(width: 140, height: 140, borderRadius: 8),
+          const SizedBox(width: 18),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const KdtSkeleton(width: double.infinity, height: 24, borderRadius: 4),
+                const SizedBox(height: 10),
+                const KdtSkeleton(width: 150, height: 16, borderRadius: 4),
+                const SizedBox(height: 20),
+                const KdtSkeleton(width: 100, height: 28, borderRadius: 4),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // --- Cart Item Card ---
 class _CartItemCard extends StatelessWidget {
   const _CartItemCard(this.item);
@@ -282,6 +368,84 @@ class _CartItemCard extends StatelessWidget {
   }
 }
 
+class _CartShimmer extends StatelessWidget {
+  final double horizontalPadding;
+  final bool isDesktop;
+  final BoxConstraints constraints;
+
+  const _CartShimmer({
+    required this.horizontalPadding,
+    required this.isDesktop,
+    required this.constraints,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return KdtShimmer(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 20),
+        child: Column(
+          children: [
+            if (isDesktop)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: List.generate(3, (index) => _itemShimmer()),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  const KdtSkeleton(width: 380, height: 400, borderRadius: 12),
+                ],
+              )
+            else
+              Column(
+                children: [
+                  ...List.generate(2, (index) => _itemShimmer()),
+                  const SizedBox(height: 20),
+                  const KdtSkeleton(width: double.infinity, height: 300, borderRadius: 12),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _itemShimmer() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const KdtSkeleton(width: 140, height: 140, borderRadius: 8),
+          const SizedBox(width: 18),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const KdtSkeleton(width: double.infinity, height: 24, borderRadius: 4),
+                const SizedBox(height: 10),
+                const KdtSkeleton(width: 150, height: 16, borderRadius: 4),
+                const SizedBox(height: 20),
+                const KdtSkeleton(width: 100, height: 28, borderRadius: 4),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // --- Item Image ---
 class _ItemImage extends StatelessWidget {
   const _ItemImage({required this.image});
@@ -311,6 +475,84 @@ class _ItemImage extends StatelessWidget {
             size: 50,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _CartShimmer extends StatelessWidget {
+  final double horizontalPadding;
+  final bool isDesktop;
+  final BoxConstraints constraints;
+
+  const _CartShimmer({
+    required this.horizontalPadding,
+    required this.isDesktop,
+    required this.constraints,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return KdtShimmer(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 20),
+        child: Column(
+          children: [
+            if (isDesktop)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: List.generate(3, (index) => _itemShimmer()),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  const KdtSkeleton(width: 380, height: 400, borderRadius: 12),
+                ],
+              )
+            else
+              Column(
+                children: [
+                  ...List.generate(2, (index) => _itemShimmer()),
+                  const SizedBox(height: 20),
+                  const KdtSkeleton(width: double.infinity, height: 300, borderRadius: 12),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _itemShimmer() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const KdtSkeleton(width: 140, height: 140, borderRadius: 8),
+          const SizedBox(width: 18),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const KdtSkeleton(width: double.infinity, height: 24, borderRadius: 4),
+                const SizedBox(height: 10),
+                const KdtSkeleton(width: 150, height: 16, borderRadius: 4),
+                const SizedBox(height: 20),
+                const KdtSkeleton(width: 100, height: 28, borderRadius: 4),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -366,6 +608,84 @@ class _QuantityControl extends StatelessWidget {
   }
 }
 
+class _CartShimmer extends StatelessWidget {
+  final double horizontalPadding;
+  final bool isDesktop;
+  final BoxConstraints constraints;
+
+  const _CartShimmer({
+    required this.horizontalPadding,
+    required this.isDesktop,
+    required this.constraints,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return KdtShimmer(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 20),
+        child: Column(
+          children: [
+            if (isDesktop)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: List.generate(3, (index) => _itemShimmer()),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  const KdtSkeleton(width: 380, height: 400, borderRadius: 12),
+                ],
+              )
+            else
+              Column(
+                children: [
+                  ...List.generate(2, (index) => _itemShimmer()),
+                  const SizedBox(height: 20),
+                  const KdtSkeleton(width: double.infinity, height: 300, borderRadius: 12),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _itemShimmer() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const KdtSkeleton(width: 140, height: 140, borderRadius: 8),
+          const SizedBox(width: 18),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const KdtSkeleton(width: double.infinity, height: 24, borderRadius: 4),
+                const SizedBox(height: 10),
+                const KdtSkeleton(width: 150, height: 16, borderRadius: 4),
+                const SizedBox(height: 20),
+                const KdtSkeleton(width: 100, height: 28, borderRadius: 4),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // --- Quantity Button ---
 class _QtyButton extends StatelessWidget {
   const _QtyButton({
@@ -383,6 +703,84 @@ class _QtyButton extends StatelessWidget {
         width: 42,
         height: 40,
         child: Icon(icon, size: 18),
+      ),
+    );
+  }
+}
+
+class _CartShimmer extends StatelessWidget {
+  final double horizontalPadding;
+  final bool isDesktop;
+  final BoxConstraints constraints;
+
+  const _CartShimmer({
+    required this.horizontalPadding,
+    required this.isDesktop,
+    required this.constraints,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return KdtShimmer(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 20),
+        child: Column(
+          children: [
+            if (isDesktop)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: List.generate(3, (index) => _itemShimmer()),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  const KdtSkeleton(width: 380, height: 400, borderRadius: 12),
+                ],
+              )
+            else
+              Column(
+                children: [
+                  ...List.generate(2, (index) => _itemShimmer()),
+                  const SizedBox(height: 20),
+                  const KdtSkeleton(width: double.infinity, height: 300, borderRadius: 12),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _itemShimmer() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const KdtSkeleton(width: 140, height: 140, borderRadius: 8),
+          const SizedBox(width: 18),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const KdtSkeleton(width: double.infinity, height: 24, borderRadius: 4),
+                const SizedBox(height: 10),
+                const KdtSkeleton(width: 150, height: 16, borderRadius: 4),
+                const SizedBox(height: 20),
+                const KdtSkeleton(width: 100, height: 28, borderRadius: 4),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -429,6 +827,84 @@ class _ItemDetails extends StatelessWidget {
               color: Colors.black,
             ),
           ),        ],
+      ),
+    );
+  }
+}
+
+class _CartShimmer extends StatelessWidget {
+  final double horizontalPadding;
+  final bool isDesktop;
+  final BoxConstraints constraints;
+
+  const _CartShimmer({
+    required this.horizontalPadding,
+    required this.isDesktop,
+    required this.constraints,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return KdtShimmer(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 20),
+        child: Column(
+          children: [
+            if (isDesktop)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: List.generate(3, (index) => _itemShimmer()),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  const KdtSkeleton(width: 380, height: 400, borderRadius: 12),
+                ],
+              )
+            else
+              Column(
+                children: [
+                  ...List.generate(2, (index) => _itemShimmer()),
+                  const SizedBox(height: 20),
+                  const KdtSkeleton(width: double.infinity, height: 300, borderRadius: 12),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _itemShimmer() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const KdtSkeleton(width: 140, height: 140, borderRadius: 8),
+          const SizedBox(width: 18),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const KdtSkeleton(width: double.infinity, height: 24, borderRadius: 4),
+                const SizedBox(height: 10),
+                const KdtSkeleton(width: 150, height: 16, borderRadius: 4),
+                const SizedBox(height: 20),
+                const KdtSkeleton(width: 100, height: 28, borderRadius: 4),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -482,6 +958,84 @@ class _SummaryRow extends StatelessWidget {
   }
 }
 
+class _CartShimmer extends StatelessWidget {
+  final double horizontalPadding;
+  final bool isDesktop;
+  final BoxConstraints constraints;
+
+  const _CartShimmer({
+    required this.horizontalPadding,
+    required this.isDesktop,
+    required this.constraints,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return KdtShimmer(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 20),
+        child: Column(
+          children: [
+            if (isDesktop)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: List.generate(3, (index) => _itemShimmer()),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  const KdtSkeleton(width: 380, height: 400, borderRadius: 12),
+                ],
+              )
+            else
+              Column(
+                children: [
+                  ...List.generate(2, (index) => _itemShimmer()),
+                  const SizedBox(height: 20),
+                  const KdtSkeleton(width: double.infinity, height: 300, borderRadius: 12),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _itemShimmer() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const KdtSkeleton(width: 140, height: 140, borderRadius: 8),
+          const SizedBox(width: 18),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const KdtSkeleton(width: double.infinity, height: 24, borderRadius: 4),
+                const SizedBox(height: 10),
+                const KdtSkeleton(width: 150, height: 16, borderRadius: 4),
+                const SizedBox(height: 20),
+                const KdtSkeleton(width: 100, height: 28, borderRadius: 4),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // --- Section Title ---
 class _SectionTitle extends StatelessWidget {
   const _SectionTitle(this.title);
@@ -495,6 +1049,84 @@ class _SectionTitle extends StatelessWidget {
         fontSize: 24,
         fontWeight: FontWeight.w400,
         fontFamily: 'serif',
+      ),
+    );
+  }
+}
+
+class _CartShimmer extends StatelessWidget {
+  final double horizontalPadding;
+  final bool isDesktop;
+  final BoxConstraints constraints;
+
+  const _CartShimmer({
+    required this.horizontalPadding,
+    required this.isDesktop,
+    required this.constraints,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return KdtShimmer(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 20),
+        child: Column(
+          children: [
+            if (isDesktop)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: List.generate(3, (index) => _itemShimmer()),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  const KdtSkeleton(width: 380, height: 400, borderRadius: 12),
+                ],
+              )
+            else
+              Column(
+                children: [
+                  ...List.generate(2, (index) => _itemShimmer()),
+                  const SizedBox(height: 20),
+                  const KdtSkeleton(width: double.infinity, height: 300, borderRadius: 12),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _itemShimmer() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const KdtSkeleton(width: 140, height: 140, borderRadius: 8),
+          const SizedBox(width: 18),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const KdtSkeleton(width: double.infinity, height: 24, borderRadius: 4),
+                const SizedBox(height: 10),
+                const KdtSkeleton(width: 150, height: 16, borderRadius: 4),
+                const SizedBox(height: 20),
+                const KdtSkeleton(width: 100, height: 28, borderRadius: 4),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -545,6 +1177,84 @@ class _CheckoutButton extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CartShimmer extends StatelessWidget {
+  final double horizontalPadding;
+  final bool isDesktop;
+  final BoxConstraints constraints;
+
+  const _CartShimmer({
+    required this.horizontalPadding,
+    required this.isDesktop,
+    required this.constraints,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return KdtShimmer(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 20),
+        child: Column(
+          children: [
+            if (isDesktop)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: List.generate(3, (index) => _itemShimmer()),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  const KdtSkeleton(width: 380, height: 400, borderRadius: 12),
+                ],
+              )
+            else
+              Column(
+                children: [
+                  ...List.generate(2, (index) => _itemShimmer()),
+                  const SizedBox(height: 20),
+                  const KdtSkeleton(width: double.infinity, height: 300, borderRadius: 12),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _itemShimmer() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const KdtSkeleton(width: 140, height: 140, borderRadius: 8),
+          const SizedBox(width: 18),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const KdtSkeleton(width: double.infinity, height: 24, borderRadius: 4),
+                const SizedBox(height: 10),
+                const KdtSkeleton(width: 150, height: 16, borderRadius: 4),
+                const SizedBox(height: 20),
+                const KdtSkeleton(width: 100, height: 28, borderRadius: 4),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

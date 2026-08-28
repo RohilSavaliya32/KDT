@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:kdt/utils/app_colors.dart';
 import 'package:kdt/utils/app_text_style.dart';
+import 'package:kdt/widgets/kdt_shimmer.dart';
 import '../../../routes/app_routes.dart';
 import '../../Loader/Helper/Loader_helper.dart';
 import '../../fade_slide_in.dart';
@@ -30,8 +31,12 @@ class ProfileView extends GetView<ProfileController> {
       child: Scaffold(
         backgroundColor: const Color(0xffF7F8F6),
         body: SafeArea(
-          child: Obx(
-                () => Column(
+          child: Obx(() {
+            if (controller.isLoading.value && controller.email.value.isEmpty) {
+              return _ProfileShimmer();
+            }
+
+            return Column(
               children: [
                 const SizedBox(height: 10),
 
@@ -593,8 +598,8 @@ class ProfileView extends GetView<ProfileController> {
                   ),
                 ),
               ],
-            ),
-          ),
+            );
+          }),
         ),
       ),
     );
@@ -636,6 +641,55 @@ class ProfileView extends GetView<ProfileController> {
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 18,
         vertical: 4,
+      ),
+    );
+  }
+}
+
+class _ProfileShimmer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return KdtShimmer(
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          const SizedBox(height: 10),
+          Center(child: KdtSkeleton(width: 100, height: 20)),
+          const SizedBox(height: 20),
+          // Profile Card Shimmer
+          KdtSkeleton(
+            height: 120,
+            width: double.infinity,
+            borderRadius: 28,
+          ),
+          const SizedBox(height: 30),
+          // Section Title
+          KdtSkeleton(width: 150, height: 14),
+          const SizedBox(height: 16),
+          // List Items
+          ...List.generate(
+            5,
+                (index) => Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                children: [
+                  KdtSkeleton.circle(size: 40),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        KdtSkeleton(width: 120, height: 16),
+                        const SizedBox(height: 6),
+                        KdtSkeleton(width: double.infinity, height: 12),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
