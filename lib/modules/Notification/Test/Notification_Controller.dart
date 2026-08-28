@@ -94,8 +94,8 @@ class NotificationPreferencesController extends GetxController with WidgetsBindi
       if (!isSystemEnabled) {
         _updateLocalMasterToggle(false);
         Get.snackbar(
-          "Action Required",
-          "Notifications are disabled in your phone settings. Please enable them to turn this on.",
+          "Notifications Disabled",
+          "Please enable notifications in your phone settings to continue.",
           snackPosition: SnackPosition.TOP,
           duration: const Duration(seconds: 4),
         );
@@ -119,15 +119,14 @@ class NotificationPreferencesController extends GetxController with WidgetsBindi
       preferences.value = updated;
 
       Get.snackbar(
-        "Success",
-        "Notification preferences updated successfully.",
+        "Preferences Updated",
+        "Your notification preferences have been updated successfully.",
         snackPosition: SnackPosition.TOP,
       );
     } catch (e) {
       Get.snackbar(
-        "Error",
-        "Failed to save preferences.",
-        messageText: Text(e.toString()),
+        "Preferences Update Failed",
+        "We couldn’t save your notification preferences. Please try again.",
         snackPosition: SnackPosition.TOP,
       );
     } finally {

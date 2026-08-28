@@ -425,8 +425,8 @@ class RegisterController extends GetxController {
         await _autoLogin(response);
 
         Get.snackbar(
-          'Success 🎉',
-          'Account created successfully! Welcome to KDT Diamonds.',
+          'Account Created',
+          'Welcome to KDT Diamonds! Your account has been created successfully.',
           snackPosition: SnackPosition.TOP,
           duration: const Duration(seconds: 3),
         );

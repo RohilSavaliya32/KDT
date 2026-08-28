@@ -117,9 +117,15 @@ class AddressController extends GetxController {
       await getAddresses();
       clearForm();
       Get.back();
-      Get.snackbar('Success', 'Address Updated Successfully');
+      Get.snackbar(
+        'Address Updated',
+        'Your address has been updated successfully.',
+      );
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar(
+        'Update Failed',
+        'We couldn’t update your address. Please try again.',
+      );
     } finally {
       isLoading.value = false;
     }
@@ -146,9 +152,15 @@ class AddressController extends GetxController {
       await getAddresses();
       clearForm();
       Get.back();
-      Get.snackbar('Success', 'Address Added Successfully');
+      Get.snackbar(
+        'Address Added',
+        'Your address has been added successfully.',
+      );
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar(
+        'Address Not Added',
+        'We couldn’t add your address. Please try again.',
+      );
     } finally {
       isLoading.value = false;
     }
