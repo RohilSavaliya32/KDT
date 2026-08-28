@@ -193,6 +193,12 @@ class _MyAppState extends State<MyApp> {
     debugPrint("========== HANDLING DEEP LINK ==========");
     debugPrint("URI: ${uri.toString()}");
     
+    // Basic host verification (Optional but recommended)
+    if (uri.host.isNotEmpty && !uri.host.contains('kdtdiamond.com')) {
+      debugPrint("ℹ️ Host ${uri.host} ignored");
+      // return; // Uncomment if you want strict domain matching
+    }
+
     if (uri.pathSegments.isEmpty) return;
 
     if (_isNavigatingDeepLink) {
@@ -201,16 +207,29 @@ class _MyAppState extends State<MyApp> {
     }
     _isNavigatingDeepLink = true;
 
-    final slug = uri.pathSegments.first.trim();
+    // Extract slug: support /slug and /diamonds-details/slug
+    String slug = "";
+    if (uri.pathSegments.contains('diamonds-details')) {
+      final index = uri.pathSegments.indexOf('diamonds-details');
+      if (index + 1 < uri.pathSegments.length) {
+        slug = uri.pathSegments[index + 1];
+      }
+    } else {
+      slug = uri.pathSegments.first;
+    }
+
+    slug = slug.trim();
     if (slug.isEmpty || slug == '/') {
       _isNavigatingDeepLink = false;
       return;
     }
 
     try {
-      // Navigator ready hone ka intezar (Max 5 seconds)
+      // Navigator ready hone ka intezar (Max 10 seconds for cold start)
       int attempts = 0;
-      while (Get.key.currentState == null && attempts < 50) {
+      final maxAttempts = isInitial ? 100 : 50; 
+      
+      while (Get.key.currentState == null && attempts < maxAttempts) {
         await Future.delayed(const Duration(milliseconds: 100));
         attempts++;
       }
@@ -221,20 +240,21 @@ class _MyAppState extends State<MyApp> {
         return;
       }
 
-      // Agar app fresh open hui hai, toh thoda aur delay taake bindings load ho jayein
+      // Agar app fresh open hui hai (Cold Start), toh enough delay dena zaroori hai
+      // taake initialRoute (navigation) fully load ho jaye aur stack settle ho jaye.
       if (isInitial) {
-        await Future.delayed(const Duration(milliseconds: 800));
+        await Future.delayed(const Duration(milliseconds: 1500));
       } else {
-        await Future.delayed(const Duration(milliseconds: 200));
+        await Future.delayed(const Duration(milliseconds: 300));
       }
 
       debugPrint("🚀 Navigating to Diamond Details: $slug");
       
-      // Cold start per AppNavigator.to (with dialog) crash kar sakta hai
-      // Is liye hum directly Get.toNamed use karenge
+      // Use preventDuplicates to avoid opening multiple screens for same link
       Get.toNamed(
         AppRoutes.DIAMONDS_DETAILS,
         arguments: {"slug": slug},
+        preventDuplicates: true,
       );
       
     } catch (e) {
