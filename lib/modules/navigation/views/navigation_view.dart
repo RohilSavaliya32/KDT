@@ -528,7 +528,7 @@ class NavigationView extends StatelessWidget {
       return;
     }
 
-    // If logged in, navigate to profile
+    // If logged in, navigate to profile Test
     controller.changeTab(4);
   }
 }
