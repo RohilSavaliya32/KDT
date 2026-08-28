@@ -16,6 +16,7 @@ import '../../translations/Translation_key/translation_keys.dart';
 import '../../translations/language_dropdown.dart';
 import '../controllers/navigation_controller.dart';
 import '../../cart/controllers/cart_controller.dart';
+
 class NavigationView extends StatelessWidget {
   NavigationView({super.key});
 
@@ -30,11 +31,15 @@ class NavigationView extends StatelessWidget {
     ProfileView(),
   ];
 
+  // Fixed visual height of the nav bar content (icons + labels),
+  // NOT including the device's bottom safe-area inset.
+  static const double _navBarContentHeight = 60;
+
   @override
   Widget build(BuildContext context) {
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(
-        textScaleFactor: 1.0,
+        textScaler: const TextScaler.linear(1.0),
         boldText: false,
       ),
       child: _buildScaffold(),
@@ -43,21 +48,22 @@ class NavigationView extends StatelessWidget {
 
   Widget _buildScaffold() {
     return Obx(
-            () => Scaffold(
-          backgroundColor: Colors.white,
-          extendBody: true,
-          resizeToAvoidBottomInset: false,
-          appBar: _buildAppBar(),
-          body: SafeArea(
-            bottom: false,
-            child: _buildBody(),
-          ),
-          bottomNavigationBar: SafeArea(
-            top: false,
-            bottom: true,
-            child: _buildBottomNavigationBar(),
-          ),
-        )
+          () => Scaffold(
+        backgroundColor: Colors.white,
+        extendBody: true,
+        resizeToAvoidBottomInset: false,
+        appBar: _buildAppBar(),
+        body: SafeArea(
+          bottom: false,
+          child: _buildBody(),
+        ),
+        // NOTE: No outer SafeArea here anymore.
+        // We handle the bottom inset manually inside
+        // _buildBottomNavigationBar so the height stays
+        // consistent across iOS (home indicator) and
+        // Android (gesture bar / no gesture bar).
+        bottomNavigationBar: _buildBottomNavigationBar(),
+      ),
     );
   }
 
@@ -202,7 +208,8 @@ class NavigationView extends StatelessWidget {
           minWidth: 40,
           minHeight: 40,
         ),
-        tooltip: isLoggedIn ? TranslationKeys.profile.tr : TranslationKeys.login.tr,
+        tooltip:
+        isLoggedIn ? TranslationKeys.profile.tr : TranslationKeys.login.tr,
       );
     });
   }
@@ -262,33 +269,54 @@ class NavigationView extends StatelessWidget {
   Widget _buildBottomNavigationBar() {
     return GetBuilder<LanguageController>(
       builder: (langController) {
-        return Container(
-          height: 85,
-          decoration: _buildBottomNavDecoration(),
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(35),
-              topRight: Radius.circular(35),
-            ),
-            child: BottomNavigationBar(
-              selectedLabelStyle: const TextStyle(
-                height: 1.2,
+        return Builder(
+          builder: (context) {
+            // Real device bottom safe-area inset:
+            // - iOS with home indicator: ~34
+            // - iOS with home button: 0
+            // - Android gesture nav: ~16-48 depending on device
+            // - Android 3-button nav: 0 (system nav bar handles it)
+            final double bottomInset = MediaQuery.of(context).padding.bottom;
+
+            return Container(
+              height: _navBarContentHeight + bottomInset,
+              decoration: _buildBottomNavDecoration(),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(35),
+                  topRight: Radius.circular(35),
+                ),
+                child: Padding(
+                  // Push the actual nav bar content up above the
+                  // home indicator / gesture bar instead of
+                  // stacking a second SafeArea on top of a fixed
+                  // height container.
+                  padding: EdgeInsets.only(bottom: bottomInset),
+                  child: SizedBox(
+                    height: _navBarContentHeight,
+                    child: BottomNavigationBar(
+                      selectedLabelStyle: const TextStyle(
+                        height: 1.2,
+                      ),
+                      unselectedLabelStyle: const TextStyle(
+                        height: 1.2,
+                      ),
+                      currentIndex: controller.currentIndex.value,
+                      onTap: _handleBottomNavTap,
+                      backgroundColor: Colors.white,
+                      elevation: 0,
+                      type: BottomNavigationBarType.fixed,
+                      selectedItemColor: AppColors.accent,
+                      unselectedItemColor: Colors.grey,
+                      selectedFontSize: 12,
+                      unselectedFontSize: 11,
+                      items: _buildNavItems(),
+                    ),
+                  ),
+                ),
               ),
-              unselectedLabelStyle: const TextStyle(
-                height: 1.2,
-              ),
-              currentIndex: controller.currentIndex.value,
-              onTap: _handleBottomNavTap,
-              backgroundColor: Colors.white,
-              elevation: 0,
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: AppColors.accent,
-              unselectedItemColor: Colors.grey,
-              selectedFontSize: 12,
-              unselectedFontSize: 11,
-              items: _buildNavItems(),
-            ),
-          ),
+            );
+          },
         );
       },
     );
@@ -366,7 +394,6 @@ class NavigationView extends StatelessWidget {
                 const Icon(
                   Icons.shopping_bag_outlined,
                 ),
-
                 if (count > 0)
                   Positioned(
                     right: -8,
@@ -397,7 +424,6 @@ class NavigationView extends StatelessWidget {
             );
           },
         ),
-
         activeIcon: GetX<CartController>(
           builder: (cartController) {
             final count = cartController.cartItems.length;
@@ -408,7 +434,6 @@ class NavigationView extends StatelessWidget {
                 const Icon(
                   Icons.shopping_bag_outlined,
                 ),
-
                 if (count > 0)
                   Positioned(
                     right: -8,
@@ -419,7 +444,7 @@ class NavigationView extends StatelessWidget {
                         minWidth: 18,
                         minHeight: 18,
                       ),
-                      decoration:  BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.accent,
                         shape: BoxShape.circle,
                       ),
@@ -439,7 +464,6 @@ class NavigationView extends StatelessWidget {
             );
           },
         ),
-
         label: TranslationKeys.cart.tr.toUpperCase(),
       ),
 
