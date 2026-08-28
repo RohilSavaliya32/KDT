@@ -33,7 +33,11 @@ class NavigationView extends StatelessWidget {
 
   // Fixed visual height of the nav bar content (icons + labels),
   // NOT including the device's bottom safe-area inset.
-  static const double _navBarContentHeight = 76;
+  // Increased from 76 -> 88 to give the BottomNavigationBar's
+  // internal icon+label column enough room on iOS, where font
+  // metrics for Lora/Poppins render slightly taller and were
+  // causing a 2px RenderFlex bottom overflow on every nav item.
+  static const double _navBarContentHeight = 88;
 
   // Extra breathing room above the icons and below the labels
   // (on top of the device's bottom safe-area inset).
@@ -316,12 +320,14 @@ class NavigationView extends StatelessWidget {
                   child: SizedBox(
                     height: _navBarContentHeight,
                     child: BottomNavigationBar(
-                      selectedLabelStyle: const TextStyle(
-                        height: 1.2,
-                      ),
-                      unselectedLabelStyle: const TextStyle(
-                        height: 1.2,
-                      ),
+                      // Removed the fixed `height: 1.2` on label
+                      // styles — that was adding extra vertical
+                      // space to each label's line box, which
+                      // combined with the fixed SizedBox height
+                      // caused a ~2px RenderFlex bottom overflow
+                      // on iOS for every nav item.
+                      selectedLabelStyle: const TextStyle(),
+                      unselectedLabelStyle: const TextStyle(),
                       currentIndex: controller.currentIndex.value,
                       onTap: _handleBottomNavTap,
                       backgroundColor: Colors.white,
@@ -368,9 +374,11 @@ class NavigationView extends StatelessWidget {
       BottomNavigationBarItem(
         icon: const Icon(
           Icons.home_outlined,
+          size: 22,
         ),
         activeIcon: const Icon(
           Icons.home_outlined,
+          size: 22,
         ),
         label: TranslationKeys.home.tr.toUpperCase(),
       ),
@@ -381,9 +389,11 @@ class NavigationView extends StatelessWidget {
       BottomNavigationBarItem(
         icon: const Icon(
           Icons.search,
+          size: 22,
         ),
         activeIcon: const Icon(
           Icons.search,
+          size: 22,
         ),
         label: TranslationKeys.search.tr.toUpperCase(),
       ),
@@ -394,9 +404,11 @@ class NavigationView extends StatelessWidget {
       BottomNavigationBarItem(
         icon: const Icon(
           Icons.grid_view_outlined,
+          size: 22,
         ),
         activeIcon: const Icon(
           Icons.grid_view_outlined,
+          size: 22,
         ),
         label: TranslationKeys.diamond.tr.toUpperCase(),
       ),
@@ -414,6 +426,7 @@ class NavigationView extends StatelessWidget {
               children: [
                 const Icon(
                   Icons.shopping_bag_outlined,
+                  size: 22,
                 ),
                 if (count > 0)
                   Positioned(
@@ -454,6 +467,7 @@ class NavigationView extends StatelessWidget {
               children: [
                 const Icon(
                   Icons.shopping_bag_outlined,
+                  size: 22,
                 ),
                 if (count > 0)
                   Positioned(
@@ -494,9 +508,11 @@ class NavigationView extends StatelessWidget {
       BottomNavigationBarItem(
         icon: const Icon(
           Icons.person_outline,
+          size: 22,
         ),
         activeIcon: const Icon(
           Icons.person_outline,
+          size: 22,
         ),
         label: TranslationKeys.profile.tr.toUpperCase(),
       ),
