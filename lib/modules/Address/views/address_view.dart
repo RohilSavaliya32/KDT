@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:kdt/modules/fade_slide_in.dart';
 import 'package:kdt/utils/app_colors.dart';
 import '../../../utils/app_text_style.dart';
@@ -142,7 +143,7 @@ class AddressView extends GetView<AddressController> {
             color: Colors.white,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             child: SafeArea(
-              top: false,
+              top: true,
               child: Column(
                 children: [
                   // Handle
@@ -179,21 +180,21 @@ class AddressView extends GetView<AddressController> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // Location Button
-                            OutlinedButton.icon(
-                              onPressed: controller.getCurrentLocation,
-                              icon: const Icon(Icons.near_me_outlined, size: 18),
-                              label: const Text("Use my current location"),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: AppColors.foreground,
-                                minimumSize: const Size(double.infinity, 52),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                side: BorderSide(color: AppColors.border),
-                              ),
-                            ),
+                            Obx(() => OutlinedButton.icon(
+                                  onPressed: controller.isLoading.value ? null : controller.getCurrentLocation,
+                                  icon: controller.isLoading.value ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent)) : const Icon(Icons.near_me_outlined, size: 18),
+                                  label: Text(controller.isLoading.value ? "Fetching location..." : "Use my current location"),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: AppColors.foreground,
+                                    minimumSize: const Size(double.infinity, 52),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    side: BorderSide(color: AppColors.border),
+                                  ),
+                                )),
                             const SizedBox(height: 24),
 
                             _buildInputField(controller.fullNameController, "Full name *", "Enter Full name", validator: controller.fullNameValidator),
-                            _buildInputField(controller.phoneController, "Phone number *", "Enter phone number", keyboardType: TextInputType.phone, validator: controller.phoneValidator),
+                            _buildPhoneField(),
                             _buildInputField(controller.streetController, "Flat / House / Building *", "Enter Flat / House / Building", validator: controller.streetValidator),
                             _buildInputField(controller.cityController, "City *", "Enter City", validator: controller.cityValidator),
                             _buildInputField(controller.stateController, "State *", "Enter State", validator: controller.stateValidator),
@@ -264,6 +265,43 @@ class AddressView extends GetView<AddressController> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPhoneField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Phone number *", style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.foreground)),
+        const SizedBox(height: 8),
+        IntlPhoneField(
+          controller: controller.phoneController,
+          cursorColor: AppColors.accent,
+          initialCountryCode: controller.selectedCountryIso.value,
+          onCountryChanged: (country) {
+            controller.selectedCountryCode.value = '+${country.dialCode}';
+            controller.selectedCountryFlag.value = country.flag;
+            controller.selectedCountryIso.value = country.code;
+          },
+          validator: (phone) => controller.phoneValidator(phone?.completeNumber),
+          decoration: InputDecoration(
+            counterText: "",
+            hintText: "Enter phone number",
+            hintStyle: AppTextStyles.poppins(fontSize: 14, color: AppColors.mutedForeground),
+            errorStyle: AppTextStyles.poppins(fontSize: 12, color: AppColors.error),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.border)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.border)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.accent, width: 1.2)),
+            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error, width: 1)),
+            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error, width: 1.2)),
+            filled: true,
+            fillColor: AppColors.white,
+          ),
+          dropdownTextStyle: AppTextStyles.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.foreground),
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 

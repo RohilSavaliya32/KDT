@@ -30,6 +30,9 @@ class AddressController extends GetxController {
   final RxBool isDefault = false.obs;
 
   final RxString selectedType = 'Home'.obs;
+  final RxString selectedCountryCode = '+91'.obs;
+  final RxString selectedCountryFlag = '🇮🇳'.obs;
+  final RxString selectedCountryIso = 'IN'.obs;
 
   @override
   void onInit() {
@@ -165,6 +168,9 @@ class AddressController extends GetxController {
     formKey.currentState?.reset();
     isDefault.value = false;
     selectedType.value = 'Home';
+    selectedCountryCode.value = '+91';
+    selectedCountryFlag.value = '🇮🇳';
+    selectedCountryIso.value = 'IN';
   }
 
   Future<void> saveAddress() async {
@@ -188,7 +194,7 @@ class AddressController extends GetxController {
         id: editingAddress.value!.id,
         type: selectedType.value,
         fullName: fullNameController.text.trim(),
-        phone: phoneController.text.trim(),
+        phone: "${selectedCountryCode.value}${phoneController.text.trim()}",
         street: streetController.text.trim(),
         city: cityController.text.trim(),
         state: stateController.text.trim(),
@@ -225,7 +231,7 @@ class AddressController extends GetxController {
         id: '',
         type: selectedType.value,
         fullName: fullNameController.text.trim(),
-        phone: phoneController.text.trim(),
+        phone: "${selectedCountryCode.value}${phoneController.text.trim()}",
         street: streetController.text.trim(),
         city: cityController.text.trim(),
         state: stateController.text.trim(),
