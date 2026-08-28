@@ -146,8 +146,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final AppLinks _appLinks = AppLinks();
-  Uri? _pendingDeepLink;
-  bool _isNavigatingDeepLink = false;
+  bool _isInitialLinkHandled = false;
 
   @override
   void initState() {
@@ -158,51 +157,35 @@ class _MyAppState extends State<MyApp> {
   Future<void> _initDeepLinks() async {
     try {
       final initialUri = await _appLinks.getInitialLink();
-      if (initialUri != null) {
-        debugPrint("🔗 Initial Deep Link: $initialUri");
-        _handleDeepLink(initialUri, isInitial: true);
+      if (initialUri != null && !_isInitialLinkHandled) {
+        _isInitialLinkHandled = true;
+        _saveLinkForNavigation(initialUri);
       }
 
       _appLinks.uriLinkStream.listen((uri) {
-        debugPrint("🔗 Stream Deep Link: $uri");
-        _handleDeepLink(uri);
+        _saveLinkForNavigation(uri);
       }, onError: (e) => debugPrint("❌ Link Error: $e"));
     } catch (e) {
       debugPrint("❌ Init Link Error: $e");
     }
   }
 
-  Future<void> _handleDeepLink(Uri uri, {bool isInitial = false}) async {
-    final slug = uri.pathSegments.isNotEmpty ? uri.pathSegments.last.trim() : "";
-    if (slug.isEmpty || slug == 'navigation' || slug == 'home') return;
+  void _saveLinkForNavigation(Uri uri) {
+    final segments = uri.pathSegments.where((s) => s.isNotEmpty).toList();
+    if (segments.isEmpty) return;
+    
+    final slug = segments.last.trim();
+    if (slug == 'navigation' || slug == 'home') return;
 
-    if (_isNavigatingDeepLink) return;
-    _isNavigatingDeepLink = true;
+    debugPrint("🔗 Link detected, storing slug: $slug");
 
-    try {
-      // For Cold Start, we just need to wait long enough for GetX and the Navigator to settle.
-      if (isInitial) {
-        await Future.delayed(const Duration(milliseconds: 3000));
-      } else {
-        await Future.delayed(const Duration(milliseconds: 500));
-      }
-
-      // Final check: ensure we are not trying to navigate while the build is happening.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (Get.context != null) {
-          debugPrint("🚀 Navigating to Diamond: $slug");
-          Get.toNamed(
-            AppRoutes.DIAMONDS_DETAILS,
-            arguments: {"slug": slug},
-            preventDuplicates: true,
-          );
-        }
-      });
-    } catch (e) {
-      debugPrint("❌ Deep Link Navigation Error: $e");
-    } finally {
-      await Future.delayed(const Duration(milliseconds: 1000));
-      _isNavigatingDeepLink = false;
+    // Use a Global static variable or Get.put to store the slug
+    Get.put<String>(slug, tag: 'pending_deeplink', permanent: true);
+    
+    // If navigation is already ready, try to trigger it
+    if (Get.isRegistered<NavigationController>()) {
+      final nav = Get.find<NavigationController>();
+      nav.handlePendingDeepLink();
     }
   }
 

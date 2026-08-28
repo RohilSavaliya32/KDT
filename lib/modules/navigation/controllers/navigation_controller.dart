@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../routes/app_routes.dart';
 import '../../daimond_card/controllers/daimond_card_controller.dart';
 
 class NavigationController extends GetxController {
@@ -15,6 +17,32 @@ class NavigationController extends GetxController {
   void onInit() {
     super.onInit();
     _applyArguments(Get.arguments);
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    handlePendingDeepLink();
+  }
+
+  void handlePendingDeepLink() {
+    if (Get.isRegistered<String>(tag: 'pending_deeplink')) {
+      final slug = Get.find<String>(tag: 'pending_deeplink');
+      Get.delete<String>(tag: 'pending_deeplink', force: true);
+      
+      if (slug.isNotEmpty) {
+        debugPrint("🚀 NavigationController: Processing Deep Link Slug: $slug");
+        
+        // Use postFrameCallback to ensure the navigation is safe
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.toNamed(
+            AppRoutes.DIAMONDS_DETAILS,
+            arguments: {"slug": slug},
+            preventDuplicates: true,
+          );
+        });
+      }
+    }
   }
 
   void _applyArguments(dynamic args) {
