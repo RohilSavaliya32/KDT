@@ -24,13 +24,8 @@ class _InternetCheckWrapperState extends State<InternetCheckWrapper> {
   @override
   void initState() {
     super.initState();
-    // 🛡️ Delay the initial connectivity check to ensure the first build of the 
-    // widget tree (including the Navigator) is completed. This prevents 
-    // "elements.contains(element): is not true" assertion crashes during startup.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkConnectivity();
-      _listenInternetChanges();
-    });
+    _checkConnectivity();
+    _listenInternetChanges();
   }
 
   Future<void> _checkConnectivity() async {
@@ -73,33 +68,29 @@ class _InternetCheckWrapperState extends State<InternetCheckWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    // 🛡️ CRITICAL FIX: The Navigator (widget.child) is returned directly as the base
-    // of this widget. We use a ValueListenableBuilder inside a Stack to overlay the
-    // NoInternetScreen without EVER modifying the Navigator's position in the tree.
-    // This avoids the "elements.contains(element): is not true" assertion crash.
-    return Stack(
-      children: [
-        // The Navigator subtree. It stays permanently mounted at the bottom of the stack.
-        widget.child,
-
-        // The No-Internet overlay. It uses Visibility/Opacity to remain in the tree
-        // structure even when hidden, ensuring the Widget Tree remains identical.
-        ValueListenableBuilder<bool>(
-          valueListenable: _isConnected,
-          builder: (context, connected, _) {
-            return IgnorePointer(
-              ignoring: connected,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 300),
-                opacity: connected ? 0.0 : 1.0,
+    // 🛡️ To prevent tree fragmentation, we always return the same structure.
+    // The Navigator (widget.child) is the foundation.
+    return Material(
+      child: Stack(
+        children: [
+          widget.child,
+          ValueListenableBuilder<bool>(
+            valueListenable: _isConnected,
+            builder: (context, connected, _) {
+              // We use Visibility to keep the tree structure identical regardless of state.
+              return Visibility(
+                visible: !connected,
+                maintainState: true,
+                maintainAnimation: true,
+                maintainSize: true,
                 child: NoInternetScreen(
                   onRetry: _checkConnectivity,
                 ),
-              ),
-            );
-          },
-        ),
-      ],
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

@@ -157,140 +157,67 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _initDeepLinks() async {
     try {
-      // 1. Handle link that opened the app (Cold Start)
       final initialUri = await _appLinks.getInitialLink();
       if (initialUri != null) {
-        debugPrint("🔗 Initial Deep Link Found: $initialUri");
-        _pendingDeepLink = initialUri;
-        
-        // Wait for the app to be fully mounted before consuming
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Future.delayed(const Duration(milliseconds: 500), () {
-            _consumePendingDeepLink();
-          });
-        });
+        debugPrint("🔗 Initial Deep Link: $initialUri");
+        _handleDeepLink(initialUri, isInitial: true);
       }
 
-      // 2. Handle links while app is running (Foreground/Background)
-      _appLinks.uriLinkStream.listen(
-        (uri) {
-          // Prevent double-handling of the initial link
-          if (_pendingDeepLink?.toString() == uri.toString()) {
-            debugPrint("ℹ️ Stream Deep Link ignored (already pending/handled)");
-            return;
-          }
-          debugPrint("🔗 Stream Deep Link: $uri");
-          _handleDeepLink(uri);
-        },
-        onError: (error) {
-          debugPrint("❌ Deep Link Error: $error");
-        },
-      );
+      _appLinks.uriLinkStream.listen((uri) {
+        debugPrint("🔗 Stream Deep Link: $uri");
+        _handleDeepLink(uri);
+      }, onError: (e) => debugPrint("❌ Link Error: $e"));
     } catch (e) {
-      debugPrint("❌ Deep Link Init Error: $e");
+      debugPrint("❌ Init Link Error: $e");
     }
-  }
-
-  void _consumePendingDeepLink() {
-    if (_pendingDeepLink == null) return;
-    final uri = _pendingDeepLink!;
-    _pendingDeepLink = null;
-    _handleDeepLink(uri, isInitial: true);
   }
 
   Future<void> _handleDeepLink(Uri uri, {bool isInitial = false}) async {
-    debugPrint("========== HANDLING DEEP LINK ==========");
-    debugPrint("URI: ${uri.toString()}");
+    // 1. Extract slug safely
+    final segments = uri.pathSegments.where((s) => s.isNotEmpty).toList();
+    if (segments.isEmpty) return;
     
-    if (uri.pathSegments.isEmpty) return;
+    // If it's kdtdiamond.com/slug, segments.first is the slug
+    // If it's kdtdiamond.com/diamonds-details/slug, segments.last is the slug
+    final slug = segments.last.trim();
+    if (slug == 'navigation' || slug == 'home') return;
 
-    if (_isNavigatingDeepLink) {
-      debugPrint("⚠️ Deep link navigation already in progress");
-      return;
-    }
+    if (_isNavigatingDeepLink) return;
     _isNavigatingDeepLink = true;
 
-    // Support both /slug and /diamonds-details/slug
-    String slug = "";
-    if (uri.pathSegments.contains('diamonds-details')) {
-      final index = uri.pathSegments.indexOf('diamonds-details');
-      if (index + 1 < uri.pathSegments.length) {
-        slug = uri.pathSegments[index + 1];
-      }
-    } else {
-      slug = uri.pathSegments.first;
-    }
-
-    slug = slug.trim();
-    if (slug.isEmpty || slug == '/') {
-      _isNavigatingDeepLink = false;
-      return;
-    }
-
     try {
-      // 1. Wait for Navigator to be ready
+      // 2. Wait for Navigator to mount
       int attempts = 0;
-      final maxAttempts = isInitial ? 200 : 60; 
-      
-      while (Get.key.currentState == null && attempts < maxAttempts) {
+      while (Get.key.currentState == null && attempts < 100) {
         await Future.delayed(const Duration(milliseconds: 100));
         attempts++;
       }
 
-      if (Get.key.currentState == null) {
-        debugPrint("❌ Navigator not ready, aborting");
-        _isNavigatingDeepLink = false;
-        return;
-      }
+      if (Get.key.currentState == null) return;
 
-      // 2. Additional stability check for Cold Start.
-      // We wait until NavigationController is registered, which means the initial route's 
-      // bindings have completed. This is crucial for tree stability.
+      // 3. Delay for app initialization
       if (isInitial) {
-        int bindingAttempts = 0;
-        while (!Get.isRegistered<NavigationController>() && bindingAttempts < 50) {
-          await Future.delayed(const Duration(milliseconds: 100));
-          bindingAttempts++;
-        }
-        
-        // Final rest period to allow the first build cycle to fully settle
-        await Future.delayed(const Duration(milliseconds: 1500));
+        await Future.delayed(const Duration(milliseconds: 2000));
       } else {
         await Future.delayed(const Duration(milliseconds: 300));
       }
 
-      // 3. Perform Navigation outside of the build phase
-      // Using SchedulerBinding to ensure we are in a safe phase of the frame pipeline.
-      debugPrint("🚀 Navigating to Diamond Details: $slug");
-      
+      // 4. Navigate using GetX
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (Get.key.currentState != null) {
-          try {
-            // Cold Start solution: We use toNamed with a stable stack. 
-            // offAllNamed was causing tree instability during initial build.
-            if (isInitial) {
-              Get.toNamed(
-                AppRoutes.DIAMONDS_DETAILS,
-                arguments: {"slug": slug},
-              );
-            } else {
-              Get.toNamed(
-                AppRoutes.DIAMONDS_DETAILS,
-                arguments: {"slug": slug},
-                preventDuplicates: true,
-              );
-            }
-          } catch (e) {
-            debugPrint("❌ Navigation failed: $e");
-          }
+          debugPrint("🚀 Deep Link Navigation to: $slug");
+          Get.toNamed(
+            AppRoutes.DIAMONDS_DETAILS,
+            arguments: {"slug": slug},
+            preventDuplicates: true,
+          );
         }
       });
-      
     } catch (e) {
-      debugPrint("❌ Deep link navigation error: $e");
+      debugPrint("❌ Deep Link Error: $e");
     } finally {
-      // Safety gap
-      await Future.delayed(const Duration(milliseconds: 1000));
+      // Small cooldown
+      await Future.delayed(const Duration(milliseconds: 500));
       _isNavigatingDeepLink = false;
     }
   }
@@ -326,14 +253,7 @@ class _MyAppState extends State<MyApp> {
 
       builder: (context, child) {
         if (child == null) return const SizedBox.shrink();
-        
-        // Return child directly if InternetCheckWrapper is still causing issues.
-        // But we wrap it in a stable structure to prevent tree fragmentation.
-        return Material(
-          child: InternetCheckWrapper(
-            child: child,
-          ),
-        );
+        return InternetCheckWrapper(child: child);
       },
     );
   }
