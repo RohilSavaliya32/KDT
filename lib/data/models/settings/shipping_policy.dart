@@ -1,19 +1,19 @@
 class ShippingPolicyModel {
   final String? en;
   final String? ko;
-  final String? zh;
+  final String? ja;
 
   ShippingPolicyModel({
     this.en,
     this.ko,
-    this.zh,
+    this.ja,
   });
 
   factory ShippingPolicyModel.fromJson(Map<String, dynamic> json) {
     return ShippingPolicyModel(
       en: json['en'],
       ko: json['ko'],
-      zh: json['zh'],
+      ja: json['ja'] ?? json['jp'] ?? json['zh'],
     );
   }
 
@@ -21,7 +21,7 @@ class ShippingPolicyModel {
     return {
       'en': en,
       'ko': ko,
-      'zh': zh,
+      'ja': ja,
     };
   }
 }

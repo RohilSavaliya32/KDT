@@ -35,7 +35,7 @@ class ReturnsPolicyView extends GetView<ReturnsPolicyController> {
             onPressed: Get.back,
           ),
           title: Text(
-            "Returns Policy",
+            TranslationKeys.returnPolicy.tr,
             style: AppTextStyles.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w500,

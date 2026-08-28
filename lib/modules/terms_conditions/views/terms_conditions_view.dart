@@ -35,7 +35,7 @@ class TermsConditionsView extends GetView<TermsConditionsController> {
             onPressed: Get.back,
           ),
           title: Text(
-            "Terms & Conditions",
+            TranslationKeys.termsConditions.tr,
             style: AppTextStyles.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w500,

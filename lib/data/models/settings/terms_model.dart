@@ -1,19 +1,19 @@
 class TermsModel {
   final String? en;
   final String? ko;
-  final String? zh;
+  final String? ja;
 
   TermsModel({
     this.en,
     this.ko,
-    this.zh,
+    this.ja,
   });
 
   factory TermsModel.fromJson(Map<String, dynamic> json) {
     return TermsModel(
       en: json['en'],
       ko: json['ko'],
-      zh: json['zh'],
+      ja: json['ja'] ?? json['jp'] ?? json['zh'], // Support ja, jp, or fallback to zh if that's what API sends
     );
   }
 
@@ -21,7 +21,7 @@ class TermsModel {
     return {
       'en': en,
       'ko': ko,
-      'zh': zh,
+      'ja': ja,
     };
   }
 }

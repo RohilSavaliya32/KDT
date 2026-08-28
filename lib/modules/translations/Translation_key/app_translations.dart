@@ -11,6 +11,11 @@ class AppTranslations extends Translations {
 
   // ========== ENGLISH TRANSLATIONS ==========
   Map<String, String> get _englishTranslations => {
+    // Policies
+    TranslationKeys.termsConditions: 'Terms & Conditions',
+    TranslationKeys.privacyPolicy: 'Privacy Policy',
+    TranslationKeys.shippingPolicy: 'Shipping Policy',
+    TranslationKeys.returnPolicy: 'Return Policy',
     // Login
     TranslationKeys.verifyCode: 'Verify Code',
     TranslationKeys.weSentCodeTo: "We've sent a code to",
@@ -430,6 +435,11 @@ class AppTranslations extends Translations {
 
   // ========== JAPANESE TRANSLATIONS (日本語) ==========
   Map<String, String> get _japaneseTranslations => {
+    // Policies
+    TranslationKeys.termsConditions: '利用規約',
+    TranslationKeys.privacyPolicy: 'プライバシーポリシー',
+    TranslationKeys.shippingPolicy: '配送ポリシー',
+    TranslationKeys.returnPolicy: '返品ポリシー',
     // Login
     TranslationKeys.verifyCode: '認証コード',
     TranslationKeys.weSentCodeTo: '認証コードを送信しました',
@@ -846,6 +856,11 @@ class AppTranslations extends Translations {
 
   // ========== KOREAN TRANSLATIONS (한국어) ==========
   Map<String, String> get _koreanTranslations => {
+    // Policies
+    TranslationKeys.termsConditions: '이용약관',
+    TranslationKeys.privacyPolicy: '개인정보처리방침',
+    TranslationKeys.shippingPolicy: '배송 정책',
+    TranslationKeys.returnPolicy: '반품 정책',
     // Login
     TranslationKeys.verifyCode: '인증 코드',
     TranslationKeys.weSentCodeTo: '인증 코드를 보냈습니다',

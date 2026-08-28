@@ -1,19 +1,19 @@
 class ReturnsPolicyModel {
   final String? en;
   final String? ko;
-  final String? zh;
+  final String? ja;
 
   ReturnsPolicyModel({
     this.en,
     this.ko,
-    this.zh,
+    this.ja,
   });
 
   factory ReturnsPolicyModel.fromJson(Map<String, dynamic> json) {
     return ReturnsPolicyModel(
       en: json['en'],
       ko: json['ko'],
-      zh: json['zh'],
+      ja: json['ja'] ?? json['jp'] ?? json['zh'],
     );
   }
 
@@ -21,7 +21,7 @@ class ReturnsPolicyModel {
     return {
       'en': en,
       'ko': ko,
-      'zh': zh,
+      'ja': ja,
     };
   }
 }

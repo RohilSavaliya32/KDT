@@ -33,7 +33,7 @@ class NavigationView extends StatelessWidget {
 
   // Fixed visual height of the nav bar content (icons + labels),
   // NOT including the device's bottom safe-area inset.
-  static const double _navBarContentHeight = 60;
+  static const double _navBarContentHeight = 76;
 
   // Extra breathing room above the icons and below the labels
   // (on top of the device's bottom safe-area inset).

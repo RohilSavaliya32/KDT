@@ -35,7 +35,7 @@ class PrivacyPolicyView extends GetView<PrivacyPolicyController> {
             onPressed: Get.back,
           ),
           title: Text(
-            "Privacy Policy",
+            TranslationKeys.privacyPolicy.tr,
             style: AppTextStyles.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w500,

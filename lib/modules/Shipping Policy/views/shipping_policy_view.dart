@@ -35,7 +35,7 @@ class ShippingPolicyView extends GetView<ShippingPolicyController> {
             onPressed: Get.back,
           ),
           title: Text(
-            "Shipping Policy",
+            TranslationKeys.shippingPolicy.tr,
             style: AppTextStyles.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w500,

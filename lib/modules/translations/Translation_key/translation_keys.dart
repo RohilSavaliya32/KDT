@@ -1,6 +1,12 @@
 class TranslationKeys {
   TranslationKeys._();
 
+  // ================= Policies =================
+  static const termsConditions = 'termsConditions';
+  static const privacyPolicy = 'privacyPolicy';
+  static const shippingPolicy = 'shippingPolicy';
+  static const returnPolicy = 'returnPolicy';
+
   // ================= App =================
   static const appTitle = 'appTitle';
   static const welcome = 'welcome';

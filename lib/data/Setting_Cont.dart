@@ -87,10 +87,10 @@ SettingsDataController(this.repository);
     switch (lang) {
       case 'ko':
         return p.ko ?? p.en ?? '';
-      case 'zh':
-        return p.zh ?? p.en ?? '';
+      case 'ja':
+        return p.ja ?? p.en ?? '';
       default:
-        return p.en ?? p.ko ?? p.zh ?? '';
+        return p.en ?? p.ko ?? p.ja ?? '';
     }
   }
 
@@ -102,10 +102,10 @@ SettingsDataController(this.repository);
     switch (lang) {
       case 'ko':
         return t.ko ?? t.en ?? '';
-      case 'zh':
-        return t.zh ?? t.en ?? '';
+      case 'ja':
+        return t.ja ?? t.en ?? '';
       default:
-        return t.en ?? t.ko ?? t.zh ?? '';
+        return t.en ?? t.ko ?? t.ja ?? '';
     }
   }
 String getLocalizedShippingPolicy() {
@@ -116,10 +116,10 @@ String getLocalizedShippingPolicy() {
   switch (lang) {
     case 'ko':
       return s.ko ?? s.en ?? '';
-    case 'zh':
-      return s.zh ?? s.en ?? '';
+    case 'ja':
+      return s.ja ?? s.en ?? '';
     default:
-      return s.en ?? s.ko ?? s.zh ?? '';
+      return s.en ?? s.ko ?? s.ja ?? '';
   }
 }
 String getLocalizedReturnsPolicy() {
@@ -130,10 +130,10 @@ String getLocalizedReturnsPolicy() {
   switch (lang) {
     case 'ko':
       return r.ko ?? r.en ?? '';
-    case 'zh':
-      return r.zh ?? r.en ?? '';
+    case 'ja':
+      return r.ja ?? r.en ?? '';
     default:
-      return r.en ?? r.ko ?? r.zh ?? '';
+      return r.en ?? r.ko ?? r.ja ?? '';
   }
 }
 }
