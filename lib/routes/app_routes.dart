@@ -16,7 +16,7 @@ abstract class AppRoutes {
   static const SETTINGS = '/settings';
   static const navigation = '/navigation';
 
-  // Setting & Profile Routes Comme test  
+  // Setting & Profile Routes Comme test
   static const ORDERS = '/orders';
   // static const SETTINGS = '/settings';
   static const ADDRESS = '/address';
