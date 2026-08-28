@@ -30,108 +30,62 @@ import 'services_controller.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-
-  debugPrint("========== BACKGROUND ==========");
-  debugPrint("Message ID : ${message.messageId}");
-  debugPrint("Title      : ${message.notification?.title}");
-  debugPrint("Body       : ${message.notification?.body}");
-  debugPrint("Data       : ${message.data}");
 }
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize essential storage and language first (fast)
-  await GetStorage.init();
-  LanguageBinding().dependencies();
-  
-  // Track readiness
+  // Pre-register status controller (Synchronous, so no white flash)
   Get.put(ServicesController());
 
   runApp(const MyApp());
 
-  // Initialize heavy services in background
-  await _initServices();
-  
-  // Mark as ready
-  Get.find<ServicesController>().markReady();
+  // Background initialization
+  _initServices();
 }
 
 Future<void> _initServices() async {
   try {
+    final servicesController = Get.find<ServicesController>();
+    
+    // Essential setup
+    await GetStorage.init();
+    LanguageBinding().dependencies();
+    
+    // Background services
     await Firebase.initializeApp();
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  } catch (e) {
-    if (kDebugMode) debugPrint("❌ FIREBASE ERROR: $e");
-  }
-
-  // Initialize remaining Dependencies
-  FirebaseBinding().dependencies();
-  
-  // Initialize Dio
-  Get.put<Dio>(
-    Dio(
-      BaseOptions(
-        baseUrl: ApiConstants.baseUrl,
-        connectTimeout: const Duration(seconds: 30),
-        receiveTimeout: const Duration(seconds: 30),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+    FirebaseBinding().dependencies();
+    
+    Get.put<Dio>(
+      Dio(
+        BaseOptions(
+          baseUrl: ApiConstants.baseUrl,
+          connectTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
       ),
-    ),
-    permanent: true,
-  );
+      permanent: true,
+    );
 
-  // Initialize Controllers
-  SettingsBinding().dependencies();
-  WishlistBinding().dependencies();
+    SettingsBinding().dependencies();
+    WishlistBinding().dependencies();
 
-  Get.put<AuthController>(AuthController(), permanent: true);
-  Get.put<LoginController>(LoginController(), permanent: true);
-  Get.put<CartController>(CartController(), permanent: true);
-  Get.put<CurrencyController>(CurrencyController(), permanent: true);
-}
+    Get.put<AuthController>(AuthController(), permanent: true);
+    Get.put<LoginController>(LoginController(), permanent: true);
+    Get.put<CartController>(CartController(), permanent: true);
+    Get.put<CurrencyController>(CurrencyController(), permanent: true);
 
-void _handleNotificationTap(RemoteMessage message) {
-  final type = message.data['type'];
-  final id = message.data['id'];
-
-  debugPrint("Notification Type : $type");
-  debugPrint("Notification Id   : $id");
-
-  switch (type) {
-    case 'order':
-      AppNavigator.to(
-        AppRoutes.ORDERS,
-        arguments: {"id": id},
-      );
-      break;
-
-    case 'payment':
-      AppNavigator.to(
-        AppRoutes.PAYMENT,
-        arguments: {"id": id},
-      );
-      break;
-
-    case 'diamond':
-      AppNavigator.to(
-        AppRoutes.DIAMONDS_DETAILS,
-        arguments: {"id": id},
-      );
-      break;
-
-    case 'notification':
-      AppNavigator.to(
-        AppRoutes.NOTIFICATIONS,
-      );
-      break;
-
-    default:
-      AppNavigator.to(AppRoutes.navigation);
-      break;
+    // Notify app that everything is ready
+    servicesController.markReady();
+  } catch (e) {
+    debugPrint("❌ SERVICE INIT ERROR: $e");
+    // Even on error, mark ready to prevent getting stuck on Splash
+    Get.find<ServicesController>().markReady();
   }
 }
 
@@ -175,12 +129,8 @@ class _MyAppState extends State<MyApp> {
     final slug = segments.last.trim();
     if (slug == 'navigation' || slug == 'home') return;
 
-    debugPrint("🔗 Deep Link Slug Stored: $slug");
-
-    // Store slug globally
     Get.put<String>(slug, tag: 'pending_deeplink', permanent: true);
     
-    // Notify NavigationController if it's already running
     try {
       if (Get.isRegistered<NavigationController>()) {
         Get.find<NavigationController>().handlePendingDeepLink();
@@ -190,15 +140,13 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final LanguageController languageController = Get.find<LanguageController>();
-
     return GetMaterialApp(
       title: 'KDT DIAMONDS',
       debugShowCheckedModeBanner: false,
-      navigatorKey: Get.key, // Ensure Get.key is set
+      navigatorKey: Get.key,
 
       translations: AppTranslations(),
-      locale: languageController.getCurrentLocale(),
+      locale: const Locale('en', 'US'),
       fallbackLocale: const Locale('en', 'US'),
 
       defaultTransition: Transition.cupertino,

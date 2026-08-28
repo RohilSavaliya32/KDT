@@ -139,17 +139,20 @@ class CartView extends GetView<CartController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const SizedBox(height: 16),
         _buildCartItemsList(),
         const SizedBox(height: 18),
         _buildOrderSummaryCard(),
+        const SizedBox(height: 32),
       ],
     );
   }
 
   Widget _buildCartItemsList() {
     return Obx(
-          () => ListView.separated(
+      () => ListView.separated(
         shrinkWrap: true,
+        padding: EdgeInsets.zero,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: controller.cartItems.length,
         separatorBuilder: (_, __) => const SizedBox(height: 16),
@@ -166,14 +169,14 @@ class CartView extends GetView<CartController> {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade300, width: 1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
       ),
       child: Obx(() {
         final subtotal = controller.cartItems.fold<double>(
           0.0,
-              (sum, item) =>
-          sum +
+          (sum, item) =>
+              sum +
               (double.tryParse(item.price.toString()) ?? 0.0) *
                   item.quantity.value,
         );
@@ -182,19 +185,26 @@ class CartView extends GetView<CartController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const _SectionTitle('Order Summary'),
-            const SizedBox(height: 18),
-            Divider(color: Colors.grey.shade300, thickness: 1),
-            const SizedBox(height: 18),
+            const Text(
+              'Order Summary',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w400,
+                fontFamily: 'serif',
+              ),
+            ),
+            const SizedBox(height: 14),
+            const Divider(color: Colors.black12, thickness: 1),
+            const SizedBox(height: 20),
             _SummaryRow('Subtotal', controller.formatCurrency(subtotal)),
             const SizedBox(height: 16),
-            _SummaryRow('Shipping', 'Complimentary'),
-            const SizedBox(height: 18),
-            Divider(color: Colors.grey.shade300, thickness: 1),
-            const SizedBox(height: 18),
+            const _SummaryRow('Shipping', 'Complimentary'),
+            const SizedBox(height: 20),
+            const Divider(color: Colors.black12, thickness: 1),
+            const SizedBox(height: 20),
             _SummaryRow('Total', controller.formatCurrency(subtotal), bold: true),
             const SizedBox(height: 24),
-            _CheckoutButton(),
+            const _CheckoutButton(),
           ],
         );
       }),
@@ -292,73 +302,74 @@ class _CartItemCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade300, width: 1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
       ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final useColumn = constraints.maxWidth < 620;
-          return Stack(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left Side: Image & Quantity
+          Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 28, top: 6),
-                child: useColumn
-                    ? _buildCompactLayout()
-                    : _buildWideLayout(),
-              ),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: IconButton(
-                  onPressed: () => _removeItem(),
-                  icon: const Icon(Icons.delete_outline),
-                  color: Colors.grey.shade700,
-                  visualDensity: VisualDensity.compact,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  tooltip: 'Remove item',
-                ),
-              ),
+              _ItemImage(image: item.image),
+              const SizedBox(height: 12),
+              _QuantityControl(item: item),
             ],
-          );
-        },
+          ),
+          const SizedBox(width: 16),
+          // Right Side: Details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.diamondTitle,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    InkWell(
+                      onTap: () => _removeItem(),
+                      child: Icon(
+                        Icons.delete_outline,
+                        color: Colors.grey.shade500,
+                        size: 22,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  item.subtitle,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                CurrencyPriceText(
+                  usdAmount: double.tryParse(item.price.toString()) ?? 0,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-    );
-  }
-
-  Widget _buildWideLayout() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _ItemImage(image: item.image),
-            const SizedBox(height: 12),
-            _QuantityControl(item: item),
-          ],
-        ),
-        const SizedBox(width: 18),
-        Expanded(child: _ItemDetails(item: item)),
-      ],
-    );
-  }
-
-  Widget _buildCompactLayout() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _ItemImage(image: item.image),
-            const SizedBox(height: 12),
-            _QuantityControl(item: item),
-          ],
-        ),
-        const SizedBox(width: 14),
-        Expanded(child: _ItemDetails(item: item)),
-      ],
     );
   }
 
@@ -376,27 +387,34 @@ class _ItemImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: SizedBox(
-        width: 140,
-        height: 140,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 100,
+        height: 100,
+        color: Colors.grey.shade50,
         child: image.startsWith('http')
             ? Image.network(
-          image,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(
-            Icons.image_not_supported,
-            size: 50,
-          ),
-        )
+                image,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Center(
+                  child: Image.asset(
+                    'assets/shapes/logo.png',
+                    width: 40,
+                    color: Colors.grey.shade300,
+                  ),
+                ),
+              )
             : Image.asset(
-          image,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(
-            Icons.image_not_supported,
-            size: 50,
-          ),
-        ),
+                image,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Center(
+                  child: Image.asset(
+                    'assets/shapes/logo.png',
+                    width: 40,
+                    color: Colors.grey.shade300,
+                  ),
+                ),
+              ),
       ),
     );
   }
@@ -411,6 +429,7 @@ class _QuantityControl extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<CartController>();
     return Container(
+      height: 36,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(6),
@@ -423,24 +442,27 @@ class _QuantityControl extends StatelessWidget {
             onTap: () => controller.decreaseQty(item),
           ),
           Container(
-            width: 48,
+            width: 1,
+            height: double.infinity,
+            color: Colors.grey.shade300,
+          ),
+          Container(
+            width: 36,
             alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              border: Border(
-                left: BorderSide(color: Colors.grey.shade300),
-                right: BorderSide(color: Colors.grey.shade300),
-              ),
-            ),
             child: Obx(
-                  () => Text(
+              () => Text(
                 '${item.quantity.value}',
                 style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
+          ),
+          Container(
+            width: 1,
+            height: double.infinity,
+            color: Colors.grey.shade300,
           ),
           _QtyButton(
             icon: Icons.add,
@@ -466,9 +488,9 @@ class _QtyButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: SizedBox(
-        width: 42,
-        height: 40,
-        child: Icon(icon, size: 18),
+        width: 32,
+        height: double.infinity,
+        child: Icon(icon, size: 14, color: Colors.black87),
       ),
     );
   }
@@ -536,52 +558,23 @@ class _SummaryRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
-              color: Colors.grey.shade800,
-            ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
+            color: bold ? Colors.black : Colors.grey.shade600,
           ),
         ),
-        const SizedBox(width: 12),
-        Flexible(
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerRight,
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
-                color: Colors.black,
-              ),
-            ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
+            color: Colors.black,
           ),
         ),
       ],
-    );
-  }
-}
-
-// --- Section Title ---
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle(this.title);
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w400,
-        fontFamily: 'serif',
-      ),
     );
   }
 }
@@ -594,7 +587,7 @@ class _CheckoutButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 56,
+      height: 54,
       child: ElevatedButton(
         onPressed: () {
           final authController = Get.find<AuthController>();
@@ -609,7 +602,7 @@ class _CheckoutButton extends StatelessWidget {
           foregroundColor: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
         child: const Row(
@@ -618,15 +611,15 @@ class _CheckoutButton extends StatelessWidget {
             Text(
               'Proceed to Checkout',
               style: TextStyle(
-                fontSize: 17,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
             ),
-            SizedBox(width: 10),
+            SizedBox(width: 8),
             Icon(
               Icons.arrow_forward,
-              size: 20,
+              size: 18,
               color: Colors.white,
             ),
           ],
