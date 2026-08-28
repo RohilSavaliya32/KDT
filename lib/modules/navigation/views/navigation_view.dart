@@ -141,7 +141,7 @@ class NavigationView extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: AppTextStyles.lora(
                   color: const Color(0xFF0F5B45),
-                  fontSize: 22,
+                  fontSize: AppFontSizes.s22,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.5,
                 ),
@@ -223,7 +223,7 @@ class NavigationView extends StatelessWidget {
         _getProfileInitial(userName),
         style: const TextStyle(
           color: Colors.black87,
-          fontSize: 16,
+          fontSize: AppFontSizes.s16,
           fontWeight: FontWeight.w600,
         ),
       )
@@ -240,7 +240,7 @@ class NavigationView extends StatelessWidget {
       child: Text(
         "Login",
         style: AppTextStyles.poppins(
-          fontSize: 13,
+          fontSize: AppFontSizes.s13,
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
@@ -257,12 +257,12 @@ class NavigationView extends StatelessWidget {
   Widget _buildBody() {
     return Obx(
       () => AnimatedSwitcher(
-        duration: const Duration(milliseconds: 400),
-        switchInCurve: Curves.easeOutCubic,
-        switchOutCurve: Curves.easeInCubic,
+        duration: const Duration(milliseconds: 600),
+        switchInCurve: Curves.easeInOutCubic,
+        switchOutCurve: Curves.easeInOutCubic,
         transitionBuilder: (Widget child, Animation<double> animation) {
           final slideAnimation = Tween<Offset>(
-            begin: const Offset(0.05, 0),
+            begin: const Offset(0.02, 0),
             end: Offset.zero,
           ).animate(animation);
 
@@ -316,8 +316,8 @@ class NavigationView extends StatelessWidget {
                       type: BottomNavigationBarType.fixed,
                       selectedItemColor: AppColors.accent,
                       unselectedItemColor: Colors.grey,
-                      selectedFontSize: 12,
-                      unselectedFontSize: 11,
+                      selectedFontSize: AppFontSizes.s12,
+                      unselectedFontSize: AppFontSizes.s11,
                       items: _buildNavItems(),
                     ),
                   ),
@@ -428,7 +428,7 @@ class NavigationView extends StatelessWidget {
                           count > 99 ? "99+" : "$count",
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 10,
+                            fontSize: AppFontSizes.s10,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -469,7 +469,7 @@ class NavigationView extends StatelessWidget {
                           count > 10 ? "10+" : "$count",
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 10,
+                            fontSize: AppFontSizes.s10,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

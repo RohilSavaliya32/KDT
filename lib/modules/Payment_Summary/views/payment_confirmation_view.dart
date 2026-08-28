@@ -15,7 +15,7 @@ class PaymentConfirmationView  extends GetView<PaymentConfirmationController> {
         boldText: false,
       ),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         appBar: _buildAppBar(),
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -48,12 +48,21 @@ class PaymentConfirmationView  extends GetView<PaymentConfirmationController> {
   // ==================== APP BAR ====================
   AppBar _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
+      surfaceTintColor: AppColors.background,
       elevation: 0,
+      scrolledUnderElevation: 0,
       centerTitle: true,
+      iconTheme: const IconThemeData(
+        color: AppColors.foreground,
+      ),
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
         onPressed: () => Get.offAllNamed("/navigation", arguments: {"tab": 3}),
+        icon: const Icon(
+          Icons.arrow_back_ios_new_rounded,
+          size: 20,
+          color: AppColors.foreground,
+        ),
       ),
       title: Text(
         "Payment Confirmation",

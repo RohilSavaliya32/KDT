@@ -65,7 +65,7 @@ class OrderSummarySection extends StatelessWidget {
               priceWidget: CurrencyPriceText(
                 usdAmount: usdPrice,
                 style: AppTextStyles.poppins(
-                  fontSize: 14,
+                  fontSize: AppFontSizes.s14,
                   fontWeight: FontWeight.w500,
                   color: AppColors.primaryDark,
                 ),
@@ -103,7 +103,7 @@ class OrderSummarySection extends StatelessWidget {
                   Text(
                     "${TranslationKeys.couponApplied.tr}: ${applied.code}",
                     style: AppTextStyles.poppins(
-                      fontSize: 13,
+                      fontSize: AppFontSizes.s13,
                       fontWeight: FontWeight.w500,
                       color: AppColors.success,
                     ),
@@ -112,7 +112,7 @@ class OrderSummarySection extends StatelessWidget {
                   Text(
                     "${applied.discountPercent}% Off",
                     style: AppTextStyles.poppins(
-                      fontSize: 12,
+                      fontSize: AppFontSizes.s12,
                       fontWeight: FontWeight.w400,
                       color: AppColors.success,
                     ),
@@ -125,7 +125,7 @@ class OrderSummarySection extends StatelessWidget {
               child: Text(
                 TranslationKeys.remove.tr,
                 style: AppTextStyles.poppins(
-                  fontSize: 12,
+                  fontSize: AppFontSizes.s12,
                   fontWeight: FontWeight.w600,
                   color: AppColors.error,
                 ),
@@ -152,7 +152,7 @@ class OrderSummarySection extends StatelessWidget {
             priceWidget: CurrencyPriceText(
               usdAmount: subtotal,
               style: AppTextStyles.poppins(
-                fontSize: 14,
+                fontSize: AppFontSizes.s14,
                 fontWeight: FontWeight.w400,
                 color: AppColors.textPrimary,
               ),
@@ -166,7 +166,7 @@ class OrderSummarySection extends StatelessWidget {
                 usdAmount: discount,
                 prefix: '-',
                 style: AppTextStyles.poppins(
-                  fontSize: 14,
+                  fontSize: AppFontSizes.s14,
                   fontWeight: FontWeight.w500,
                   color: AppColors.success,
                 ),
@@ -179,7 +179,7 @@ class OrderSummarySection extends StatelessWidget {
             priceWidget: Text(
               "Free",
               style: AppTextStyles.poppins(
-                fontSize: 14,
+                fontSize: AppFontSizes.s14,
                 fontWeight: FontWeight.w400,
                 color: AppColors.success,
               ),
@@ -212,7 +212,7 @@ class _PriceRow extends StatelessWidget {
         Text(
           label,
           style: AppTextStyles.poppins(
-            fontSize: 14,
+            fontSize: AppFontSizes.s14,
             fontWeight: FontWeight.w400,
             color: AppColors.textPrimary,
           ),
@@ -246,7 +246,7 @@ class _ProductItemWidget extends StatelessWidget {
           child: Text(
             '$title x$qty',
             style: AppTextStyles.poppins(
-              fontSize: 14,
+              fontSize: AppFontSizes.s14,
               fontWeight: FontWeight.w400,
               color: AppColors.textPrimary,
             ),
@@ -274,7 +274,7 @@ class _TotalWidget extends StatelessWidget {
         Text(
           TranslationKeys.total.tr,
           style: AppTextStyles.poppins(
-            fontSize: 18,
+            fontSize: AppFontSizes.s18,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
           ),
@@ -282,7 +282,7 @@ class _TotalWidget extends StatelessWidget {
         CurrencyPriceText(
           usdAmount: total,
           style: AppTextStyles.poppins(
-            fontSize: 18,
+            fontSize: AppFontSizes.s18,
             fontWeight: FontWeight.w600,
             color: AppColors.success,
           ),
@@ -333,7 +333,7 @@ class _PlaceOrderButton extends StatelessWidget {
               Text(
                 TranslationKeys.placeOrder.tr,
                 style: AppTextStyles.poppins(
-                  fontSize: 16,
+                  fontSize: AppFontSizes.s16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.white,
                 ),
@@ -343,7 +343,7 @@ class _PlaceOrderButton extends StatelessWidget {
               : Text(
             TranslationKeys.placeOrder.tr,
             style: AppTextStyles.poppins(
-              fontSize: 16,
+              fontSize: AppFontSizes.s16,
               fontWeight: FontWeight.w600,
               color: AppColors.white,
             ),

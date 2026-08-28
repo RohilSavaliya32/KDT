@@ -72,12 +72,17 @@ class UserInformationSection extends StatelessWidget {
           controller: controller.nameController,
           textInputAction: TextInputAction.next,
           hint: "Enter your full name",
+          maxLength: 100,
           validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return "Full name is required";
+            final v = value?.trim() ?? '';
+            if (v.isEmpty) {
+              return "Please enter full name";
             }
-            if (value.trim().length < 3) {
+            if (v.length < 3) {
               return "Full name must be at least 3 characters";
+            }
+            if (v.length > 100) {
+              return "Full name cannot exceed 100 characters";
             }
             return null;
           },
@@ -90,8 +95,10 @@ class UserInformationSection extends StatelessWidget {
           hint: "Enter your email",
           validator: (value) {
             final v = value?.trim() ?? '';
-            if (v.isEmpty) return "Email is required";
-            if (!GetUtils.isEmail(v)) return "Please enter a valid email";
+            if (v.isEmpty) return "Please enter email address";
+            // Proper email validation regex
+            final emailRegex = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+            if (!emailRegex.hasMatch(v)) return "Please enter a valid email address";
             return null;
           },
         ),
@@ -103,7 +110,7 @@ class UserInformationSection extends StatelessWidget {
           hint: "Enter your phone number",
           validator: (value) {
             final v = value?.trim() ?? '';
-            if (v.isEmpty) return "Phone number is required";
+            if (v.isEmpty) return "Please enter phone number";
             if (!RegExp(r'^[0-9+\s()-]{8,20}$').hasMatch(v)) {
               return "Please enter a valid phone number";
             }
@@ -125,12 +132,17 @@ class UserInformationSection extends StatelessWidget {
           controller: controller.streetController,
           textInputAction: TextInputAction.next,
           hint: "Enter your street address",
+          maxLength: 100,
           validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return "Street address is required";
+            final v = value?.trim() ?? '';
+            if (v.isEmpty) {
+              return "Please enter street address";
             }
-            if (value.trim().length < 5) {
+            if (v.length < 5) {
               return "Street address is too short";
+            }
+            if (v.length > 100) {
+              return "Street address cannot exceed 100 characters";
             }
             return null;
           },
@@ -143,9 +155,14 @@ class UserInformationSection extends StatelessWidget {
                 controller: controller.cityController,
                 textInputAction: TextInputAction.next,
                 hint: "Enter your city",
+                maxLength: 100,
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "City is required";
+                  final v = value?.trim() ?? '';
+                  if (v.isEmpty) {
+                    return "Please enter city";
+                  }
+                  if (v.length > 100) {
+                    return "City name is too long";
                   }
                   return null;
                 },
@@ -158,9 +175,14 @@ class UserInformationSection extends StatelessWidget {
                 controller: controller.stateController,
                 textInputAction: TextInputAction.next,
                 hint: "Enter your state",
+                maxLength: 100,
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "State is required";
+                  final v = value?.trim() ?? '';
+                  if (v.isEmpty) {
+                    return "Please enter state";
+                  }
+                  if (v.length > 100) {
+                    return "State name is too long";
                   }
                   return null;
                 },
@@ -179,9 +201,10 @@ class UserInformationSection extends StatelessWidget {
                 hint: "Enter your zip code",
                 validator: (value) {
                   final v = value?.trim() ?? '';
-                  if (v.isEmpty) return "Zip code is required";
+                  if (v.isEmpty) return "Please enter zip code";
+                  // Proper zip code validation (e.g., 5-6 digits for many countries)
                   if (!RegExp(r'^[0-9]{4,10}$').hasMatch(v)) {
-                    return "Please enter a valid zip code";
+                    return "Enter a valid 4-10 digit zip code";
                   }
                   return null;
                 },
@@ -194,9 +217,14 @@ class UserInformationSection extends StatelessWidget {
                 controller: controller.countryController,
                 textInputAction: TextInputAction.done,
                 hint: "Enter your country",
+                maxLength: 100,
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "Country is required";
+                  final v = value?.trim() ?? '';
+                  if (v.isEmpty) {
+                    return "Please enter country";
+                  }
+                  if (v.length > 100) {
+                    return "Country name is too long";
                   }
                   return null;
                 },

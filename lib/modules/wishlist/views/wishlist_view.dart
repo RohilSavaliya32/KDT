@@ -258,6 +258,15 @@ class _WishlistDiamondCard extends StatelessWidget {
     required this.vm,
   });
 
+  String _formatImageUrl(String path) {
+    if (path.isEmpty) return "";
+    if (path.startsWith('http')) return path;
+    if (path.startsWith('assets/')) return path;
+    const String baseUrl = "https://www.kdtdiamond.com";
+    final cleanPath = path.startsWith('/') ? path : '/$path';
+    return "$baseUrl$cleanPath";
+  }
+
   @override
   Widget build(BuildContext context) {
     return MediaQuery(
@@ -297,7 +306,7 @@ class _WishlistDiamondCard extends StatelessWidget {
     final titleStyle = AppTextStyles.lora(
       fontSize: vm.titleSize,
       fontWeight: FontWeight.w500,
-      color: AppColors.foreground,
+      color: Colors.black,
     );
 
     final bodyStyle = AppTextStyles.poppins(
@@ -372,7 +381,7 @@ class _WishlistDiamondCard extends StatelessWidget {
                                 fontWeight:
                                 FontWeight.w600,
                                 color:
-                                AppColors.foreground,
+                                Colors.black87,
                                 fontSize: 10,
                               ),
                               maxLines: 1,
@@ -390,9 +399,7 @@ class _WishlistDiamondCard extends StatelessWidget {
                   ),
 
                   Text(
-                    "${diamond.cut} Cut • "
-                        "${diamond.color} Color • "
-                        "${diamond.clarity} Clarity",
+                    "${diamond.cut} • ${diamond.color} • ${diamond.clarity}",
                     maxLines: 2,
                     overflow:
                     TextOverflow.ellipsis,
@@ -439,35 +446,28 @@ class _WishlistDiamondCard extends StatelessWidget {
 
                   const Divider(
                     height: 16,
-                    color: AppColors.divider,
                   ),
 
                   Column(
                     crossAxisAlignment:
                     CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                        children: [
-                          CurrencyPriceText(
-                            usdAmount:
-                            diamond.price.toDouble(),
-                            style:
-                            AppTextStyles.lora(
-                              fontSize:
-                              vm.priceSize + 4,
-                              fontWeight:
-                              FontWeight.w500,
-                              color:
-                              AppColors.foreground,
-                            ),
-                          ),
-                        ],
+                      CurrencyPriceText(
+                        usdAmount:
+                        diamond.price.toDouble(),
+                        style:
+                        AppTextStyles.lora(
+                          fontSize:
+                          vm.priceSize + 4,
+                          fontWeight:
+                          FontWeight.w500,
+                          color:
+                          Colors.black,
+                        ),
                       ),
 
-                      SizedBox(
-                        height: vm.tinySpacing,
+                      const SizedBox(
+                        height: 4,
                       ),
 
                       Row(
@@ -482,32 +482,28 @@ class _WishlistDiamondCard extends StatelessWidget {
                               AppTextStyles.poppins(
                                 fontSize: 12,
                                 color:
-                                AppColors.darkGray,
+                                Colors.grey,
                                 decoration:
                                 TextDecoration
                                     .lineThrough,
                               ),
                             ),
+                          const SizedBox(width: 4),
+                          CurrencyPriceText(
+                            usdAmount:
+                            pricePerCarat.toDouble(),
+                            suffix: "/ct",
+                            style:
+                            AppTextStyles.poppins(
+                              fontSize:
+                              vm.pricePerCaratSize,
+                              color:
+                              AppColors.darkGray,
+                              fontWeight:
+                              FontWeight.w500,
+                            ),
+                          ),
                         ],
-                      ),
-
-                      SizedBox(
-                        height: vm.tinySpacing,
-                      ),
-
-                      CurrencyPriceText(
-                        usdAmount:
-                        pricePerCarat.toDouble(),
-                        suffix: "/ct",
-                        style:
-                        AppTextStyles.poppins(
-                          fontSize:
-                          vm.pricePerCaratSize,
-                          color:
-                          AppColors.darkGray,
-                          fontWeight:
-                          FontWeight.w500,
-                        ),
                       ),
                     ],
                   ),
@@ -537,23 +533,27 @@ class _WishlistDiamondCard extends StatelessWidget {
               child: Padding(
                 padding:
                 const EdgeInsets.all(1),
-                child: Image.network(
-                  diamond.image,
-                  width: double.infinity,
-                  height: double.infinity,
-                  fit: BoxFit.contain,
-                  errorBuilder: (
-                      context,
-                      error,
-                      stackTrace,
-                      ) {
-                    return const Icon(
-                      Icons.diamond_outlined,
-                      size: 80,
-                      color:
-                      AppColors.mutedForeground,
-                    );
-                  },
+                child: Hero(
+                  tag: 'diamond_${diamond.id}',
+                  child: Image.network(
+                    _formatImageUrl(diamond.image),
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.fill,
+                    errorBuilder: (
+                        context,
+                        error,
+                        stackTrace,
+                        ) {
+                      return Padding(
+                        padding: const EdgeInsets.all(30.0),
+                        child: Image.asset(
+                          'assets/shapes/logo.png',
+                          fit: BoxFit.contain,
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -574,7 +574,7 @@ class _WishlistDiamondCard extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color:
-                    AppColors.primaryDark,
+                    const Color(0xFF111111),
                     borderRadius:
                     BorderRadius.circular(1),
                   ),
@@ -611,7 +611,7 @@ class _WishlistDiamondCard extends StatelessWidget {
                   vm.badgeVerticalPadding,
                 ),
                 decoration: const BoxDecoration(
-                  color: AppColors.accent,
+                  color: Color(0xFF005B45),
                 ),
                 child: Text(
                   diamond.certification,
@@ -643,10 +643,10 @@ class _WishlistDiamondCard extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color:
-                    AppColors.lightGreen,
+                    const Color(0xFFE5EDEA),
                     border: Border.all(
                       color:
-                      AppColors.accentDisabled,
+                      const Color(0xFFB8DCCF),
                     ),
                     borderRadius:
                     BorderRadius.circular(4),
@@ -659,7 +659,7 @@ class _WishlistDiamondCard extends StatelessWidget {
                       fontWeight:
                       FontWeight.w700,
                       color:
-                      AppColors.accent,
+                      const Color(0xFF005B45),
                     ),
                   ),
                 ),
@@ -691,7 +691,7 @@ class _WishlistDiamondCard extends StatelessWidget {
                       vm.favPadding,
                     ),
                     decoration:
-                    BoxDecoration(
+                    const BoxDecoration(
                       color:
                       AppColors.white,
                       shape:
@@ -699,9 +699,7 @@ class _WishlistDiamondCard extends StatelessWidget {
                       boxShadow: [
                         BoxShadow(
                           color:
-                          AppColors.black
-                              .withOpacity(
-                              0.12),
+                          Colors.black12,
                           blurRadius: 4,
                         ),
                       ],
@@ -712,7 +710,7 @@ class _WishlistDiamondCard extends StatelessWidget {
                           : Icons.favorite_border,
                       color: isFav
                           ? AppColors.accent
-                          : AppColors.iconGray,
+                          : Colors.grey,
                       size:
                       vm.favIconSize,
                     ),

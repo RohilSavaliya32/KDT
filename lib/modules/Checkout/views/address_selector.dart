@@ -41,7 +41,7 @@ class AddressSelector extends StatelessWidget {
                 Text(
                   "Quick Autofill from Saved Addresses",
                   style: AppTextStyles.poppins(
-                    fontSize: 13,
+                    fontSize: AppFontSizes.s13,
                     fontWeight: FontWeight.w500,
                     color: AppColors.primaryDark,
                   ),
@@ -89,7 +89,7 @@ class AddressSelector extends StatelessWidget {
                           return Text(
                             "Select a saved address",
                             style: AppTextStyles.poppins(
-                              fontSize: 13,
+                              fontSize: AppFontSizes.s13,
                               fontWeight: FontWeight.w400,
                               color: AppColors.darkGray,
                             ),
@@ -101,7 +101,7 @@ class AddressSelector extends StatelessWidget {
                           return Text(
                             "Select a saved address",
                             style: AppTextStyles.poppins(
-                              fontSize: 13,
+                              fontSize: AppFontSizes.s13,
                               fontWeight: FontWeight.w400,
                               color: AppColors.darkGray,
                             ),
@@ -112,7 +112,7 @@ class AddressSelector extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTextStyles.poppins(
-                            fontSize: 14,
+                            fontSize: AppFontSizes.s14,
                             fontWeight: FontWeight.w500,
                             color: AppColors.textPrimary,
                           ),
@@ -191,7 +191,7 @@ class AddressSelector extends StatelessWidget {
                 Text(
                   "Select Address",
                   style: AppTextStyles.lora(
-                    fontSize: 22,
+                    fontSize: AppFontSizes.s22,
                     fontWeight: FontWeight.w500,
                     color: AppColors.primaryDark,
                   ),
@@ -260,7 +260,7 @@ class AddressSelector extends StatelessWidget {
                         Text(
                           "Clear selected address",
                           style: AppTextStyles.poppins(
-                            fontSize: 13,
+                            fontSize: AppFontSizes.s13,
                             fontWeight: FontWeight.w500,
                             color: AppColors.error,
                           ),
@@ -345,7 +345,7 @@ class AddressSelector extends StatelessWidget {
                   Text(
                     address.fullName,
                     style: AppTextStyles.poppins(
-                      fontSize: 15,
+                      fontSize: AppFontSizes.s15,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
                     ),
@@ -357,7 +357,7 @@ class AddressSelector extends StatelessWidget {
                     maxLines: 5,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.poppins(
-                      fontSize: 13,
+                      fontSize: AppFontSizes.s13,
                       fontWeight: FontWeight.w400,
                       color: AppColors.textSecondary,
                     ),
@@ -368,7 +368,7 @@ class AddressSelector extends StatelessWidget {
                     Text(
                       "📞 ${address.phone}",
                       style: AppTextStyles.poppins(
-                        fontSize: 12,
+                        fontSize: AppFontSizes.s12,
                         fontWeight: FontWeight.w400,
                         color: AppColors.darkGray,
                       ),

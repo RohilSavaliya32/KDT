@@ -304,9 +304,9 @@ class _DiamondCardViewState extends State<DiamondCardView> {
       itemBuilder: (context, index) {
         final diamond = displayList[index];
         return FadeSlideIn(
-          delay: Duration(milliseconds: index < 6 ? index * 50 : 0),
-          duration: const Duration(milliseconds: 400),
-          slideOffset: 10,
+          delay: Duration(milliseconds: index < 6 ? index * 80 : 0),
+          duration: const Duration(milliseconds: 700),
+          slideOffset: 20,
           child: InkWell(
             borderRadius: BorderRadius.circular(vm.cardRadius),
             onTap: () => AppNavigator.to("/diamonds-details", arguments: diamond.id),

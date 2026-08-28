@@ -258,7 +258,7 @@ class _MyAppState extends State<MyApp> {
       fallbackLocale: const Locale('en', 'US'),
 
       defaultTransition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
 
       theme: ThemeData(
         fontFamily: 'Poppins',

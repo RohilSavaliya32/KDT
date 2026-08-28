@@ -66,7 +66,7 @@ abstract class AppPages {
       page: () => const HomeView(),
       binding: HomeBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
 
     GetPage(
@@ -74,7 +74,7 @@ abstract class AppPages {
       page: () => const CartView(),
       binding: CartBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
 
     GetPage(
@@ -82,7 +82,7 @@ abstract class AppPages {
       page: () => const SearchView(),
       binding: SearchBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
 
     GetPage(
@@ -90,21 +90,21 @@ abstract class AppPages {
       page: () => const ProfileView(),
       binding: ProfileBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.EDIT_PROFILE,
       page: () => const EditProfilePage(),
       binding: EditProfileBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.navigation,
       page: () => NavigationView(),
       binding: NavigationBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
 
     GetPage(
@@ -112,14 +112,14 @@ abstract class AppPages {
       page: () => const NotificationPreferencesView(),
       binding: NotificationPreferencesBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.FAQ,
       page: () => const FaqView(),
       binding: FaqBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
 
     GetPage(
@@ -127,14 +127,14 @@ abstract class AppPages {
       page: () => const ContactView(),
       binding: ContactBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.ABOUT_US,
       page: () => const AboutView(),
       binding: AboutBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
 
     GetPage(
@@ -142,7 +142,7 @@ abstract class AppPages {
       page: () => const PrivacyPolicyView(),
       binding: PrivacyPolicyBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
 
     GetPage(
@@ -150,7 +150,7 @@ abstract class AppPages {
       page: () => const TermsConditionsView(),
       binding: TermsConditionsBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
 
     GetPage(
@@ -158,112 +158,112 @@ abstract class AppPages {
       page: () => const ReturnsPolicyView(),
       binding: ReturnPolicyBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.SHIPPING_POLICY,
       page: () => const ShippingPolicyView(),
       binding: ReturnPolicyBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.DIAMONDS,
       page: () => const DiamondsView(),
       binding: DiamondsBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.DIAMONDS_CARD,
       page: () => const DiamondCardView(),
       binding: DiamondCardBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.DIAMONDS_DETAILS,
       page: () => const DiamondDetailView(),
       binding: DiamondDetailViewBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.ORDERS,
       page: () => const OrderHistoryView(),
       binding: OrderHistoryBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.CHECKOUT,
       page: () => const CheckoutView(),
       binding:  CheckoutBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.Payment_Summary,
       page: () => const PaymentConfirmationView(),
       binding: PaymentConfirmationBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.login,
       page: () => const LoginModalDialog(),
       binding: LoginBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.SETTINGS,
       page: () => const SettingsView(),
       binding: SettingsBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.ADDRESS,
       page: () => const AddressView(),
       binding: AddressBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.register,
       page: () => const RegisterDialog(),
       binding: RegisterBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.WISHLIST,
       page: () => WishlistView(),
       binding: WishlistBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.diamondEducation,
       page: () => const DiamondEducationView(),
       binding: DiamondEducationBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.currency_selection,
       page: () => const CurrencySelectionView(),
       binding: CurrencySelectionBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
     GetPage(
       name: AppRoutes.SIZE_GUIDE,
       page: () => const SizeGuideView(),
       binding: SizeGuideBinding(),
       transition: Transition.cupertino,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 600),
     ),
   ];
 }

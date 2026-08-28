@@ -39,7 +39,7 @@ class TermsConditionsView extends GetView<TermsConditionsController> {
           title: Text(
             TranslationKeys.termsConditions.tr,
             style: AppTextStyles.poppins(
-              fontSize: 18,
+              fontSize: AppFontSizes.s18,
               fontWeight: FontWeight.w500,
               color: AppColors.foreground,
             ),
@@ -63,7 +63,7 @@ class TermsConditionsView extends GetView<TermsConditionsController> {
                 style: {
                   "body": Style(
                     color: AppColors.foreground,
-                    fontSize: FontSize(14),
+                    fontSize: FontSize(AppFontSizes.s14),
                     lineHeight: LineHeight(1.6),
                   ),
                   "h1": Style(

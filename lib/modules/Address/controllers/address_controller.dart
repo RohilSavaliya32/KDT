@@ -161,14 +161,14 @@ class AddressController extends GetxController {
 
   String? fullNameValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter your full name';
+    if (v.isEmpty) return 'Please enter full name';
     if (v.length < 3) return 'Full name must be at least 3 characters';
     return null;
   }
 
   String? phoneValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter your phone number';
+    if (v.isEmpty) return 'Please enter phone number';
     if (!RegExp(r'^[0-9]{10,15}$').hasMatch(v)) {
       return 'Please enter a valid phone number';
     }
@@ -177,32 +177,32 @@ class AddressController extends GetxController {
 
   String? streetValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter your street address';
+    if (v.isEmpty) return 'Please enter street address';
     if (v.length < 5) return 'Street address is too short';
     return null;
   }
 
   String? cityValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter your city';
+    if (v.isEmpty) return 'Please enter city';
     return null;
   }
 
   String? stateValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter your state';
+    if (v.isEmpty) return 'Please enter state';
     return null;
   }
 
   String? countryValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter your country';
+    if (v.isEmpty) return 'Please enter country';
     return null;
   }
 
   String? zipCodeValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter your zip code';
+    if (v.isEmpty) return 'Please enter zip code';
     if (v.length < 4) return 'Please enter a valid zip code';
     return null;
   }

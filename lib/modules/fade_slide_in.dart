@@ -9,9 +9,9 @@ class FadeSlideIn extends StatefulWidget {
   const FadeSlideIn({
     super.key,
     required this.child,
-    this.duration = const Duration(milliseconds: 600),
+    this.duration = const Duration(milliseconds: 800),
     this.delay = Duration.zero,
-    this.slideOffset = 30,
+    this.slideOffset = 40,
   });
 
   @override
@@ -35,7 +35,7 @@ class _FadeSlideInState extends State<FadeSlideIn>
 
     _fade = CurvedAnimation(
       parent: _controller,
-      curve: Curves.easeOutQuint,
+      curve: Curves.easeOutQuart,
     );
 
     _slide = Tween<Offset>(
@@ -44,7 +44,7 @@ class _FadeSlideInState extends State<FadeSlideIn>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Curves.easeOutQuint,
+        curve: Curves.easeOutQuart,
       ),
     );
 

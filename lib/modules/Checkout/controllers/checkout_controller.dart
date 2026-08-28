@@ -15,6 +15,7 @@ import '../../Payment_Summary/Payment_Api_Service.dart';
 import '../../Profile & Settings/Setting_Controller/Currency_Controller.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../cart/controllers/cart_controller.dart';
+import '../../../data/Setting_Cont.dart';
 import '../coupon_api_service.dart';
 import '../coupon_model.dart';
 
@@ -179,36 +180,44 @@ class CheckoutController extends GetxController {
   bool validatePaymentFields() {
     bool isValid = true;
 
-    if (transactionIdController.text.trim().isEmpty) {
-      transactionIdError.value = 'Transaction ID is required';
+    final transId = transactionIdController.text.trim();
+    if (transId.isEmpty) {
+      transactionIdError.value = 'Please enter transaction ID';
+      isValid = false;
+    } else if (transId.length > 100) {
+      transactionIdError.value = 'Transaction ID too long';
       isValid = false;
     } else {
       transactionIdError.value = '';
     }
 
-    if (bankNameController.text.trim().isEmpty) {
-      bankNameError.value = 'Bank name is required';
+    final bName = bankNameController.text.trim();
+    if (bName.isEmpty) {
+      bankNameError.value = 'Please enter bank name';
+      isValid = false;
+    } else if (bName.length > 100) {
+      bankNameError.value = 'Bank name too long';
       isValid = false;
     } else {
       bankNameError.value = '';
     }
 
     if (transferAmountController.text.trim().isEmpty) {
-      transferAmountError.value = 'Transfer amount is required';
+      transferAmountError.value = 'Please enter transfer amount';
       isValid = false;
     } else {
       transferAmountError.value = '';
     }
 
     if (transferDateController.text.trim().isEmpty) {
-      transferDateError.value = 'Transfer date is required';
+      transferDateError.value = 'Please select transfer date';
       isValid = false;
     } else {
       transferDateError.value = '';
     }
 
     if (receiptImagePath.value.isEmpty) {
-      receiptError.value = 'Please upload payment receipt';
+      receiptError.value = 'Please upload payment receipt image';
       isValid = false;
     } else {
       receiptError.value = '';
@@ -242,6 +251,7 @@ class CheckoutController extends GetxController {
         addressController.getAddresses(),
         fetchProfileData(),
         fetchCouponsFromApi(),
+        Get.find<SettingsDataController>().fetchSettings(),
       ]);
       clearShippingFields();
     } catch (e) {

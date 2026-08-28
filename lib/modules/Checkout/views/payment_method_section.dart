@@ -74,7 +74,7 @@ class _PaymentMethodCard extends StatelessWidget {
               Text(
                 "Bank Transfer (Manual)",
                 style: AppTextStyles.poppins(
-                  fontSize: 14,
+                  fontSize: AppFontSizes.s14,
                   fontWeight: FontWeight.w500,
                   color: AppColors.textPrimary,
                 ),
@@ -85,7 +85,7 @@ class _PaymentMethodCard extends StatelessWidget {
           Text(
             "Transfer directly to our bank account and upload proof of payment.",
             style: AppTextStyles.poppins(
-              fontSize: 12,
+              fontSize: AppFontSizes.s12,
               fontWeight: FontWeight.w400,
               color: AppColors.textSecondary,
             ),
@@ -106,33 +106,44 @@ class _BankTransferDetailsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final paymentController = Get.find<SettingsDataController>();
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.lightGray.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.borderGray),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Bank Transfer Details",
-            style: AppTextStyles.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+    return Obx(() {
+      if (paymentController.isLoading.value && paymentController.settings.value == null) {
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: CircularProgressIndicator(),
           ),
-          const SizedBox(height: 12),
-          _BankDetailRow(label: "Bank:", value: paymentController.getBankName()),
-          _BankDetailRow(label: "Account Name:", value: paymentController.getAccountName()),
-          _BankDetailRow(label: "Account No:", value: paymentController.getAccountNumber()),
-          _BankDetailRow(label: "Routing:", value: paymentController.getRoutingNumber()),
-          _BankDetailRow(label: "SWIFT/BIC:", value: paymentController.getSwiftCode()),
-        ],
-      ),
-    );
+        );
+      }
+
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.lightGray.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.borderGray),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Bank Transfer Details",
+              style: AppTextStyles.poppins(
+                fontSize: AppFontSizes.s14,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _BankDetailRow(label: "Bank:", value: paymentController.getBankName()),
+            _BankDetailRow(label: "Account Name:", value: paymentController.getAccountName()),
+            _BankDetailRow(label: "Account No:", value: paymentController.getAccountNumber()),
+            _BankDetailRow(label: "Routing:", value: paymentController.getRoutingNumber()),
+            _BankDetailRow(label: "SWIFT/BIC:", value: paymentController.getSwiftCode()),
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -153,7 +164,7 @@ class _BankDetailRow extends StatelessWidget {
             child: Text(
               label,
               style: AppTextStyles.poppins(
-                fontSize: 13,
+                fontSize: AppFontSizes.s13,
                 fontWeight: FontWeight.w500,
                 color: AppColors.textSecondary,
               ),
@@ -163,7 +174,7 @@ class _BankDetailRow extends StatelessWidget {
             child: Text(
               value,
               style: AppTextStyles.poppins(
-                fontSize: 13,
+                fontSize: AppFontSizes.s13,
                 fontWeight: FontWeight.w400,
                 color: AppColors.textPrimary,
               ),
@@ -198,7 +209,7 @@ class _ReceiptUploadCard extends StatelessWidget {
           Text(
             "Upload Payment Receipt",
             style: AppTextStyles.poppins(
-              fontSize: 14,
+              fontSize: AppFontSizes.s14,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
             ),
@@ -225,16 +236,18 @@ class _ReceiptFormFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-
         OptimizedField(
           title: "Transaction ID / UTR",
           controller: controller.transactionIdController,
           textInputAction: TextInputAction.next,
           hint: "Enter UTR or Reference No.",
+          maxLength: 100,
           validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return "Transaction ID required";
+            final v = value?.trim() ?? '';
+            if (v.isEmpty) {
+              return "Please enter transaction ID";
             }
+            if (v.length > 100) return "Transaction ID too long";
             return null;
           },
         ),
@@ -244,10 +257,13 @@ class _ReceiptFormFields extends StatelessWidget {
           controller: controller.bankNameController,
           textInputAction: TextInputAction.next,
           hint: "Bank Name",
+          maxLength: 100,
           validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return "Bank Name required";
+            final v = value?.trim() ?? '';
+            if (v.isEmpty) {
+              return "Please enter bank name";
             }
+            if (v.length > 100) return "Bank name too long";
             return null;
           },
         ),
@@ -260,7 +276,7 @@ class _ReceiptFormFields extends StatelessWidget {
           hint: "Amount transferred",
           validator: (value) {
             final v = value?.trim() ?? '';
-            if (v.isEmpty) return "Transfer amount required";
+            if (v.isEmpty) return "Please enter transfer amount";
             if (double.tryParse(v) == null) return "Enter valid amount";
             return null;
           },
@@ -269,9 +285,14 @@ class _ReceiptFormFields extends StatelessWidget {
         _DatePickerField(
           controller: controller.transferDateController,
           title: "Transfer Date",
-          hint: "dd-mm-yyyy",
+          hint: "yyyy-mm-dd",
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Please select transfer date";
+            }
+            return null;
+          },
         ),
-
       ],
     );
   }
@@ -281,209 +302,265 @@ class _ReceiptFormFields extends StatelessWidget {
 // DATE PICKER FIELD
 // ============================================================
 
-class _DatePickerField extends StatelessWidget {
+class _DatePickerField extends FormField<String> {
   final TextEditingController controller;
   final String title;
   final String hint;
 
-  const _DatePickerField({
+  _DatePickerField({
     required this.controller,
     required this.title,
     required this.hint,
-  });
+    super.validator,
+  }) : super(
+          initialValue: controller.text,
+          builder: (FormFieldState<String> state) {
+            final hasError = state.hasError;
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: AppTextStyles.poppins(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          InkWell(
-            onTap: () => _selectDate(context),
-            borderRadius: BorderRadius.circular(2),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(2),
-                border: Border.all(color: AppColors.borderGray),
-              ),
-              child: Row(
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.calendar_today_outlined,
-                    size: 18,
-                    color: AppColors.darkGray,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ValueListenableBuilder<TextEditingValue>(
-                      valueListenable: controller,
-                      builder: (context, value, child) {
-                        final date = value.text;
-
-                        return Text(
-                          date.isEmpty ? hint : date,
-                          style: AppTextStyles.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: date.isEmpty
-                                ? AppColors.darkGray
-                                : AppColors.textPrimary,
-                          ),
-                        );
-                      },
+                  Text(
+                    title,
+                    style: AppTextStyles.poppins(
+                      fontSize: AppFontSizes.s13,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textPrimary,
                     ),
                   ),
-                  Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    color: AppColors.darkGray,
-                    size: 20,
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: state.context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime.now(), // Disable future dates
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: const ColorScheme.light(
+                                primary: AppColors.primaryDark,
+                                onPrimary: AppColors.white,
+                                onSurface: AppColors.textPrimary,
+                              ),
+                              dialogBackgroundColor: AppColors.white,
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
+
+                      if (picked != null) {
+                        // API format: yyyy-MM-dd
+                        final String formattedDate =
+                            "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+
+                        controller.text = formattedDate;
+                        state.didChange(formattedDate);
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(2),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(2),
+                        border: Border.all(
+                          color: hasError ? AppColors.error : AppColors.borderGray,
+                          width: hasError ? 1.5 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today_outlined,
+                            size: 18,
+                            color: hasError ? AppColors.error : AppColors.darkGray,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              controller.text.isEmpty ? hint : controller.text,
+                              style: AppTextStyles.poppins(
+                                fontSize: AppFontSizes.s14,
+                                fontWeight: FontWeight.w400,
+                                color: controller.text.isEmpty
+                                    ? AppColors.darkGray
+                                    : AppColors.textPrimary,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: hasError ? AppColors.error : AppColors.darkGray,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
+                  if (hasError)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8, left: 4),
+                      child: Text(
+                        state.errorText ?? '',
+                        style: AppTextStyles.poppins(
+                          fontSize: AppFontSizes.s12,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.error,
+                        ),
+                      ),
+                    ),
                 ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primaryDark,
-              onPrimary: AppColors.white,
-              onSurface: AppColors.textPrimary,
-            ),
-            dialogBackgroundColor: AppColors.white,
-          ),
-          child: child!,
+            );
+          },
         );
-      },
-    );
-
-    if (picked != null) {
-      // Format date as dd-mm-yyyy
-      final String formattedDate =
-          "${picked.day.toString().padLeft(2, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.year}";
-      controller.text = formattedDate;
-    }
-  }
 }
 
 // ============================================================
-// FILE UPLOAD SECTION (Improved)
+// FILE UPLOAD SECTION (Improved with Validation)
 // ============================================================
 
-class _FileUploadSection extends StatelessWidget {
+class _FileUploadSection extends FormField<String> {
   final CheckoutController controller;
-  const _FileUploadSection({required this.controller});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.borderGray),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.attach_file_outlined, color: AppColors.darkGray, size: 18),
-              const SizedBox(width: 8),
-              Text(
-                "Select Image (JPG, PNG, WEBP)",
-                style: AppTextStyles.poppins(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          InkWell(
-            onTap: controller.pickReceiptImage,
-            borderRadius: BorderRadius.circular(8),
-            child: Obx(() {
-              final hasFile = controller.receiptImagePath.value.isNotEmpty;
-              final fileName = controller.receiptImagePath.value.split('/').last;
+  _FileUploadSection({required this.controller})
+      : super(
+          validator: (value) {
+            if (controller.receiptImagePath.value.isEmpty) {
+              return "Please upload payment receipt image";
+            }
+            return null;
+          },
+          builder: (FormFieldState<String> state) {
+            final hasError = state.hasError;
 
-              return Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                decoration: BoxDecoration(
-                  color: hasFile ? AppColors.success.withOpacity(0.05) : AppColors.lightGray,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: hasFile ? AppColors.success : AppColors.borderGray,
-                    width: hasFile ? 1.5 : 1,
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: hasError ? AppColors.error : AppColors.borderGray,
+                      width: hasError ? 1.5 : 1,
+                    ),
                   ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      hasFile ? Icons.check_circle : Icons.cloud_upload_outlined,
-                      color: hasFile ? AppColors.success : AppColors.darkGray,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        hasFile ? fileName : "Select image (JPG, PNG, WEBP)",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.poppins(
-                          fontSize: hasFile ? 12 : 13,
-                          fontWeight: hasFile ? FontWeight.w500 : FontWeight.w400,
-                          color: hasFile ? AppColors.success : AppColors.darkGray,
-                        ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.attach_file_outlined,
+                            color: hasError ? AppColors.error : AppColors.darkGray,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Select Image (JPG, PNG, WEBP)",
+                            style: AppTextStyles.poppins(
+                              fontSize: AppFontSizes.s12,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    if (hasFile) ...[
-                      const SizedBox(width: 8),
+                      const SizedBox(height: 8),
                       InkWell(
-                        onTap: () {
-                          controller.receiptImagePath.value = '';
+                        onTap: () async {
+                          await controller.pickReceiptImage();
+                          state.didChange(controller.receiptImagePath.value);
                         },
-                        child: Icon(
-                          Icons.close_rounded,
-                          color: AppColors.darkGray,
-                          size: 18,
-                        ),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Obx(() {
+                          final hasFile = controller.receiptImagePath.value.isNotEmpty;
+                          final fileName = controller.receiptImagePath.value.split('/').last;
+
+                          return Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                            decoration: BoxDecoration(
+                              color: hasFile
+                                  ? AppColors.success.withOpacity(0.05)
+                                  : AppColors.lightGray,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: hasFile
+                                    ? AppColors.success
+                                    : (hasError ? AppColors.error : AppColors.borderGray),
+                                width: hasFile || hasError ? 1.5 : 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  hasFile ? Icons.check_circle : Icons.cloud_upload_outlined,
+                                  color: hasFile
+                                      ? AppColors.success
+                                      : (hasError ? AppColors.error : AppColors.darkGray),
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    hasFile ? fileName : "Select image (JPG, PNG, WEBP)",
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTextStyles.poppins(
+                                      fontSize: hasFile ? AppFontSizes.s12 : AppFontSizes.s13,
+                                      fontWeight: hasFile ? FontWeight.w500 : FontWeight.w400,
+                                      color: hasFile
+                                          ? AppColors.success
+                                          : (hasError ? AppColors.error : AppColors.darkGray),
+                                    ),
+                                  ),
+                                ),
+                                if (hasFile) ...[
+                                  const SizedBox(width: 8),
+                                  InkWell(
+                                    onTap: () {
+                                      controller.receiptImagePath.value = '';
+                                      state.didChange('');
+                                    },
+                                    child: Icon(
+                                      Icons.close_rounded,
+                                      color: AppColors.darkGray,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          );
+                        }),
                       ),
                     ],
-                  ],
+                  ),
                 ),
-              );
-            }),
-          ),
-        ],
-      ),
-    );
-  }
+                if (hasError)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8, left: 4),
+                    child: Text(
+                      state.errorText ?? '',
+                      style: AppTextStyles.poppins(
+                        fontSize: AppFontSizes.s12,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.error,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        );
 }

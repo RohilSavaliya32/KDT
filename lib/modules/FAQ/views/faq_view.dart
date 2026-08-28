@@ -62,7 +62,7 @@ class FaqView extends GetView<FaqController> {
       title: Text(
         TranslationKeys.faqs.tr,
         style: AppTextStyles.poppins(
-          fontSize: 18,
+          fontSize: AppFontSizes.s18,
           fontWeight: FontWeight.w500,
           color: AppColors.foreground,
         ),
@@ -89,7 +89,7 @@ class _EmptyState extends StatelessWidget {
         child: Text(
           TranslationKeys.noFaqsAvailable.tr,
           style: AppTextStyles.poppins(
-            fontSize: 16,
+            fontSize: AppFontSizes.s16,
             color: AppColors.mutedForeground,
           ),
         ),
@@ -290,19 +290,19 @@ class _FaqItem extends StatelessWidget {
   double _getResponsiveQuestionFontSize(
       double width,
       ) {
-    if (width < 360) return 14;
-    if (width < 600) return 16;
-    if (width < 900) return 17;
-    return 19;
+    if (width < 360) return AppFontSizes.s14;
+    if (width < 600) return AppFontSizes.s16;
+    if (width < 900) return AppFontSizes.s17;
+    return AppFontSizes.s19;
   }
 
   double _getResponsiveAnswerFontSize(
       double width,
       ) {
-    if (width < 360) return 12;
-    if (width < 600) return 14;
-    if (width < 900) return 15;
-    return 16;
+    if (width < 360) return AppFontSizes.s12;
+    if (width < 600) return AppFontSizes.s14;
+    if (width < 900) return AppFontSizes.s15;
+    return AppFontSizes.s16;
   }
 
   double _getResponsiveItemPadding(

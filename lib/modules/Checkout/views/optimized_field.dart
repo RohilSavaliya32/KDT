@@ -9,6 +9,7 @@ class OptimizedField extends StatefulWidget {
   final String? Function(String?)? validator;
   final TextInputAction textInputAction;
   final TextInputType keyboardType;
+  final int? maxLength;
 
   const OptimizedField({
     super.key,
@@ -18,6 +19,7 @@ class OptimizedField extends StatefulWidget {
     this.validator,
     this.textInputAction = TextInputAction.next,
     this.keyboardType = TextInputType.text,
+    this.maxLength,
   });
 
   @override
@@ -53,7 +55,6 @@ class _OptimizedFieldState extends State<OptimizedField> {
   }
 
   Color get _titleColor {
-    if (_hasError) return AppColors.error;
     return AppColors.textPrimary;
   }
 
@@ -72,7 +73,7 @@ class _OptimizedFieldState extends State<OptimizedField> {
           Text(
             widget.title,
             style: AppTextStyles.poppins(
-              fontSize: 13,
+              fontSize: AppFontSizes.s13,
               fontWeight: FontWeight.w500,
               color: _titleColor,
             ),
@@ -84,9 +85,10 @@ class _OptimizedFieldState extends State<OptimizedField> {
             keyboardType: widget.keyboardType,
             textInputAction: widget.textInputAction,
             autovalidateMode: AutovalidateMode.onUserInteraction,
+            maxLength: widget.maxLength,
             cursorColor: _cursorColor,
             style: AppTextStyles.poppins(
-              fontSize: 14,
+              fontSize: AppFontSizes.s14,
               fontWeight: FontWeight.w400,
               color: AppColors.textPrimary,
             ),
@@ -118,13 +120,14 @@ class _OptimizedFieldState extends State<OptimizedField> {
     return InputDecoration(
       hintText: widget.hint,
       hintStyle: AppTextStyles.poppins(
-        fontSize: 12,
+        fontSize: AppFontSizes.s12,
         fontWeight: FontWeight.w400,
         color: AppColors.darkGray,
       ),
       filled: true,
       fillColor: AppColors.white,
       isDense: true,
+      counterText: "",
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 14,
         vertical: 14,
@@ -173,7 +176,7 @@ class _OptimizedFieldState extends State<OptimizedField> {
       ),
 
       errorStyle: AppTextStyles.poppins(
-        fontSize: 12,
+        fontSize: AppFontSizes.s12,
         fontWeight: FontWeight.w400,
         color: AppColors.error,
       ),

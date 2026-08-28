@@ -21,7 +21,7 @@ class SectionHeader extends StatelessWidget {
         Text(
           title,
           style: AppTextStyles.lora(
-            fontSize: 20,
+            fontSize: AppFontSizes.s20,
             fontWeight: FontWeight.w400,
             color: AppColors.primaryDark,
           ),

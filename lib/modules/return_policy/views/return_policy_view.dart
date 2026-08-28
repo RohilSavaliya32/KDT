@@ -39,7 +39,7 @@ class ReturnsPolicyView extends GetView<ReturnsPolicyController> {
           title: Text(
             TranslationKeys.returnPolicy.tr,
             style: AppTextStyles.poppins(
-              fontSize: 18,
+              fontSize: AppFontSizes.s18,
               fontWeight: FontWeight.w500,
               color: AppColors.foreground,
             ),
@@ -64,7 +64,7 @@ class ReturnsPolicyView extends GetView<ReturnsPolicyController> {
                   "body": Style(
                     color: AppColors.foreground,
                     fontFamily: 'Poppins',
-                    fontSize: FontSize(14),
+                    fontSize: FontSize(AppFontSizes.s14),
                     lineHeight: LineHeight(1.6),
                   ),
                   "h1": Style(

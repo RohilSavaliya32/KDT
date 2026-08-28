@@ -77,7 +77,7 @@ class CheckoutView extends GetView<CheckoutController> {
       title: Text(
         TranslationKeys.checkout.tr,
         style: AppTextStyles.poppins(
-          fontSize: 18,
+          fontSize: AppFontSizes.s18,
           fontWeight: FontWeight.w500,
           color: AppColors.foreground,
         ),
