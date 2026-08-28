@@ -348,21 +348,11 @@ class OrderDetailsView extends StatelessWidget {
                                         Get.back();
 
                                         Get.snackbar(
-                                          TranslationKeys
-                                              .cancelled
-                                              .tr,
-                                          TranslationKeys
-                                              .orderCancelledSuccessfully
-                                              .tr,
-                                          snackPosition:
-                                          SnackPosition
-                                              .TOP,
-                                          backgroundColor:
-                                          AppColors
-                                              .accent,
-                                          colorText:
-                                          AppColors
-                                              .background,
+                                          TranslationKeys.cancelled.tr,
+                                          TranslationKeys.orderCancelledSuccessfully.tr,
+                                          snackPosition: SnackPosition.TOP,
+                                          backgroundColor: AppColors.accent,
+                                          colorText: AppColors.background,
                                         );
                                       }
 

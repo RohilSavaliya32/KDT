@@ -94,12 +94,10 @@ class ReviewController extends GetxController {
     final comment = commentController.text.trim();
 
     if (rating == 0) {
-      Get.snackbar('Validation', 'Please select rating');
       return;
     }
 
     if (comment.isEmpty) {
-      Get.snackbar('Validation', 'Please enter comment');
       return;
     }
 
@@ -122,16 +120,13 @@ class ReviewController extends GetxController {
 
         if (editingReview.value != null) {
           cancelEdit();
-          Get.snackbar('Success', 'Review updated successfully');
         } else {
           selectedRating.value = 0.0;
           commentController.clear();
-          Get.snackbar('Success', 'Review submitted successfully');
         }
 
         hasReviewed.value = true;
       } else {
-        Get.snackbar('Error', 'Unable to save review');
       }
     } catch (e) {
       debugPrint('SUBMIT/UPDATE REVIEW ERROR => $e');

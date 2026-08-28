@@ -201,9 +201,21 @@ class AddressController extends GetxController {
       await getAddresses();
       clearForm();
       Get.back();
+<<<<<<< HEAD
       Get.snackbar('Success', 'Address Updated Successfully', snackPosition: SnackPosition.TOP);
     } catch (e) {
       Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.TOP);
+=======
+      Get.snackbar(
+        'Address Updated',
+        'Your address has been updated successfully.',
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Update Failed',
+        'We couldn’t update your address. Please try again.',
+      );
+>>>>>>> deecc1dd8465ff49d5c9ea94c706ce07494190e9
     } finally {
       isLoading.value = false;
     }
@@ -230,9 +242,21 @@ class AddressController extends GetxController {
       await getAddresses();
       clearForm();
       Get.back();
+<<<<<<< HEAD
       Get.snackbar('Success', 'Address Added Successfully', snackPosition: SnackPosition.TOP);
     } catch (e) {
       Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.TOP);
+=======
+      Get.snackbar(
+        'Address Added',
+        'Your address has been added successfully.',
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Address Not Added',
+        'We couldn’t add your address. Please try again.',
+      );
+>>>>>>> deecc1dd8465ff49d5c9ea94c706ce07494190e9
     } finally {
       isLoading.value = false;
     }

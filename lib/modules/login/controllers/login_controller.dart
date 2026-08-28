@@ -268,10 +268,18 @@ class LoginController extends GetxController {
       // ✅ Close dialog before navigation
       await _closeLoginDialogAndNavigate();
 
-      Get.snackbar("Success", "Login successful!", snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Welcome Back',
+        'You’ve been logged in successfully.',
+        snackPosition: SnackPosition.TOP,
+      );
       return true;
     } catch (e) {
-      Get.snackbar("Login Failed", e.toString(), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Login Failed',
+        'We couldn’t log you in. Please check your credentials and try again.',
+        snackPosition: SnackPosition.TOP,
+      );
       return false;
     } finally {
       isLoading.value = false;
@@ -312,7 +320,11 @@ class LoginController extends GetxController {
       checkedMobile.value = response.meta.mobile ?? fullPhoneNumber;
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Something Went Wrong',
+        'An unexpected error occurred. Please try again.',
+        snackPosition: SnackPosition.TOP,
+      );
       return;
     }
 
@@ -328,7 +340,12 @@ class LoginController extends GetxController {
         },
         verificationFailed: (FirebaseAuthException e) {
           isOtpLoading.value = false;
-          Get.snackbar("OTP Failed", e.message ?? e.code, snackPosition: SnackPosition.TOP);
+
+          Get.snackbar(
+            'OTP Verification Failed',
+            'We couldn’t verify the OTP. Please check the code and try again.',
+            snackPosition: SnackPosition.TOP,
+          );
         },
         codeSent: (String verificationId, int? resendToken) {
           _verificationId = verificationId;
@@ -336,8 +353,12 @@ class LoginController extends GetxController {
           startOtpTimer();
           isOtpLoading.value = false;
           showOtpScreen.value = true;
-          Get.snackbar("Success", "OTP sent to $fullPhoneNumber", snackPosition: SnackPosition.TOP);
-        },
+          Get.snackbar(
+            "OTP Sent",
+            "OTP has been sent to $fullPhoneNumber",
+            snackPosition: SnackPosition.TOP,
+          );
+          },
         codeAutoRetrievalTimeout: (String verificationId) {
           _verificationId = verificationId;
         },
@@ -345,7 +366,11 @@ class LoginController extends GetxController {
       );
     } catch (e) {
       isOtpLoading.value = false;
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Something Went Wrong',
+        'An unexpected error occurred. Please try again.',
+        snackPosition: SnackPosition.TOP,
+      );
     }
   }
 
@@ -384,18 +409,32 @@ class LoginController extends GetxController {
           debugPrint("OTP FAILED");
           debugPrint("ERROR CODE    : ${e.code}");
           debugPrint("ERROR MESSAGE : ${e.message}");
+
           isOtpLoading.value = false;
-          Get.snackbar("OTP Failed", e.message ?? e.code, snackPosition: SnackPosition.TOP);
+
+          Get.snackbar(
+            "Verification Failed",
+            "The OTP is incorrect or has expired. Please try again.",
+            snackPosition: SnackPosition.TOP,
+          );
         },
+
         codeSent: (String verificationId, int? resendToken) {
           debugPrint("OTP RESENT SUCCESS");
           debugPrint("verificationId : $verificationId");
           debugPrint("resendToken    : $resendToken");
+
           _verificationId = verificationId;
           _resendToken = resendToken;
+
           startOtpTimer();
           isOtpLoading.value = false;
-          Get.snackbar("Success", "OTP resent successfully", snackPosition: SnackPosition.TOP);
+
+          Get.snackbar(
+            "OTP Resent",
+            "A new OTP has been sent successfully.",
+            snackPosition: SnackPosition.TOP,
+          );
         },
         codeAutoRetrievalTimeout: (String verificationId) {
           debugPrint("AUTO RETRIEVAL TIMEOUT");
@@ -407,14 +446,22 @@ class LoginController extends GetxController {
       debugPrint("EXCEPTION : $e");
       debugPrint("STACK : $s");
       isOtpLoading.value = false;
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        'Something Went Wrong',
+        'An unexpected error occurred. Please try again.',
+        snackPosition: SnackPosition.TOP,
+      );
     }
   }
 
   Future<void> verifyPhoneOtp(String otp) async {
     if (_verificationId == null) {
       otpError.value = "OTP session expired. Please resend code.";
-      Get.snackbar("Error", "OTP session expired. Please resend code.", snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        "OTP Expired",
+        "This OTP is no longer valid. Please resend the OTP.",
+        snackPosition: SnackPosition.TOP,
+      );
       return;
     }
 
@@ -427,9 +474,17 @@ class LoginController extends GetxController {
       await _signInWithPhoneCredential(credential);
     } on FirebaseAuthException catch (e) {
       otpError.value = e.message ?? e.code;
-      Get.snackbar("Invalid OTP", e.message ?? e.code, snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        "Invalid OTP",
+        "The OTP you entered is incorrect. Please try again.",
+        snackPosition: SnackPosition.TOP,
+      );
     } catch (e) {
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.TOP);
+      Get.snackbar(
+        "Something Went Wrong",
+        "An unexpected error occurred. Please try again.",
+        snackPosition: SnackPosition.TOP,
+      );
     } finally {
       isOtpLoading.value = false;
     }

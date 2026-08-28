@@ -241,7 +241,7 @@ class DiamondDetailViewController extends GetxController {
 
     Get.snackbar(
       'Added to Cart',
-      'Diamond added successfully',
+      'The diamond has been added to your cart.',
       snackPosition: SnackPosition.TOP,
     );
     AppNavigator.to("/navigation", arguments: {"tab": 3});
@@ -298,11 +298,6 @@ class DiamondDetailViewController extends GetxController {
     final contactSettings = Get.find<SettingsDataController>().contact;
 
     if (contactSettings == null) {
-      Get.snackbar(
-        "Error",
-        "Contact settings not available",
-        snackPosition: SnackPosition.TOP,
-      );
       return;
     }
 
@@ -310,8 +305,8 @@ class DiamondDetailViewController extends GetxController {
 
     if (rawPhone == null || rawPhone.isEmpty) {
       Get.snackbar(
-        "Error",
-        "WhatsApp number not available",
+        "WhatsApp Unavailable",
+        "The WhatsApp number is currently unavailable. Please try again later.",
         snackPosition: SnackPosition.TOP,
       );
       return;
@@ -336,8 +331,8 @@ class DiamondDetailViewController extends GetxController {
 
       if (!launched) {
         Get.snackbar(
-          "Error",
-          "WhatsApp could not be opened",
+          "WhatsApp Unavailable",
+          "The WhatsApp number is currently unavailable. Please try again later.",
           snackPosition: SnackPosition.TOP,
         );
       }
@@ -345,15 +340,18 @@ class DiamondDetailViewController extends GetxController {
       debugPrint("WhatsApp Error: $e");
 
       Get.snackbar(
-        "Error",
-        "Unable to open WhatsApp",
+        "WhatsApp Unavailable",
+        "The WhatsApp number is currently unavailable. Please try again later.",
         snackPosition: SnackPosition.TOP,
       );
     }
   }
   Future<void> makePhoneCall() async {
     if (phoneNumbers.isEmpty) {
-      Get.snackbar("Error", "Phone number not available");
+      Get.snackbar(
+        "Phone Number Unavailable",
+        "The phone number is currently unavailable. Please try again later.",
+      );
       return;
     }
 
@@ -365,10 +363,16 @@ class DiamondDetailViewController extends GetxController {
     try {
       final launched = await launchUrl(uri);
       if (!launched) {
-        Get.snackbar("Error", "Phone dialer could not be opened");
+        Get.snackbar(
+          "Unable to Make Call",
+          "The phone dialer could not be opened. Please try again.",
+        );
       }
     } catch (e) {
-      Get.snackbar("Error", "Unable to open phone dialer");
+      Get.snackbar(
+        "Unable to Make Call",
+        "The phone dialer could not be opened. Please try again.",
+      );
     }
   }
 
@@ -514,11 +518,9 @@ class DiamondDetailViewController extends GetxController {
         wishlistIds.refresh();
 
         Get.snackbar(
-          'Error',
-          'Failed to update wishlist',
+          'Wishlist Update Failed',
+          'We couldn’t update your wishlist. Please try again.',
           snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
         );
       } else {
         // API success → server state ke according sync

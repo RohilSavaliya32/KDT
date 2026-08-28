@@ -179,11 +179,6 @@ class OrderHistoryController extends GetxController {
           final diamondId = item.id;
 
           if (diamondId.isEmpty) {
-            Get.snackbar(
-              'Error',
-              'Diamond details not available',
-              snackPosition: SnackPosition.TOP,
-            );
             return;
           }
           AppNavigator.to("/diamonds-details", arguments: diamondId);

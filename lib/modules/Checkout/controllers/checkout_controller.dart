@@ -408,16 +408,11 @@ class CheckoutController extends GetxController {
         errorMessage.value = '';
         receiptError.value = '';
         _validateForm();
-        Get.snackbar(
-          "Success",
-          "Receipt selected successfully",
-          snackPosition: SnackPosition.TOP,
-        );
       }
     } catch (e) {
       Get.snackbar(
-        "Error",
-        e.toString(),
+        "Something Went Wrong",
+        "An unexpected error occurred. Please try again.",
         snackPosition: SnackPosition.TOP,
       );
     }
@@ -443,25 +438,11 @@ class CheckoutController extends GetxController {
 
     if (!formValid || !paymentValid) {
       _validateForm();
-      Get.snackbar(
-        "Error",
-        "Please fill all required fields",
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
       return;
     }
 
     // Double check - if form is invalid, return
     if (!isFormValid.value) {
-      Get.snackbar(
-        "Error",
-        "Please fill all required fields",
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
       return;
     }
 
@@ -469,7 +450,10 @@ class CheckoutController extends GetxController {
 
     if (cartController.cartItems.isEmpty) {
       isPlacingOrder.value = false;
-      Get.snackbar("Error", "Cart is empty");
+      Get.snackbar(
+        "Cart Empty",
+        "Your cart is empty. Add an item to continue.",
+      );
       return;
     }
 
@@ -571,13 +555,10 @@ class CheckoutController extends GetxController {
       }
 
       Get.snackbar(
-        "Success",
-        "Order placed successfully!",
+        "Order Confirmed",
+        "Your order has been placed successfully!",
         snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
       );
-
       await AppNavigator.to(
         AppRoutes.Payment_Summary,
         arguments: {
@@ -595,7 +576,10 @@ class CheckoutController extends GetxController {
     } catch (e) {
       isPlacingOrder.value = false;
       errorMessage.value = e.toString();
-      Get.snackbar("Error", e.toString());
+      Get.snackbar(
+        "Something Went Wrong",
+        "An unexpected error occurred. Please try again.",
+      );
       debugPrint("PLACE ORDER ERROR => $e");
     } finally {
       isLoading.value = false;
