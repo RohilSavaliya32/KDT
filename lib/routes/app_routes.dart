@@ -1,4 +1,3 @@
-import 'package:kdt/modules/diamond_model.dart';
 
 abstract class AppRoutes {
   static const HOME = '/home';
