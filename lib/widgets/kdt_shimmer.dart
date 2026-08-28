@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:kdt/utils/app_decorations.dart';
+
 class KdtShimmer extends StatefulWidget {
   final Widget child;
   final bool enabled;
@@ -119,20 +121,19 @@ class DiamondCardSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: AppDecorations.cardDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        shadow: AppDecorations.smoothShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AspectRatio(
+          AspectRatio(
             aspectRatio: 1,
-            child: KdtSkeleton(borderRadius: 16),
+            child: KdtSkeleton(borderRadius: AppDecorations.cardRadius),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -143,9 +144,9 @@ class DiamondCardSkeleton extends StatelessWidget {
                     const KdtSkeleton(width: 30, height: 16),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 const KdtSkeleton(width: 120, height: 12),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     const Expanded(child: KdtSkeleton(height: 10)),
@@ -153,10 +154,10 @@ class DiamondCardSkeleton extends StatelessWidget {
                     const Expanded(child: KdtSkeleton(height: 10)),
                   ],
                 ),
-                const Divider(height: 20),
-                const KdtSkeleton(width: 80, height: 20),
-                const SizedBox(height: 4),
-                const KdtSkeleton(width: 60, height: 12),
+                const Divider(height: 24),
+                const KdtSkeleton(width: 100, height: 20),
+                const SizedBox(height: 8),
+                const KdtSkeleton(width: 70, height: 12),
               ],
             ),
           ),

@@ -705,71 +705,116 @@ class _HomeShimmer extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final vm = _ViewModel(constraints.maxWidth);
+        final width = constraints.maxWidth;
+        final horizontalPadding = 16.0;
+
+        // Banner Height calculation matching BannerWidget
+        final bannerHeight = (width * 0.78).clamp(280.0, 420.0);
+
+        // FeatureRow settings
+        final isMobileFeature = width < 700;
+        final featureCrossAxisCount = isMobileFeature ? 2 : 4;
+        final featureHeight = isMobileFeature ? 180.0 : 90.0;
+
+        // ShapeGrid settings
+        final isVerySmallShape = width < 380;
+        final isMobileShape = width >= 380 && width < 600;
+        final isTabletShape = width >= 600 && width < 1024;
+        final shapeCrossAxisCount = isVerySmallShape ? 3 : (isMobileShape ? 4 : (isTabletShape ? 5 : 6));
+        final shapeGridHeight = isVerySmallShape ? 380.0 : (isMobileShape ? 300.0 : 250.0);
+
+        // CollectionBanner settings
+        final isMobileCollection = width < 768;
+        final collectionHeight = isMobileCollection ? 500.0 : 320.0;
+
         return KdtShimmer(
           child: SingleChildScrollView(
             physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Banner Shimmer
+                // 1. Banner Shimmer
                 KdtSkeleton(
-                  height: 200,
+                  height: bannerHeight,
                   width: double.infinity,
-                  borderRadius: 12,
+                  borderRadius: 18,
                 ),
                 SizedBox(height: vm.sectionSpacing),
 
-                // Feature Row Shimmer
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(
-                    3,
-                    (index) => KdtSkeleton(
-                      width: (constraints.maxWidth - 64) / 3,
-                      height: 80,
-                      borderRadius: 12,
+                // 2. Feature Row Shimmer
+                SizedBox(
+                  height: featureHeight,
+                  child: GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: featureCrossAxisCount,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
+                      childAspectRatio: isMobileFeature ? 2.6 : 3.8,
                     ),
+                    itemCount: 4,
+                    itemBuilder: (_, __) => KdtSkeleton(borderRadius: 12),
                   ),
                 ),
                 SizedBox(height: vm.sectionSpacing),
 
-                // Shape Grid Shimmer
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    mainAxisExtent: 100,
-                  ),
-                  itemCount: 6,
-                  itemBuilder: (_, __) => KdtSkeleton(borderRadius: 12),
+                // 3. Shape Grid Shimmer
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    KdtSkeleton(width: 200, height: 24, borderRadius: 4),
+                    const SizedBox(height: 18),
+                    SizedBox(
+                      height: shapeGridHeight,
+                      child: GridView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: shapeCrossAxisCount,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: isVerySmallShape ? 0.72 : 0.82,
+                        ),
+                        itemCount: isVerySmallShape ? 9 : 12,
+                        itemBuilder: (_, __) => KdtSkeleton(borderRadius: 14),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: vm.sectionSpacing),
 
-                // Collection Banner Shimmer
-                KdtSkeleton(
-                  height: 150,
-                  width: double.infinity,
-                  borderRadius: 12,
-                ),
-                SizedBox(height: vm.sectionSpacing),
-
-                // Section Title Shimmer
-                Center(
-                  child: Column(
+                // 4. Collection Banner Shimmer
+                SizedBox(
+                  height: collectionHeight,
+                  child: isMobileCollection
+                      ? Column(
                     children: [
-                      KdtSkeleton(width: 150, height: 12),
-                      const SizedBox(height: 8),
-                      KdtSkeleton(width: 200, height: 24),
+                      Expanded(child: KdtSkeleton(borderRadius: 12)),
+                      const SizedBox(height: 16),
+                      Expanded(child: KdtSkeleton(borderRadius: 12)),
+                    ],
+                  )
+                      : Row(
+                    children: [
+                      Expanded(child: KdtSkeleton(borderRadius: 12)),
+                      const SizedBox(width: 28),
+                      Expanded(child: KdtSkeleton(borderRadius: 12)),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: vm.sectionSpacing),
 
-                // Diamond Cards Shimmer
+                // 5. Best Sellers Section Shimmer
+                Center(
+                  child: Column(
+                    children: [
+                      KdtSkeleton(width: 180, height: 12, borderRadius: 2),
+                      const SizedBox(height: 8),
+                      KdtSkeleton(width: 220, height: 28, borderRadius: 4),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
                 GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
