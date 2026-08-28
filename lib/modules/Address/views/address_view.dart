@@ -130,95 +130,115 @@ class AddressView extends GetView<AddressController> {
     final isEdit = controller.editingAddress.value != null;
 
     Get.bottomSheet(
-      Container(
-        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
-            // Handle
-            const SizedBox(height: 12),
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
-            
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 10),
-              child: Row(
+      Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Container(
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Material(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            child: SafeArea(
+              top: false,
+              child: Column(
                 children: [
-                  Text(
-                    isEdit ? "Update Address" : "Add New Address",
-                    style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800),
+                  // Handle
+                  const SizedBox(height: 12),
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 10),
+                    child: Row(
+                      children: [
+                        Text(
+                          isEdit ? "Update Address" : "Add New Address",
+                          style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(),
+
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+                      child: Form(
+                        key: controller.formKey,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Location Button
+                            OutlinedButton.icon(
+                              onPressed: controller.getCurrentLocation,
+                              icon: const Icon(Icons.near_me_outlined, size: 18),
+                              label: const Text("Use my current location"),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppColors.foreground,
+                                minimumSize: const Size(double.infinity, 52),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                side: BorderSide(color: AppColors.border),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+
+                            _buildInputField(controller.fullNameController, "Full name *", "Enter Full name", validator: controller.fullNameValidator),
+                            _buildInputField(controller.phoneController, "Phone number *", "Enter phone number", keyboardType: TextInputType.phone, validator: controller.phoneValidator),
+                            _buildInputField(controller.streetController, "Flat / House / Building *", "Enter Flat / House / Building", validator: controller.streetValidator),
+                            _buildInputField(controller.cityController, "City *", "Enter City", validator: controller.cityValidator),
+                            _buildInputField(controller.stateController, "State *", "Enter State", validator: controller.stateValidator),
+                            _buildInputField(controller.zipCodeController, "Pincode *", "Enter Pincode", keyboardType: TextInputType.number, validator: controller.zipCodeValidator),
+
+                            const SizedBox(height: 10),
+                            Obx(() => CheckboxListTile(
+                                  value: controller.isDefault.value,
+                                  onChanged: (v) => controller.isDefault.value = v ?? false,
+                                  title: Text("Set as default address", style: AppTextStyles.poppins(fontSize: 14)),
+                                  contentPadding: EdgeInsets.zero,
+                                  controlAffinity: ListTileControlAffinity.leading,
+                                  activeColor: AppColors.accent,
+                                )),
+
+                            const SizedBox(height: 24),
+                            ElevatedButton(
+                              onPressed: controller.isLoading.value
+                                  ? null
+                                  : () async {
+                                      await controller.saveAddress();
+                                    },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.accent,
+                                minimumSize: const Size(double.infinity, 56),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                              child: controller.isLoading.value
+                                  ? const CircularProgressIndicator(color: Colors.white)
+                                  : Text(isEdit ? "Update Address" : "Save Address", style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+                            ),
+                            const SizedBox(height: 30),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-            const Divider(),
-
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 24),
-                child: Form(
-                  key: controller.formKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Location Button
-                      OutlinedButton.icon(
-                        onPressed: controller.getCurrentLocation,
-                        icon: const Icon(Icons.near_me_outlined, size: 18),
-                        label: const Text("Use my current location"),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.foreground,
-                          minimumSize: const Size(double.infinity, 52),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          side: BorderSide(color: AppColors.border),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      _buildInputField(controller.fullNameController, "Full name *", "Enter Full name", validator: controller.fullNameValidator),
-                      _buildInputField(controller.phoneController, "Phone number *", "Enter phone number", keyboardType: TextInputType.phone, validator: controller.phoneValidator),
-                      _buildInputField(controller.streetController, "Flat / House / Building *", "Enter Flat / House / Building", validator: controller.streetValidator),
-                      _buildInputField(controller.cityController, "City *", "Enter City", validator: controller.cityValidator),
-                      _buildInputField(controller.stateController, "State *", "Enter State", validator: controller.stateValidator),
-                      _buildInputField(controller.zipCodeController, "Pincode *", "Enter Pincode", keyboardType: TextInputType.number, validator: controller.zipCodeValidator),
-
-                      const SizedBox(height: 10),
-                      Obx(() => CheckboxListTile(
-                        value: controller.isDefault.value,
-                        onChanged: (v) => controller.isDefault.value = v ?? false,
-                        title: Text("Set as default address", style: AppTextStyles.poppins(fontSize: 14)),
-                        contentPadding: EdgeInsets.zero,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        activeColor: AppColors.accent,
-                      )),
-
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: controller.isLoading.value ? null : () async {
-                          await controller.saveAddress();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.accent,
-                          minimumSize: const Size(double.infinity, 56),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                        child: controller.isLoading.value 
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : Text(isEdit ? "Update Address" : "Save Address", style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
-                      ),
-                      const SizedBox(height: 30),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
       isScrollControlled: true,
+      ignoreSafeArea: false,
     );
   }
 
@@ -565,5 +585,3 @@ class _AddressCard extends StatelessWidget {
     }
   }
 }
-
-
