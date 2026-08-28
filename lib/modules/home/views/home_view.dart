@@ -308,7 +308,7 @@ class HomeView extends GetView<HomeController> {
           );
         }),
       ),
-    );
+      ));
   }
 
   Widget _buildBestSellersSection(_ViewModel vm) {
