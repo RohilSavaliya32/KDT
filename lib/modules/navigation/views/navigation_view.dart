@@ -31,18 +31,9 @@ class NavigationView extends StatelessWidget {
     ProfileView(),
   ];
 
-  // Fixed visual height of the nav bar content (icons + labels),
-  // NOT including the device's bottom safe-area inset.
-  // Increased from 76 -> 88 to give the BottomNavigationBar's
-  // internal icon+label column enough room on iOS, where font
-  // metrics for Lora/Poppins render slightly taller and were
-  // causing a 2px RenderFlex bottom overflow on every nav item.
   static const double _navBarContentHeight = 88;
-
-  // Extra breathing room above the icons and below the labels
-  // (on top of the device's bottom safe-area inset).
   static const double _navBarTopPadding = 10;
-  static const double _navBarBottomPadding = 8;
+  static const double _navBarBottomPadding = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +57,6 @@ class NavigationView extends StatelessWidget {
           bottom: false,
           child: _buildBody(),
         ),
-        // NOTE: No outer SafeArea here anymore.
-        // We handle the bottom inset manually inside
-        // _buildBottomNavigationBar so the height stays
-        // consistent across iOS (home indicator) and
-        // Android (gesture bar / no gesture bar).
         bottomNavigationBar: _buildBottomNavigationBar(),
       ),
     );
@@ -285,17 +271,7 @@ class NavigationView extends StatelessWidget {
             // - iOS with home button: 0
             // - Android gesture nav: ~16-48 depending on device
             // - Android 3-button nav: 0 (system nav bar handles it)
-            final double bottomInset = MediaQuery.of(context).padding.bottom;
-
-            // On devices with a big bottom inset (iPhone home
-            // indicator), that inset already provides enough
-            // breathing room below the labels — adding our own
-            // fixed padding on top of it made iOS look like it
-            // had a huge extra margin. Only add the extra padding
-            // when there's little/no system inset (Android
-            // 3-button nav, iPhones with a home button).
-            final double effectiveBottomPadding =
-            bottomInset > 0 ? bottomInset : _navBarBottomPadding;
+            const double effectiveBottomPadding = 0;
 
             return Container(
               height: _navBarContentHeight +
