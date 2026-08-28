@@ -52,7 +52,7 @@ class NavigationView extends StatelessWidget {
           () => Scaffold(
         backgroundColor: AppColors.appBack,
         extendBody: true,
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         appBar: _buildAppBar(),
         body: SafeArea(
           bottom: false,
@@ -82,9 +82,23 @@ class NavigationView extends StatelessWidget {
       backgroundColor: AppColors.appBack,
       elevation: 0,
       scrolledUnderElevation: 0,
-      toolbarHeight: 120,
       centerTitle: false,
-      title: _buildSearchHeader(),
+      title: _buildLogo(),
+      actions: [
+        _buildLanguageIcon(),
+        const SizedBox(width: 4),
+        Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: _buildProfileButton(),
+        ),
+      ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(66),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+          child: _buildSearchField(),
+        ),
+      ),
     );
   }
 
@@ -129,54 +143,35 @@ class NavigationView extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchHeader() {
+  Widget _buildSearchField() {
     return GetBuilder<LanguageController>(
       builder: (langController) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 8),
-            Center(
-              child: Text(
-                TranslationKeys.searchYourDreamDiamonds.tr,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.lora(
-                  color: const Color(0xFF0F5B45),
-                  fontSize: AppFontSizes.s22,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.5,
-                ),
+        return Container(
+          height: 46,
+          decoration: BoxDecoration(
+            color: const Color(0xFFF5F5F5),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: AppColors.border,
+              width: 1,
+            ),
+          ),
+          child: TextField(
+            onChanged: (value) {
+              Get.find<DiamondCardController>().searchDiamonds(value);
+            },
+            decoration: InputDecoration(
+              hintText: TranslationKeys.searchDiamonds.tr,
+              prefixIcon: const Icon(Icons.search),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
               ),
             ),
-            const SizedBox(height: 14),
-            _buildSearchField(),
-          ],
+          ),
         );
       },
-    );
-  }
-
-  Widget _buildSearchField() {
-    return Container(
-      height: 46,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: TextField(
-        onChanged: (value) {
-          Get.find<DiamondCardController>().searchDiamonds(value);
-        },
-        decoration: InputDecoration(
-          hintText: TranslationKeys.searchDiamonds.tr,
-          prefixIcon: const Icon(Icons.search),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
-        ),
-      ),
     );
   }
 

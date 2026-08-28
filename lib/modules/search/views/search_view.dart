@@ -32,6 +32,7 @@ class SearchView extends GetView<SearchController> {
 
               // Clear search
               controller.searchText.value = "";
+              diamondController.searchText.value = "";
 
               // Reset pagination
               diamondController.currentPage.value = 1;
@@ -51,6 +52,7 @@ class SearchView extends GetView<SearchController> {
 
               return SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                 padding: const EdgeInsets.only(
                   left: 20,
                   right: 20,
