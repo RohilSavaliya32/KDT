@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../address_model.dart';
 import '../address_repository.dart';
@@ -26,6 +29,8 @@ class AddressController extends GetxController {
 
   final RxBool isDefault = false.obs;
 
+  final RxString selectedType = 'Home'.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -42,6 +47,83 @@ class AddressController extends GetxController {
     countryController.dispose();
     zipCodeController.dispose();
     super.onClose();
+  }
+
+  void setAddressType(String type) {
+    selectedType.value = type;
+  }
+
+  Future<void> getCurrentLocation() async {
+    try {
+      isLoading.value = true;
+
+      // 1. Check if location services are enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        Get.snackbar("Service Disabled", "Please enable location services in your settings",
+            snackPosition: SnackPosition.TOP);
+        return;
+      }
+
+      // 2. Check and request permission using Geolocator directly (often more reliable on iOS)
+      LocationPermission permission = await Geolocator.checkPermission();
+      
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          Get.snackbar("Permission Denied", "Location permission is required to autofill address",
+              snackPosition: SnackPosition.TOP);
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        Get.snackbar("Permission Restricted", "Location permissions are permanently denied. Please enable them in app settings.",
+            snackPosition: SnackPosition.TOP,
+            mainButton: TextButton(
+              onPressed: () => openAppSettings(),
+              child: const Text("Settings"),
+            ));
+        return;
+      }
+
+      // 3. Get current position
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      // 4. Get address from coordinates
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+
+        // Format street: House number + Street name
+        String street = [
+          place.name,
+          place.subLocality,
+          place.thoroughfare
+        ].where((e) => e != null && e.isNotEmpty).join(", ");
+
+        streetController.text = street;
+        cityController.text = place.locality ?? "";
+        stateController.text = place.administrativeArea ?? "";
+        countryController.text = place.country ?? "";
+        zipCodeController.text = place.postalCode ?? "";
+        
+        Get.snackbar("Success", "Address fetched from your current location",
+            snackPosition: SnackPosition.TOP);
+      }
+    } catch (e) {
+      debugPrint("Location Error: $e");
+      Get.snackbar("Error", "Could not fetch location. Please enter manually.",
+          snackPosition: SnackPosition.TOP);
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future<void> getAddresses() async {
@@ -68,6 +150,7 @@ class AddressController extends GetxController {
     countryController.text = address.country;
     zipCodeController.text = address.zipCode;
     isDefault.value = address.isDefault;
+    selectedType.value = address.type.isNotEmpty ? address.type : 'Home';
   }
 
   void clearForm() {
@@ -81,6 +164,7 @@ class AddressController extends GetxController {
     zipCodeController.clear();
     formKey.currentState?.reset();
     isDefault.value = false;
+    selectedType.value = 'Home';
   }
 
   Future<void> saveAddress() async {
@@ -102,7 +186,7 @@ class AddressController extends GetxController {
 
       final model = AddressModel(
         id: editingAddress.value!.id,
-        type: 'shipping',
+        type: selectedType.value,
         fullName: fullNameController.text.trim(),
         phone: phoneController.text.trim(),
         street: streetController.text.trim(),
@@ -117,9 +201,9 @@ class AddressController extends GetxController {
       await getAddresses();
       clearForm();
       Get.back();
-      Get.snackbar('Success', 'Address Updated Successfully');
+      Get.snackbar('Success', 'Address Updated Successfully', snackPosition: SnackPosition.TOP);
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.TOP);
     } finally {
       isLoading.value = false;
     }
@@ -131,7 +215,7 @@ class AddressController extends GetxController {
 
       final model = AddressModel(
         id: '',
-        type: 'shipping',
+        type: selectedType.value,
         fullName: fullNameController.text.trim(),
         phone: phoneController.text.trim(),
         street: streetController.text.trim(),
@@ -146,9 +230,9 @@ class AddressController extends GetxController {
       await getAddresses();
       clearForm();
       Get.back();
-      Get.snackbar('Success', 'Address Added Successfully');
+      Get.snackbar('Success', 'Address Added Successfully', snackPosition: SnackPosition.TOP);
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.TOP);
     } finally {
       isLoading.value = false;
     }
@@ -157,6 +241,31 @@ class AddressController extends GetxController {
   Future<void> deleteAddress(String id) async {
     await repository.deleteAddress(id);
     addresses.removeWhere((e) => e.id == id);
+  }
+
+  Future<void> setAsDefault(String id) async {
+    try {
+      final address = addresses.firstWhereOrNull((e) => e.id == id);
+      if (address == null) return;
+
+      final model = AddressModel(
+        id: address.id,
+        type: address.type,
+        fullName: address.fullName,
+        phone: address.phone,
+        street: address.street,
+        city: address.city,
+        state: address.state,
+        country: address.country,
+        zipCode: address.zipCode,
+        isDefault: true,
+      );
+
+      await repository.updateAddress(model);
+      await getAddresses();
+    } catch (e) {
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.TOP);
+    }
   }
 
   String? fullNameValidator(String? value) {

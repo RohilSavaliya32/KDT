@@ -38,31 +38,15 @@ class AddressView extends GetView<AddressController> {
         ),
         onPressed: () => Get.back(),
         padding: const EdgeInsets.only(left: 12),
-        splashRadius: 20,
       ),
       title: Text(
-        TranslationKeys.myAddresses.tr,
+        TranslationKeys.address.tr,
         style: AppTextStyles.poppins(
           fontSize: 18,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           color: AppColors.foreground,
         ),
       ),
-      iconTheme: const IconThemeData(
-        color: AppColors.foreground,
-      ),
-      actions: [
-        IconButton(
-          onPressed: () {
-            controller.clearForm();
-            _openAddressSheet(Get.context!);
-          },
-          icon: const Icon(
-            Icons.add,
-            color: AppColors.accent,
-          ),
-        ),
-      ],
     );
   }
 
@@ -78,56 +62,122 @@ class AddressView extends GetView<AddressController> {
         );
       }
 
-      if (error.isNotEmpty) {
-        return _EmptyOrErrorState(
-          icon: Icons.error_outline,
-          title: TranslationKeys.somethingWentWrong.tr,
-          subtitle: error,
-          buttonText: TranslationKeys.retry.tr,
-          onButtonTap: controller.getAddresses,
-        );
-      }
-
-      if (controller.addresses.isEmpty) {
-        return _EmptyOrErrorState(
-          icon: Icons.location_off_outlined,
-          title: TranslationKeys.noAddressesFound.tr,
-          subtitle: TranslationKeys.addFirstAddress.tr,
-          buttonText: TranslationKeys.addAddress.tr,
-          onButtonTap: () {
-            controller.clearForm();
-            _openAddressSheet(Get.context!);
-          },
-        );
-      }
-
-      return RefreshIndicator(
-        color: AppColors.accent,
-        onRefresh: controller.getAddresses,
-        child: FadeSlideIn(
-          duration: const Duration(milliseconds: 500),
-          slideOffset: 15,
-          child: ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: controller.addresses.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (_, index) {
-              final address = controller.addresses[index];
-
-              return _AddressCard(
-                address: address,
-                onEdit: () {
-                  controller.fillForm(address);
-                  _openAddressSheet(Get.context!);
-                },
-                onDelete: () =>
-                    _confirmDelete(Get.context!, address),
-              );
-            },
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(),
+          Expanded(
+            child: error.isNotEmpty
+                ? _EmptyOrErrorState(
+                    icon: Icons.error_outline,
+                    title: TranslationKeys.somethingWentWrong.tr,
+                    subtitle: error,
+                    buttonText: TranslationKeys.retry.tr,
+                    onButtonTap: controller.getAddresses,
+                  )
+                : controller.addresses.isEmpty
+                    ? _EmptyOrErrorState(
+                        icon: Icons.location_on_outlined,
+                        title: "Koi address saved nahi hai",
+                        subtitle: "Upar \"Add Address\" se apna pehla delivery address jodein",
+                        buttonText: TranslationKeys.addAddress.tr,
+                        onButtonTap: () {
+                          controller.clearForm();
+                          _openAddressSheet(Get.context!);
+                        },
+                      )
+                    : RefreshIndicator(
+                        color: AppColors.accent,
+                        onRefresh: controller.getAddresses,
+                        child: FadeSlideIn(
+                          duration: const Duration(milliseconds: 500),
+                          slideOffset: 15,
+                          child: ListView.separated(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: controller.addresses.length,
+                            separatorBuilder: (_, __) => const SizedBox(height: 16),
+                            itemBuilder: (_, index) {
+                              final address = controller.addresses[index];
+                              return _AddressCard(
+                                address: address,
+                                onEdit: () {
+                                  controller.fillForm(address);
+                                  _openAddressSheet(Get.context!);
+                                },
+                                onDelete: () => _confirmDelete(Get.context!, address),
+                                onSetDefault: () => controller.setAsDefault(address.id),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
           ),
-        ),
+        ],
       );
     });
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "DELIVERY",
+                  style: AppTextStyles.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.mutedForeground,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Your Addresses",
+                  style: AppTextStyles.poppins(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.foreground,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Saved addresses yahaan manage karein — add, edit ya default set karein.",
+                  style: AppTextStyles.poppins(
+                    fontSize: 14,
+                    color: AppColors.mutedForeground,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          ElevatedButton.icon(
+            onPressed: () {
+              controller.clearForm();
+              _openAddressSheet(Get.context!);
+            },
+            icon: const Icon(Icons.add, size: 18, color: Colors.white),
+            label: const Text("Add Address"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0F172A),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              elevation: 0,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _openAddressSheet(BuildContext context) {
@@ -136,219 +186,204 @@ class AddressView extends GetView<AddressController> {
     Get.bottomSheet(
       Container(
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.92,
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
         ),
         width: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColors.background,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(22),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(24),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.black.withOpacity(0.10),
-              blurRadius: 24,
-              offset: const Offset(0, -4),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 10),
+              child: Row(
+                children: [
+                  Text(
+                    isEdit ? "Update Address" : "Add New Address",
+                    style: AppTextStyles.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.foreground,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(Icons.close, color: Color(0xFF64748B)),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(color: Color(0xFFF1F5F9)),
+
+            Expanded(
+              child: Form(
+                key: controller.formKey,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Location Button
+                      OutlinedButton.icon(
+                        onPressed: controller.getCurrentLocation,
+                        icon: const Icon(Icons.near_me_outlined, size: 20),
+                        label: const Text("Use my current location"),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.foreground,
+                          side: const BorderSide(color: Color(0xFFE2E8F0)),
+                          minimumSize: const Size(double.infinity, 52),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          textStyle: AppTextStyles.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Type Selector
+                      Obx(() => Row(
+                            children: [
+                              _buildTypeOption("Home"),
+                              const SizedBox(width: 12),
+                              _buildTypeOption("Work"),
+                              const SizedBox(width: 12),
+                              _buildTypeOption("Other"),
+                            ],
+                          )),
+                      const SizedBox(height: 24),
+
+                      _Field(
+                        controller: controller.fullNameController,
+                        label: "Full name",
+                        hint: "e.g. Sujal Savaliya",
+                        isRequired: true,
+                        validator: controller.fullNameValidator,
+                      ),
+                      _Field(
+                        controller: controller.phoneController,
+                        label: "Phone number",
+                        hint: "+91 98765 43210",
+                        isRequired: true,
+                        keyboardType: TextInputType.phone,
+                        validator: controller.phoneValidator,
+                      ),
+                      _Field(
+                        controller: controller.streetController,
+                        label: "Flat / House / Building",
+                        hint: "Flat, house no., building",
+                        isRequired: true,
+                        validator: controller.streetValidator,
+                      ),
+                      _Field(
+                        controller: controller.cityController,
+                        label: "City",
+                        hint: "Surat",
+                        isRequired: true,
+                        validator: controller.cityValidator,
+                      ),
+                      _Field(
+                        controller: controller.stateController,
+                        label: "State",
+                        hint: "Gujarat",
+                        isRequired: true,
+                        validator: controller.stateValidator,
+                      ),
+                      _Field(
+                        controller: controller.zipCodeController,
+                        label: "Pincode",
+                        hint: "395007",
+                        isRequired: true,
+                        keyboardType: TextInputType.number,
+                        validator: controller.zipCodeValidator,
+                      ),
+
+                      const SizedBox(height: 8),
+                      Obx(() => CheckboxListTile(
+                            value: controller.isDefault.value,
+                            onChanged: (v) => controller.isDefault.value = v ?? false,
+                            title: Text(
+                              "Set as default address",
+                              style: AppTextStyles.poppins(
+                                fontSize: 14,
+                                color: AppColors.foreground,
+                              ),
+                            ),
+                            contentPadding: EdgeInsets.zero,
+                            controlAffinity: ListTileControlAffinity.leading,
+                            activeColor: const Color(0xFF0F172A),
+                          )),
+
+                      const SizedBox(height: 24),
+                      Obx(() => ElevatedButton(
+                            onPressed: controller.isLoading.value ? null : controller.saveAddress,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0F172A),
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(double.infinity, 56),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: controller.isLoading.value
+                                ? const CircularProgressIndicator(color: Colors.white)
+                                : Text(
+                                    isEdit ? "Update Address" : "Save Address",
+                                    style: AppTextStyles.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                          )),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),
-        child: Form(
-          key: controller.formKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Drag handle
-                Center(
-                  child: Container(
-                    width: 42,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: AppColors.borderGray,
-                      borderRadius: BorderRadius.circular(99),
-                    ),
-                  ),
-                ),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
 
-                const SizedBox(height: 16),
-
-                Text(
-                  isEdit
-                      ? TranslationKeys.updateAddress.tr
-                      : TranslationKeys.addAddress.tr,
-                  style: AppTextStyles.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.foreground,
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                _Field(
-                  controller: controller.fullNameController,
-                  label: TranslationKeys.fullName.tr,
-                  icon: Icons.person_outline,
-                  validator: controller.fullNameValidator,
-                  onFieldSubmitted: (_) => _focusNextNode(
-                    context,
-                    controller.streetController,
-                  ),
-                ),
-
-                _Field(
-                  controller: controller.phoneController,
-                  label: TranslationKeys.phoneNumber.tr,
-                  icon: Icons.phone_outlined,
-                  keyboardType: TextInputType.phone,
-                  validator: controller.phoneValidator,
-                  onFieldSubmitted: (_) => _focusNextNode(
-                    context,
-                    controller.streetController,
-                  ),
-                ),
-
-                _Field(
-                  controller: controller.streetController,
-                  label: TranslationKeys.street.tr,
-                  icon: Icons.home_outlined,
-                  validator: controller.streetValidator,
-                  onFieldSubmitted: (_) => _focusNextNode(
-                    context,
-                    controller.cityController,
-                  ),
-                ),
-
-                _Field(
-                  controller: controller.cityController,
-                  label: TranslationKeys.city.tr,
-                  icon: Icons.location_city_outlined,
-                  validator: controller.cityValidator,
-                  onFieldSubmitted: (_) => _focusNextNode(
-                    context,
-                    controller.stateController,
-                  ),
-                ),
-
-                _Field(
-                  controller: controller.stateController,
-                  label: TranslationKeys.state.tr,
-                  icon: Icons.map_outlined,
-                  validator: controller.stateValidator,
-                  onFieldSubmitted: (_) => _focusNextNode(
-                    context,
-                    controller.countryController,
-                  ),
-                ),
-
-                _Field(
-                  controller: controller.countryController,
-                  label: TranslationKeys.country.tr,
-                  icon: Icons.flag_outlined,
-                  validator: controller.countryValidator,
-                  onFieldSubmitted: (_) => _focusNextNode(
-                    context,
-                    controller.zipCodeController,
-                  ),
-                ),
-
-                _Field(
-                  controller: controller.zipCodeController,
-                  label: TranslationKeys.zipCode.tr,
-                  icon: Icons.local_post_office_outlined,
-                  keyboardType: TextInputType.number,
-                  validator: controller.zipCodeValidator,
-                  onFieldSubmitted: (_) =>
-                      _focusNextNode(context, null),
-                ),
-
-                const SizedBox(height: 8),
-
-                Obx(
-                      () => CheckboxListTile(
-                    value: controller.isDefault.value,
-                    onChanged: (v) {
-                      controller.isDefault.value = v ?? false;
-                    },
-                    activeColor: AppColors.accent,
-                    checkColor: AppColors.white,
-                    contentPadding: EdgeInsets.zero,
-                    controlAffinity:
-                    ListTileControlAffinity.leading,
-                    title: Text(
-                      TranslationKeys.setAsDefaultAddress.tr,
-                      style: AppTextStyles.poppins(
-                        color: AppColors.foreground,
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                Obx(
-                      () => SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      onPressed: controller.isLoading.value
-                          ? null
-                          : () async {
-                        await controller.saveAddress();
-
-                        if (Get.isBottomSheetOpen ?? false) {
-                          Get.back();
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.accent,
-                        foregroundColor: AppColors.white,
-                        disabledBackgroundColor:
-                        AppColors.accentDisabled,
-                        disabledForegroundColor:
-                        AppColors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      child: controller.isLoading.value
-                          ? const SizedBox(
-                        height: 22,
-                        width: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.white,
-                        ),
-                      )
-                          : Text(
-                        isEdit
-                            ? TranslationKeys.updateAddress.tr
-                            : TranslationKeys.saveAddress.tr,
-                        style: AppTextStyles.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-              ],
+  Widget _buildTypeOption(String type) {
+    final isSelected = controller.selectedType.value == type;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => controller.setAddressType(type),
+        child: Container(
+          height: 44,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFFE2E8F0) : Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: isSelected ? const Color(0xFFCBD5E1) : const Color(0xFFE2E8F0),
+            ),
+          ),
+          child: Text(
+            type,
+            style: AppTextStyles.poppins(
+              fontSize: 14,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              color: const Color(0xFF0F172A),
             ),
           ),
         ),
       ),
-      isScrollControlled: true,
-      backgroundColor: AppColors.transparent,
-      enableDrag: true,
-      isDismissible: true,
     );
   }
 
@@ -417,182 +452,129 @@ class _AddressCard extends StatelessWidget {
   final AddressModel address;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback onSetDefault;
 
   const _AddressCard({
     required this.address,
     required this.onEdit,
     required this.onDelete,
+    required this.onSetDefault,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      color: AppColors.background,
-      shadowColor: AppColors.transparent,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-        side: const BorderSide(
-          color: AppColors.border,
-          width: 1,
+    final typeIcon = address.type.toLowerCase() == 'work' ? Icons.work_outline : Icons.home_outlined;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: address.isDefault ? const Color(0xFF64748B) : const Color(0xFFE2E8F0),
+          width: address.isDefault ? 1.5 : 1.0,
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
-                  Icons.location_on_outlined,
-                  color: AppColors.mutedForeground,
-                  size: 22,
+                _buildTag(address.type.isNotEmpty ? address.type : 'Home', typeIcon),
+                if (address.isDefault) ...[
+                  const SizedBox(width: 8),
+                  _buildTag("Default", Icons.check, isDefault: true),
+                ],
+                const Spacer(),
+                IconButton(
+                  onPressed: onEdit,
+                  icon: const Icon(Icons.edit_outlined, size: 20, color: Color(0xFF64748B)),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
-
-                const SizedBox(width: 10),
-
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              address.fullName,
-                              style: AppTextStyles.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.foreground,
-                              ),
-                              overflow:
-                              TextOverflow.ellipsis,
-                            ),
-                          ),
-
-                          if (address.isDefault)
-                            Container(
-                              padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 5,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.lightGreen,
-                                borderRadius:
-                                BorderRadius.circular(999),
-                                border: Border.all(
-                                  color:
-                                  AppColors.accentDisabled,
-                                ),
-                              ),
-                              child: Text(
-                                TranslationKeys.defaultText.tr,
-                                style: AppTextStyles.poppins(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.accent,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 6),
-
-                      Text(
-                        address.phone,
-                        style: AppTextStyles.poppins(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
+                const SizedBox(width: 16),
+                IconButton(
+                  onPressed: onDelete,
+                  icon: const Icon(Icons.delete_outline, size: 20, color: Color(0xFF64748B)),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
               ],
             ),
-
-            const SizedBox(height: 12),
-
-            Text(
-              address.street,
-              style: AppTextStyles.poppins(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
-            ),
-
-            const SizedBox(height: 4),
-
-            Text(
-              '${address.city}, ${address.state}',
-              style: AppTextStyles.poppins(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
-            ),
-
-            const SizedBox(height: 4),
-
-            Text(
-              '${address.country} - ${address.zipCode}',
-              style: AppTextStyles.poppins(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
-            ),
-
-            const SizedBox(height: 14),
-
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onEdit,
-                    icon: const Icon(
-                      Icons.edit_outlined,
-                      size: 18,
-                    ),
-                    label: Text(
-                      TranslationKeys.edit.tr,
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.accent,
-                      side: const BorderSide(
-                        color: AppColors.accent,
-                      ),
+            const SizedBox(height: 16),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: address.fullName,
+                    style: AppTextStyles.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.foreground,
                     ),
                   ),
-                ),
-
-                const SizedBox(width: 10),
-
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onDelete,
-                    icon: const Icon(
-                      Icons.delete_outline,
-                      size: 18,
-                    ),
-                    label: Text(
-                      TranslationKeys.delete.tr,
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.error,
-                      side: const BorderSide(
-                        color: AppColors.error,
-                      ),
+                  TextSpan(
+                    text: " · ${address.phone}",
+                    style: AppTextStyles.poppins(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF64748B),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            const SizedBox(height: 8),
+            Text(
+              "${address.street}, ${address.city}, ${address.state} — ${address.zipCode}",
+              style: AppTextStyles.poppins(
+                fontSize: 14,
+                color: const Color(0xFF64748B),
+                height: 1.5,
+              ),
+            ),
+            if (!address.isDefault) ...[
+              const SizedBox(height: 12),
+              GestureDetector(
+                onTap: onSetDefault,
+                child: Text(
+                  "Set as default",
+                  style: AppTextStyles.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.foreground,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTag(String label, IconData icon, {bool isDefault = false}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF1F5F9),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: const Color(0xFF0F172A)),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: AppTextStyles.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF0F172A),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -601,89 +583,88 @@ class _AddressCard extends StatelessWidget {
 class _Field extends StatelessWidget {
   final TextEditingController controller;
   final String label;
-  final IconData icon;
+  final String? hint;
+  final bool isRequired;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
-  final void Function(String)? onFieldSubmitted;
 
   const _Field({
-    super.key,
     required this.controller,
     required this.label,
-    required this.icon,
+    this.hint,
+    this.isRequired = false,
     this.keyboardType = TextInputType.text,
     this.validator,
-    this.onFieldSubmitted,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        validator: validator,
-        onFieldSubmitted: onFieldSubmitted,
-        textInputAction: TextInputAction.next,
-        style: AppTextStyles.poppins(
-          color: AppColors.foreground,
-          fontSize: 15,
-        ),
-        cursorColor: AppColors.accent,
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: AppTextStyles.poppins(
-            color: AppColors.mutedForeground,
-            fontSize: 14,
-          ),
-          prefixIcon: Icon(
-            icon,
-            color: AppColors.iconGray,
-          ),
-          filled: true,
-          fillColor: AppColors.background,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
-          ),
-          errorStyle: AppTextStyles.poppins(
-            color: AppColors.error,
-            fontWeight: FontWeight.w600,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(
-              color: AppColors.border,
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: label,
+                  style: AppTextStyles.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF0F172A),
+                  ),
+                ),
+                if (isRequired)
+                  TextSpan(
+                    text: " *",
+                    style: AppTextStyles.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFFEF4444),
+                    ),
+                  ),
+              ],
             ),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(
-              color: AppColors.border,
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: controller,
+            keyboardType: keyboardType,
+            validator: validator,
+            style: AppTextStyles.poppins(
+              fontSize: 15,
+              color: const Color(0xFF0F172A),
+            ),
+            cursorColor: const Color(0xFF0F172A),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: AppTextStyles.poppins(
+                fontSize: 15,
+                color: const Color(0xFF94A3B8),
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Color(0xFFCBD5E1), width: 1.5),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Color(0xFFEF4444)),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
+              ),
             ),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(
-              color: AppColors.accent,
-              width: 1.4,
-            ),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(
-              color: AppColors.error,
-              width: 1.4,
-            ),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(
-              color: AppColors.error,
-            ),
-          ),
-        ),
+        ],
       ),
     );
   }
@@ -713,61 +694,56 @@ class _EmptyOrErrorState extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 icon,
-                size: 52,
-                color: AppColors.mutedForeground,
+                size: 64,
+                color: const Color(0xFF64748B),
               ),
-
-              const SizedBox(height: 12),
-
+              const SizedBox(height: 24),
               Text(
                 title,
-                style: AppTextStyles.lora(
+                style: AppTextStyles.poppins(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: AppColors.foreground,
                 ),
                 textAlign: TextAlign.center,
               ),
-
               const SizedBox(height: 8),
-
               Text(
                 subtitle,
                 style: AppTextStyles.poppins(
-                  fontSize: 14,
-                  color: AppColors.mutedForeground,
+                  fontSize: 15,
+                  color: const Color(0xFF64748B),
                 ),
                 textAlign: TextAlign.center,
               ),
-
-              const SizedBox(height: 16),
-
-              SizedBox(
-                height: 46,
-                child: ElevatedButton(
-                  onPressed: onButtonTap,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.foreground,
-                    foregroundColor: AppColors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3),
+              const SizedBox(height: 32),
+              if (buttonText.isNotEmpty)
+                SizedBox(
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: onButtonTap,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0F172A),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 0,
                     ),
-                  ),
-                  child: Text(
-                    buttonText,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.white,
+                    child: Text(
+                      buttonText,
+                      style: AppTextStyles.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
