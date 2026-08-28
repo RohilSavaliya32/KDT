@@ -248,11 +248,38 @@ class DiamondDetailViewController extends GetxController {
   }
 
   void shareViaWhatsApp() {
-    Get.snackbar('Share', 'Share action placeholder');
+    final d = diamond.value;
+    if (d == null) return;
+
+    final shareUrl = '$webDomain/${d.slug}';
+    final titleText = d.seoTitle.isNotEmpty ? d.seoTitle : d.title;
+    final priceText = _formatPrice(d.price);
+
+    final text = "Check out this Diamond at KDT: $shareUrl\n\n"
+        "💎 $titleText\n"
+        "Carat: ${d.carat} ct | Shape: ${d.shape}\n"
+        "Price: $priceText";
+
+    final whatsappUrl = "whatsapp://send?text=${Uri.encodeComponent(text)}";
+
+    launchUrl(Uri.parse(whatsappUrl), mode: LaunchMode.externalApplication).catchError((e) {
+      // If WhatsApp is not installed, fallback to general share
+      shareDiamond();
+      return true;
+    });
   }
 
   void shareViaWebCart() {
-    Get.snackbar('Share', 'Share action placeholder');
+    final d = diamond.value;
+    if (d == null) return;
+
+    // Direct link to the product on website for sharing/cart
+    final shareUrl = '$webDomain/${d.slug}';
+    
+    Share.share(
+      'Check out this product on KDT: $shareUrl',
+      subject: d.title,
+    );
   }
 
   void bookAppointment() {
@@ -800,26 +827,29 @@ class DiamondDetailViewController extends GetxController {
     final d = diamond.value;
     if (d == null) return;
 
-    // ✅ Website format: https://kdtdiamond.com/brilliant-diamond
+    // ✅ Website format: https://www.kdtdiamond.com/brilliant-diamond
+    // Deep link is handled in main.dart by taking the first path segment as slug.
     final shareUrl = '$webDomain/${d.slug}';
 
-    final titleText = d.certification.isNotEmpty ? d.certification : 'Diamond Certificate';
+    // Use SEO title if available, otherwise use diamond title
+    final titleText = d.seoTitle.isNotEmpty ? d.seoTitle : d.title;
     final priceText = _formatPrice(d.price);
 
-    final imageUrl = images.first;
+    final String imageUrl = images.isNotEmpty ? images.first : '';
+    
+    // 📢 IMPROVED SHARE TEXT for better Social Media "Prelayout" (Rich Link Preview)
+    // Putting the link at the top encourages platforms like WhatsApp to generate a rich preview card.
     final shareText = '''
-    💎 $titleText
-    $diamondTitle
-    Carat: ${d.carat} ct
-    Shape: ${d.shape}
-    Color: ${d.color}
-    Clarity: ${d.clarity}
-    Cut: ${d.cut}
-    Price: $priceText
+Check out this Diamond: $shareUrl
 
-    View More Details:
-    $shareUrl
-    ''';
+💎 $titleText
+${d.seoDescription.isNotEmpty ? "${d.seoDescription}\n" : ""}
+Carat: ${d.carat} ct | Shape: ${d.shape}
+Color: ${d.color} | Clarity: ${d.clarity} | Cut: ${d.cut}
+Price: $priceText
+
+View more details on KDT Diamonds.
+''';
 
     try {
       if (imageUrl.isNotEmpty && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
@@ -837,6 +867,8 @@ class DiamondDetailViewController extends GetxController {
         }
       }
 
+      // Fallback to text-only share if image download fails or no image exists
+      // This will definitely trigger a link preview (prelayout) on social media.
       await Share.share(
         shareText,
         subject: '$titleText - #${d.certNumber}',
