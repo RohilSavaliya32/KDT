@@ -35,6 +35,11 @@ class NavigationView extends StatelessWidget {
   // NOT including the device's bottom safe-area inset.
   static const double _navBarContentHeight = 60;
 
+  // Extra breathing room above the icons and below the labels
+  // (on top of the device's bottom safe-area inset).
+  static const double _navBarTopPadding = 10;
+  static const double _navBarBottomPadding = 8;
+
   @override
   Widget build(BuildContext context) {
     return MediaQuery(
@@ -279,7 +284,10 @@ class NavigationView extends StatelessWidget {
             final double bottomInset = MediaQuery.of(context).padding.bottom;
 
             return Container(
-              height: _navBarContentHeight + bottomInset,
+              height: _navBarContentHeight +
+                  _navBarTopPadding +
+                  _navBarBottomPadding +
+                  bottomInset,
               decoration: _buildBottomNavDecoration(),
               child: ClipRRect(
                 borderRadius: const BorderRadius.only(
@@ -290,8 +298,12 @@ class NavigationView extends StatelessWidget {
                   // Push the actual nav bar content up above the
                   // home indicator / gesture bar instead of
                   // stacking a second SafeArea on top of a fixed
-                  // height container.
-                  padding: EdgeInsets.only(bottom: bottomInset),
+                  // height container, plus a little extra
+                  // breathing room top and bottom.
+                  padding: EdgeInsets.only(
+                    top: _navBarTopPadding,
+                    bottom: _navBarBottomPadding + bottomInset,
+                  ),
                   child: SizedBox(
                     height: _navBarContentHeight,
                     child: BottomNavigationBar(
