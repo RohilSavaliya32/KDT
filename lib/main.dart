@@ -173,39 +173,24 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _handleDeepLink(Uri uri, {bool isInitial = false}) async {
-    // 1. Extract slug safely
-    final segments = uri.pathSegments.where((s) => s.isNotEmpty).toList();
-    if (segments.isEmpty) return;
-    
-    // If it's kdtdiamond.com/slug, segments.first is the slug
-    // If it's kdtdiamond.com/diamonds-details/slug, segments.last is the slug
-    final slug = segments.last.trim();
-    if (slug == 'navigation' || slug == 'home') return;
+    final slug = uri.pathSegments.isNotEmpty ? uri.pathSegments.last.trim() : "";
+    if (slug.isEmpty || slug == 'navigation' || slug == 'home') return;
 
     if (_isNavigatingDeepLink) return;
     _isNavigatingDeepLink = true;
 
     try {
-      // 2. Wait for Navigator to mount
-      int attempts = 0;
-      while (Get.key.currentState == null && attempts < 100) {
-        await Future.delayed(const Duration(milliseconds: 100));
-        attempts++;
-      }
-
-      if (Get.key.currentState == null) return;
-
-      // 3. Delay for app initialization
+      // For Cold Start, we just need to wait long enough for GetX and the Navigator to settle.
       if (isInitial) {
-        await Future.delayed(const Duration(milliseconds: 2000));
+        await Future.delayed(const Duration(milliseconds: 3000));
       } else {
-        await Future.delayed(const Duration(milliseconds: 300));
+        await Future.delayed(const Duration(milliseconds: 500));
       }
 
-      // 4. Navigate using GetX
+      // Final check: ensure we are not trying to navigate while the build is happening.
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (Get.key.currentState != null) {
-          debugPrint("🚀 Deep Link Navigation to: $slug");
+        if (Get.context != null) {
+          debugPrint("🚀 Navigating to Diamond: $slug");
           Get.toNamed(
             AppRoutes.DIAMONDS_DETAILS,
             arguments: {"slug": slug},
@@ -214,10 +199,9 @@ class _MyAppState extends State<MyApp> {
         }
       });
     } catch (e) {
-      debugPrint("❌ Deep Link Error: $e");
+      debugPrint("❌ Deep Link Navigation Error: $e");
     } finally {
-      // Small cooldown
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 1000));
       _isNavigatingDeepLink = false;
     }
   }

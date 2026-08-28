@@ -24,8 +24,12 @@ class _InternetCheckWrapperState extends State<InternetCheckWrapper> {
   @override
   void initState() {
     super.initState();
-    _checkConnectivity();
-    _listenInternetChanges();
+    // 🛡️ CRITICAL: Do NOT check connectivity during initState. 
+    // This avoids race conditions during the very first build cycle.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkConnectivity();
+      _listenInternetChanges();
+    });
   }
 
   Future<void> _checkConnectivity() async {
@@ -68,21 +72,18 @@ class _InternetCheckWrapperState extends State<InternetCheckWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    // 🛡️ To prevent tree fragmentation, we always return the same structure.
-    // The Navigator (widget.child) is the foundation.
-    return Material(
+    // 🛡️ Clean, stable structure. widget.child (the Navigator) is always built.
+    // Overlay is only added when there's no internet.
+    return Directionality(
+      textDirection: TextDirection.ltr,
       child: Stack(
         children: [
           widget.child,
           ValueListenableBuilder<bool>(
             valueListenable: _isConnected,
             builder: (context, connected, _) {
-              // We use Visibility to keep the tree structure identical regardless of state.
-              return Visibility(
-                visible: !connected,
-                maintainState: true,
-                maintainAnimation: true,
-                maintainSize: true,
+              if (connected) return const SizedBox.shrink();
+              return Material(
                 child: NoInternetScreen(
                   onRetry: _checkConnectivity,
                 ),
