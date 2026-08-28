@@ -131,7 +131,7 @@ class AddressView extends GetView<AddressController> {
 
     Get.bottomSheet(
       Container(
-        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -199,7 +199,6 @@ class AddressView extends GetView<AddressController> {
                       ElevatedButton(
                         onPressed: controller.isLoading.value ? null : () async {
                           await controller.saveAddress();
-                          if (Get.isBottomSheetOpen ?? false) Get.back();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.accent,
@@ -261,10 +260,13 @@ class AddressView extends GetView<AddressController> {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: AppTextStyles.poppins(fontSize: 14, color: AppColors.mutedForeground),
+            errorStyle: AppTextStyles.poppins(fontSize: 12, color: AppColors.error),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.border)),
             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.border)),
             focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.accent, width: 1.2)),
+            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error, width: 1)),
+            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error, width: 1.2)),
             filled: true,
             fillColor: AppColors.white,
           ),
