@@ -139,8 +139,8 @@ class _BannerWidgetState extends State<BannerWidget>
 
       await _pageController.animateToPage(
         index,
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOutCubic,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOutQuart,
       );
 
       if (mounted) {

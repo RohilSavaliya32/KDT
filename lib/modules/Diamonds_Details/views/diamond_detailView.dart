@@ -1042,7 +1042,9 @@ class _SpecTabsSectionState extends State<_SpecTabsSection> {
     final isSelected = _selectedTab == index;
     return GestureDetector(
       onTap: () => setState(() => _selectedTab = index),
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
         margin: const EdgeInsets.only(right: 22),
         padding: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
@@ -1066,15 +1068,36 @@ class _SpecTabsSectionState extends State<_SpecTabsSection> {
   }
 
   Widget _buildTabContent(BuildContext context) {
-    switch (_selectedTab) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 400),
+      switchInCurve: Curves.easeOutQuart,
+      switchOutCurve: Curves.easeInQuart,
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0.02, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+        );
+      },
+      child: _getTabWidget(_selectedTab),
+    );
+  }
+
+  Widget _getTabWidget(int index) {
+    switch (index) {
       case 0:
-        return _buildFullSpecifications(context);
+        return Container(key: const ValueKey(0), child: _buildFullSpecifications(context));
       case 1:
-        return _buildCertificationTab(context);
+        return Container(key: const ValueKey(1), child: _buildCertificationTab(context));
       case 2:
-        return _buildShippingReturnsTab(context);
+        return Container(key: const ValueKey(2), child: _buildShippingReturnsTab(context));
       default:
-        return const SizedBox.shrink();
+        return const SizedBox.shrink(key: ValueKey(-1));
     }
   }
 

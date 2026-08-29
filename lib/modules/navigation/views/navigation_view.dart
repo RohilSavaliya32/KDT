@@ -268,30 +268,38 @@ class NavigationView extends StatelessWidget {
 
   Widget _buildBody() {
     return Obx(
-      () => AnimatedSwitcher(
-        duration: const Duration(milliseconds: 350),
-        switchInCurve: Curves.easeOutCubic,
-        switchOutCurve: Curves.easeInCubic,
-        transitionBuilder: (Widget child, Animation<double> animation) {
-          final slideAnimation = Tween<Offset>(
-            begin: const Offset(0.05, 0),
-            end: Offset.zero,
-          ).animate(animation);
+      () {
+        final isMovingForward = controller.currentIndex.value >= controller.previousIndex.value;
 
-          return FadeTransition(
-            opacity: animation,
-            child: SlideTransition(
-              position: slideAnimation,
-              child: child,
-            ),
-          );
-        },
-        child: Container(
-          key: ValueKey<int>(controller.currentIndex.value),
-          color: AppColors.appBack,
-          child: pages[controller.currentIndex.value],
-        ),
-      ),
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          switchInCurve: Curves.fastOutSlowIn,
+          switchOutCurve: Curves.fastOutSlowIn,
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            final isEntering = (child.key as ValueKey<int>).value == controller.currentIndex.value;
+
+            return ClipRect(
+              child: FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: isEntering
+                        ? (isMovingForward ? const Offset(0.08, 0.0) : const Offset(-0.08, 0.0))
+                        : (isMovingForward ? const Offset(-0.08, 0.0) : const Offset(0.08, 0.0)),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                ),
+              ),
+            );
+          },
+          child: Container(
+            key: ValueKey<int>(controller.currentIndex.value),
+            color: AppColors.appBack,
+            child: pages[controller.currentIndex.value],
+          ),
+        );
+      },
     );
   }
 

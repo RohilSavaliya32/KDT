@@ -62,7 +62,8 @@ class DiamondsTypeFilter extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(30),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutQuart,
           padding: const EdgeInsets.symmetric(
             horizontal: 22,
             vertical: 12,
@@ -78,8 +79,8 @@ class DiamondsTypeFilter extends StatelessWidget {
                   : AppColors.lightgray,
             ),
           ),
-          child: Text(
-            title,
+          child: AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 300),
             style: AppTextStyles.poppins(
               fontSize: 13,
               fontWeight: FontWeight.w500,
@@ -87,6 +88,7 @@ class DiamondsTypeFilter extends StatelessWidget {
                   ? AppColors.white
                   : AppColors.foreground,
             ),
+            child: Text(title),
           ),
         ),
       ),

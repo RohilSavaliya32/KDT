@@ -186,7 +186,9 @@ class _DiamondsShapeSectionState extends State<DiamondsShapeSection> {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(6),
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
           width: 90,
           height: 100,
           decoration: BoxDecoration(
@@ -215,11 +217,8 @@ class _DiamondsShapeSectionState extends State<DiamondsShapeSection> {
                 padding: const EdgeInsets.symmetric(
                   horizontal: 6,
                 ),
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 250),
                   style: AppTextStyles.poppins(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
@@ -227,6 +226,10 @@ class _DiamondsShapeSectionState extends State<DiamondsShapeSection> {
                         ? AppColors.primaryDark
                         : AppColors.textPrimary,
                   ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  child: Text(title),
                 ),
               ),
               const SizedBox(height: 6),

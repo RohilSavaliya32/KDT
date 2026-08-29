@@ -37,15 +37,11 @@ class AddressView extends GetView<AddressController> {
           return const Center(child: CircularProgressIndicator(color: AppColors.accent));
         }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: controller.addresses.isEmpty
-                  ? _buildEmptyState()
-                  : _buildAddressList(),
-            ),
-          ],
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: controller.addresses.isEmpty
+              ? _buildEmptyState()
+              : _buildAddressList(),
         );
       }),
       floatingActionButton: FloatingActionButton.extended(
@@ -201,6 +197,7 @@ class AddressView extends GetView<AddressController> {
                               ),
                             )),
                         const SizedBox(height: 24),
+                        _buildAddressTypeSelector(),
                         _buildInputField(controller.fullNameController, "Full Name", "Enter your full name", validator: controller.fullNameValidator),
                         _buildPhoneField(),
                         Row(
@@ -376,6 +373,60 @@ class AddressView extends GetView<AddressController> {
           );
         }),
         const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget _buildAddressTypeSelector() {
+    final types = ['Home', 'Office', 'Other'];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Address Type",
+            style: AppTextStyles.poppins(
+                fontSize: AppFontSizes.s14,
+                fontWeight: FontWeight.w600,
+                color: AppColors.foreground)),
+        const SizedBox(height: 12),
+        Obx(() => Row(
+              children: types.map((type) {
+                final isSelected = controller.selectedType.value == type;
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => controller.setAddressType(type),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeInOut,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColors.accent
+                            : AppColors.lightGray.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                            color: isSelected
+                                ? AppColors.accent
+                                : AppColors.border),
+                      ),
+                      child: Center(
+                        child: AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 250),
+                          style: AppTextStyles.poppins(
+                            fontSize: AppFontSizes.s14,
+                            fontWeight:
+                                isSelected ? FontWeight.w600 : FontWeight.w500,
+                            color: isSelected ? Colors.white : AppColors.foreground,
+                          ),
+                          child: Text(type),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            )),
+        const SizedBox(height: 24),
       ],
     );
   }
