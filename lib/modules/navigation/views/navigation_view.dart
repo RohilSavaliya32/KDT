@@ -269,12 +269,12 @@ class NavigationView extends StatelessWidget {
   Widget _buildBody() {
     return Obx(
       () => AnimatedSwitcher(
-        duration: const Duration(milliseconds: 600),
-        switchInCurve: Curves.easeInOutCubic,
-        switchOutCurve: Curves.easeInOutCubic,
+        duration: const Duration(milliseconds: 350),
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeInCubic,
         transitionBuilder: (Widget child, Animation<double> animation) {
           final slideAnimation = Tween<Offset>(
-            begin: const Offset(0.02, 0),
+            begin: const Offset(0.05, 0),
             end: Offset.zero,
           ).animate(animation);
 

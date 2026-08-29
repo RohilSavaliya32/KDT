@@ -75,81 +75,74 @@ class _CouponWidgetState extends State<CouponWidget> {
             ),
           ],
 
-          const SizedBox(height: 10),
+          if (controller.availableCoupons.isNotEmpty) ...[
+            const SizedBox(height: 10),
 
-          /// Available Coupons
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.borderGray),
-              borderRadius: BorderRadius.circular(2),
-            ),
-            child: ExpansionTile(
-              controller: _tileController,
-              tilePadding:
-              const EdgeInsets.symmetric(horizontal: 12),
-              title: Text(
-                controller.selectedCoupon.value?.label ??
-                    "Available Offers...",
-                style: AppTextStyles.poppins(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                ),
+            /// Available Coupons
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.borderGray),
+                borderRadius: BorderRadius.circular(2),
               ),
-              children: controller.availableCoupons.map((coupon) {
-                final selected =
-                    controller.selectedCoupon.value?.id == coupon.id;
+              child: ExpansionTile(
+                controller: _tileController,
+                tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+                title: Text(
+                  controller.selectedCoupon.value?.label ?? "Available Offers...",
+                  style: AppTextStyles.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                children: controller.availableCoupons.map((coupon) {
+                  final selected = controller.selectedCoupon.value?.id == coupon.id;
 
-                return InkWell(
-                  onTap: () {
-                    controller.selectCoupon(coupon);
+                  return InkWell(
+                    onTap: () {
+                      controller.selectCoupon(coupon);
 
-                    /// Select hote hi dropdown close
-                    Future.delayed(
-                      const Duration(milliseconds: 100),
-                          () {
-                        if (mounted) {
-                          _tileController.collapse();
-                        }
-                      },
-                    );
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-                    color: selected
-                        ? AppColors.accent
-                        : Colors.transparent,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            coupon.label,
-                            style: TextStyle(
-                              color: selected
-                                  ? Colors.white
-                                  : Colors.black87,
-                              fontWeight: selected
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
+                      /// Select hote hi dropdown close
+                      Future.delayed(
+                        const Duration(milliseconds: 100),
+                        () {
+                          if (mounted) {
+                            _tileController.collapse();
+                          }
+                        },
+                      );
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      color: selected ? AppColors.accent : Colors.transparent,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              coupon.label,
+                              style: TextStyle(
+                                color: selected ? Colors.white : Colors.black87,
+                                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                              ),
                             ),
                           ),
-                        ),
-                        if (selected)
-                          const Icon(
-                            Icons.check_circle,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                      ],
+                          if (selected)
+                            const Icon(
+                              Icons.check_circle,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }).toList(),
+                  );
+                }).toList(),
+              ),
             ),
-          ),
+          ],
         ],
       );
     });

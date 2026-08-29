@@ -5,6 +5,7 @@ import '../../daimond_card/controllers/daimond_card_controller.dart';
 
 class NavigationController extends GetxController {
   RxInt currentIndex = 0.obs;
+  RxInt previousIndex = 0.obs;
   final pendingShapeIndex = RxnInt();
   final pendingLabGrown = RxnBool();
 
@@ -73,9 +74,9 @@ class NavigationController extends GetxController {
 
   void changeTab(int index) {
     final dc = Get.find<DiamondCardController>();
-    final previousIndex = currentIndex.value;
+    previousIndex.value = currentIndex.value;
 
-    if (previousIndex == 2 && index != 2) {
+    if (previousIndex.value == 2 && index != 2) {
       dc.clearAllFilters();
       dc.setType('');
     }

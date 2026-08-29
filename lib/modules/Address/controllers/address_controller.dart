@@ -516,14 +516,7 @@ class AddressController extends GetxController {
       return 'Please enter your phone number';
     }
 
-    if (!RegExp(r'^[0-9]+$').hasMatch(v)) {
-      return 'Phone number must contain only digits';
-    }
-
-    if (v.length < 10 || v.length > 12) {
-      return 'Please enter a valid 10-12 digit phone number';
-    }
-
+    // Let IntlPhoneField handle digit and length validation
     return null;
   }
 

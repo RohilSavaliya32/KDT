@@ -269,13 +269,14 @@ class AddressView extends GetView<AddressController> {
       children: [
         Text("Phone Number", style: AppTextStyles.poppins(fontSize: AppFontSizes.s14, fontWeight: FontWeight.w600, color: AppColors.foreground)),
         const SizedBox(height: 8),
-        IntlPhoneField(
+        Obx(() => IntlPhoneField(
+          key: ValueKey(controller.selectedCountryIso.value),
           controller: controller.phoneController,
           cursorColor: AppColors.accent,
           initialCountryCode: controller.selectedCountryIso.value,
           keyboardType: TextInputType.number,
-
           autovalidateMode: AutovalidateMode.onUserInteraction,
+          disableLengthCheck: false,
 
           onCountryChanged: (country) {
             controller.selectedCountryCode.value = '+${country.dialCode}';
@@ -284,9 +285,14 @@ class AddressView extends GetView<AddressController> {
           },
 
           onChanged: (phone) {
-            if (phone.number.trim().isNotEmpty) {
-              controller.phoneError.value = '';
+            controller.phoneError.value = '';
+          },
+
+          validator: (value) {
+            if (value == null || value.number.isEmpty) {
+              return "Please enter your phone number";
             }
+            return null;
           },
 
           style: AppTextStyles.poppins(
@@ -297,36 +303,30 @@ class AddressView extends GetView<AddressController> {
           decoration: InputDecoration(
             counterText: "",
             hintText: "Enter phone number",
-
             hintStyle: AppTextStyles.poppins(
               fontSize: AppFontSizes.s14,
               color: AppColors.mutedForeground,
             ),
-
             errorStyle: AppTextStyles.poppins(
               fontSize: AppFontSizes.s12,
               color: AppColors.error,
             ),
-
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
             ),
-
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(
                 color: AppColors.border,
               ),
             ),
-
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(
                 color: AppColors.border,
               ),
             ),
-
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: const BorderSide(
@@ -334,7 +334,6 @@ class AddressView extends GetView<AddressController> {
                 width: 1.5,
               ),
             ),
-
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: const BorderSide(
@@ -342,7 +341,6 @@ class AddressView extends GetView<AddressController> {
                 width: 1,
               ),
             ),
-
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: const BorderSide(
@@ -350,20 +348,17 @@ class AddressView extends GetView<AddressController> {
                 width: 1.5,
               ),
             ),
-
             filled: true,
             fillColor: AppColors.lightGray.withOpacity(0.3),
           ),
-
           dropdownTextStyle: AppTextStyles.poppins(
             fontSize: AppFontSizes.s14,
             fontWeight: FontWeight.w600,
             color: AppColors.foreground,
           ),
-
           dropdownIconPosition: IconPosition.trailing,
           showCountryFlag: true,
-        ),
+        )),
         Obx(() {
           if (controller.phoneError.value.isEmpty) {
             return const SizedBox.shrink();

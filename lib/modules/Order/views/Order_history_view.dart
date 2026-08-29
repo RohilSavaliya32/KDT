@@ -23,68 +23,76 @@ class OrderHistoryView extends GetView<OrderHistoryController> {
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: _buildAppBar(),
-        body: Obx(() {
-          // ======================================================
-          // INITIAL LOADING
-          // ======================================================
+        body: RefreshIndicator(
+          color: AppColors.accent,
+          backgroundColor: AppColors.background,
+          onRefresh: controller.refreshOrders,
+          child: Obx(() {
+            // ======================================================
+            // INITIAL LOADING
+            // ======================================================
 
-          if (controller.isLoading.value &&
-              controller.orders.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.accent,
-              ),
-            );
-          }
+            if (controller.isLoading.value && controller.orders.isEmpty) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.accent,
+                ),
+              );
+            }
 
-          // ======================================================
-          // ERROR STATE
-          // ======================================================
+            // ======================================================
+            // ERROR STATE
+            // ======================================================
 
-          if (controller.errorMessage.value.isNotEmpty &&
-              controller.orders.isEmpty) {
-            return FadeSlideIn(
-              duration: const Duration(milliseconds: 500),
-              slideOffset: 15,
-              child: OrderEmptyState(
-                title: controller.errorMessage.value,
-                subtitle:
-                TranslationKeys.pullToRefreshAndTryAgain.tr,
-                onRetry: controller.refreshOrders,
-              ),
-            );
-          }
+            if (controller.errorMessage.value.isNotEmpty && controller.orders.isEmpty) {
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height - 150,
+                  child: FadeSlideIn(
+                    duration: const Duration(milliseconds: 500),
+                    slideOffset: 15,
+                    child: OrderEmptyState(
+                      title: controller.errorMessage.value,
+                      subtitle: TranslationKeys.pullToRefreshAndTryAgain.tr,
+                      onRetry: controller.refreshOrders,
+                    ),
+                  ),
+                ),
+              );
+            }
 
-          // ======================================================
-          // EMPTY STATE
-          // ======================================================
+            // ======================================================
+            // EMPTY STATE
+            // ======================================================
 
-          if (controller.orders.isEmpty) {
-            return FadeSlideIn(
-              duration: const Duration(milliseconds: 500),
-              slideOffset: 15,
-              child: OrderEmptyState(
-                title: TranslationKeys.noOrdersFound.tr,
-                subtitle:
-                TranslationKeys.orderHistoryWillAppear.tr,
-                onRetry: controller.refreshOrders,
-              ),
-            );
-          }
+            if (controller.orders.isEmpty) {
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height - 150,
+                  child: FadeSlideIn(
+                    duration: const Duration(milliseconds: 500),
+                    slideOffset: 15,
+                    child: OrderEmptyState(
+                      title: TranslationKeys.noOrdersFound.tr,
+                      subtitle: TranslationKeys.orderHistoryWillAppear.tr,
+                      onRetry: controller.refreshOrders,
+                    ),
+                  ),
+                ),
+              );
+            }
 
-          // ======================================================
-          // ORDER LIST
-          // ======================================================
+            // ======================================================
+            // ORDER LIST
+            // ======================================================
 
-          return RefreshIndicator(
-            color: AppColors.accent,
-            backgroundColor: AppColors.background,
-            onRefresh: controller.refreshOrders,
-            child: Obx(() => ListView.separated(
+            return ListView.separated(
               controller: controller.scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),
-              itemCount: controller.orders.length +
-                  (controller.isMoreLoading.value ? 1 : 0),
+              itemCount: controller.orders.length + (controller.isMoreLoading.value ? 1 : 0),
               separatorBuilder: (_, __) => const SizedBox(height: 16),
               itemBuilder: (_, index) {
                 // ==================================================
@@ -108,34 +116,28 @@ class OrderHistoryView extends GetView<OrderHistoryController> {
                 // ORDER CARD
                 // ==================================================
 
-                final order =
-                controller.orders[index];
+                final order = controller.orders[index];
 
                 return OrderCard(
                   order: order,
-                  shortOrderNo:
-                  controller.shortOrderNumber(
+                  shortOrderNo: controller.shortOrderNumber(
                     order.id,
                   ),
-                  formatDate:
-                  controller.formatDate,
-                  statusColor:
-                  controller.statusColor(
+                  formatDate: controller.formatDate,
+                  statusColor: controller.statusColor(
                     order.status,
                   ),
-                  statusIcon:
-                  controller.statusIcon(
+                  statusIcon: controller.statusIcon(
                     order.status,
                   ),
-                  onViewDetails: () =>
-                      controller.openOrderDetails(
-                        order,
-                      ),
+                  onViewDetails: () => controller.openOrderDetails(
+                    order,
+                  ),
                 );
               },
-            )),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }

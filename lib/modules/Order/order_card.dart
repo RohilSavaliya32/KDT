@@ -375,13 +375,16 @@ class _OrderCardState extends State<OrderCard> {
     if (s.contains('payment processing')) {
       bgColor = const Color(0xFFE3F2FD);
       textColor = const Color(0xFF1976D2);
+    } else if (s.contains('processing')) {
+      bgColor = const Color(0xFFF3E5F5); // Light Purple
+      textColor = const Color(0xFF8B5CF6); // Purple
     } else if (s.contains('cancel')) {
       bgColor = const Color(0xFFFFEBEE);
       textColor = const Color(0xFFD32F2F);
     } else if (s.contains('awaiting payment')) {
       bgColor = const Color(0xFFFFF8E1);
       textColor = const Color(0xFFF57F17);
-    } else if (s.contains('paid') || s.contains('completed')) {
+    } else if (s.contains('paid') || s.contains('completed') || s.contains('shipped') || s.contains('delivered')) {
       bgColor = const Color(0xFFE8F5E9);
       textColor = const Color(0xFF2E7D32);
     }

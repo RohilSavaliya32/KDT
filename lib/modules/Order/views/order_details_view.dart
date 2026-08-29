@@ -108,8 +108,11 @@ class OrderDetailsView extends StatelessWidget {
         final status = (currentOrder.status ?? '').trim().toLowerCase();
         final isAwaitingPayment = status == 'awaiting payment';
         final showCancelButton = status == 'processing' || status == 'payment processing';
-        final summaryTotal = currentOrder.displayTotal ?? currentOrder.displaySubtotal ?? currentOrder.total;
-        final summarySubtotal = currentOrder.displaySubtotal ?? currentOrder.subtotalUsd ?? currentOrder.total;
+
+        final double summaryTotal = (currentOrder.total ?? 0).toDouble();
+        final double discount = (currentOrder.discount ?? 0).toDouble();
+        final double summarySubtotal = currentOrder.subtotalUsd?.toDouble() ?? (summaryTotal + discount);
+
         final isCancelled = status.contains('cancelled');
 
         return Scaffold(
@@ -192,7 +195,7 @@ class OrderDetailsView extends StatelessWidget {
                       OrderSummaryRow(
                         label: TranslationKeys.subtotal.tr,
                         valueWidget: CurrencyPriceText(
-                          usdAmount: (summarySubtotal ?? 0).toDouble(),
+                          usdAmount: summarySubtotal,
                           style: AppTextStyles.poppins(fontSize: 16, color: AppColors.foreground),
                         ),
                       ),
@@ -200,7 +203,7 @@ class OrderDetailsView extends StatelessWidget {
                         OrderSummaryRow(
                           label: "${TranslationKeys.discount.tr}${currentOrder.couponCode != null ? ' (${currentOrder.couponCode})' : ''}",
                           valueWidget: CurrencyPriceText(
-                            usdAmount: currentOrder.discount!.toDouble(),
+                            usdAmount: discount,
                             prefix: '-',
                             style: AppTextStyles.poppins(fontSize: 16, color: Colors.green, fontWeight: FontWeight.w500),
                           ),
@@ -210,7 +213,7 @@ class OrderDetailsView extends StatelessWidget {
                       OrderSummaryRow(
                         label: TranslationKeys.total.tr,
                         valueWidget: CurrencyPriceText(
-                          usdAmount: (summaryTotal ?? 0).toDouble(),
+                          usdAmount: summaryTotal,
                           style: AppTextStyles.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: const Color(0xFF0F5B45)),
                         ),
                         labelStyle: AppTextStyles.poppins(fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.foreground),

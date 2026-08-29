@@ -132,6 +132,7 @@ class UserInformationSection extends StatelessWidget {
               dropdownTextStyle: AppTextStyles.poppins(fontSize: 14),
               style: AppTextStyles.poppins(fontSize: 15),
               decoration: InputDecoration(
+                counterText: "",
                 hintText: "Enter your phone number",
                 hintStyle: AppTextStyles.poppins(
                   color: AppColors.mutedForeground,
