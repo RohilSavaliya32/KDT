@@ -80,64 +80,60 @@ class OrderHistoryView extends GetView<OrderHistoryController> {
             color: AppColors.accent,
             backgroundColor: AppColors.background,
             onRefresh: controller.refreshOrders,
-            child: FadeSlideIn(
-              duration: const Duration(milliseconds: 500),
-              slideOffset: 15,
-              child: ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: controller.orders.length +
-                    (controller.isMoreLoading.value ? 1 : 0),
-                separatorBuilder: (_, __) =>
-                const SizedBox(height: 14),
-                itemBuilder: (_, index) {
-                  // ==================================================
-                  // LOAD MORE LOADER
-                  // ==================================================
+            child: Obx(() => ListView.separated(
+              controller: controller.scrollController,
+              padding: const EdgeInsets.all(16),
+              itemCount: controller.orders.length +
+                  (controller.isMoreLoading.value ? 1 : 0),
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              itemBuilder: (_, index) {
+                // ==================================================
+                // LOAD MORE LOADER
+                // ==================================================
 
-                  if (index >= controller.orders.length) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 12,
+                if (index >= controller.orders.length) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 12,
+                    ),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.accent,
                       ),
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.accent,
-                        ),
-                      ),
-                    );
-                  }
-
-                  // ==================================================
-                  // ORDER CARD
-                  // ==================================================
-
-                  final order =
-                  controller.orders[index];
-
-                  return OrderCard(
-                    order: order,
-                    shortOrderNo:
-                    controller.shortOrderNumber(
-                      order.id,
                     ),
-                    formatDate:
-                    controller.formatDate,
-                    statusColor:
-                    controller.statusColor(
-                      order.status,
-                    ),
-                    statusIcon:
-                    controller.statusIcon(
-                      order.status,
-                    ),
-                    onViewDetails: () =>
-                        controller.openOrderDetails(
-                          order,
-                        ),
                   );
-                },
-              ),
-            ),
+                }
+
+                // ==================================================
+                // ORDER CARD
+                // ==================================================
+
+                final order =
+                controller.orders[index];
+
+                return OrderCard(
+                  order: order,
+                  shortOrderNo:
+                  controller.shortOrderNumber(
+                    order.id,
+                  ),
+                  formatDate:
+                  controller.formatDate,
+                  statusColor:
+                  controller.statusColor(
+                    order.status,
+                  ),
+                  statusIcon:
+                  controller.statusIcon(
+                    order.status,
+                  ),
+                  onViewDetails: () =>
+                      controller.openOrderDetails(
+                        order,
+                      ),
+                );
+              },
+            )),
           );
         }),
       ),
@@ -170,9 +166,9 @@ class OrderHistoryView extends GetView<OrderHistoryController> {
         splashRadius: 20,
       ),
       title: Text(
-        TranslationKeys.orderDetails.tr,
-        style: AppTextStyles.poppins(
-          fontSize: 18,
+        "Order History",
+        style: AppTextStyles.lora(
+          fontSize: 20,
           fontWeight: FontWeight.w500,
           color: AppColors.foreground,
         ),

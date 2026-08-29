@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl_phone_field/countries.dart';
 
 import '../../../core/storage/api_constants.dart';
 import '../../../routes/app_routes.dart';
@@ -48,6 +49,13 @@ class CheckoutController extends GetxController {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
+
+  // Country code observables
+  final RxString selectedFlag = '🇮🇳'.obs;
+  final RxString selectedCountryCode = '+91'.obs;
+  final RxString selectedCountry = 'India'.obs;
+  final RxString selectedCountryIso = 'IN'.obs;
+
   final transactionIdController = TextEditingController();
   final bankNameController = TextEditingController();
   final transferAmountController = TextEditingController();
@@ -276,7 +284,7 @@ class CheckoutController extends GetxController {
 
     nameController.text = authController.userName ?? "Guest User";
     emailController.text = authController.userEmail ?? "";
-    phoneController.text = authController.userMobile ?? "";
+    _parsePhone(authController.userMobile ?? "");
   }
 
   Future<void> fetchCouponsFromApi() async {
@@ -318,6 +326,14 @@ class CheckoutController extends GetxController {
     stateController.text = selected.state;
     zipController.text = selected.zipCode;
     countryController.text = selected.country;
+
+    if (selected.fullName.isNotEmpty) {
+      nameController.text = selected.fullName;
+    }
+
+    if (selected.phone.isNotEmpty) {
+      _parsePhone(selected.phone);
+    }
 
     _validateForm();
   }
@@ -393,6 +409,53 @@ class CheckoutController extends GetxController {
     isCouponListOpen.toggle();
   }
 
+  // ==================== UPDATE COUNTRY ====================
+  void _parsePhone(String fullPhone) {
+    if (fullPhone.isEmpty) {
+      phoneController.clear();
+      return;
+    }
+
+    final trimmedPhone = fullPhone.trim().replaceAll(' ', '');
+
+    if (trimmedPhone.startsWith('+')) {
+      // Try to match longest dial code (up to 4 digits after +)
+      for (int i = 4; i >= 1; i--) {
+        if (trimmedPhone.length > i) {
+          String dialCode = trimmedPhone.substring(1, i + 1);
+          final country = countries.firstWhereOrNull(
+                (c) => c.dialCode == dialCode,
+          );
+
+          if (country != null) {
+            selectedCountryCode.value = '+$dialCode';
+            selectedCountryIso.value = country.code;
+            selectedFlag.value = country.flag;
+            selectedCountry.value = country.name;
+            phoneController.text = trimmedPhone.substring(i + 1);
+            return;
+          }
+        }
+      }
+    }
+
+    // Fallback if no dial code found or doesn't start with +
+    phoneController.text = trimmedPhone;
+  }
+
+  void updateCountry(
+      String flag,
+      String dialCode,
+      String name,
+      String code,
+      ) {
+    selectedFlag.value = flag;
+    selectedCountryCode.value = dialCode;
+    selectedCountry.value = name;
+    selectedCountryIso.value = code;
+    _validateForm();
+  }
+
   // ==================== RECEIPT IMAGE ====================
   Future<void> pickReceiptImage() async {
     try {
@@ -462,7 +525,7 @@ class CheckoutController extends GetxController {
     final Map<String, dynamic> payload = {
       "customerName": nameController.text.trim(),
       "customerEmail": emailController.text.trim(),
-      "customerPhone": phoneController.text.trim(),
+      "customerPhone": "${selectedCountryCode.value}${phoneController.text.trim()}",
       "shippingAddress": {
         "street": streetController.text.trim(),
         "city": cityController.text.trim(),
@@ -564,7 +627,7 @@ class CheckoutController extends GetxController {
         AppRoutes.Payment_Summary,
         arguments: {
           'orderId': orderId,
-          'amount': amount,
+          'amount': transferAmountController.text.trim(),
           'currency': currency,
           'bankName': bankNameController.text.trim(),
           'utrNumber': transactionIdController.text.trim(),

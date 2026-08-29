@@ -34,7 +34,7 @@ class CurrencyPriceText extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!Get.isRegistered<CurrencyController>()) {
       return Text(
-        '$prefix\$${usdAmount.toStringAsFixed(0)}$suffix',
+        '$prefix\$${usdAmount.toStringAsFixed(2)}$suffix',
         style: style,
       );
     }
@@ -52,7 +52,7 @@ class CurrencyPriceText extends StatelessWidget {
       final formattedAmount = NumberFormat.currency(
         locale: _localeFor(code),
         symbol: '',
-        decimalDigits: 0,
+        decimalDigits: 2,
       ).format(amount);
 
       return Text(

@@ -10,6 +10,9 @@ import '../controllers/login_controller.dart';
 import 'auth_repository.dart';
 import 'email_login.dart';
 import 'forgot_password_otp_dialog.dart';
+import 'OTP_view.dart';
+import 'PhoneNumber_OTP.dart';
+import '../../translations/Translation_key/translation_keys.dart';
 
 Future<T?> showLoginModalDialog<T>(
     BuildContext context, {
@@ -142,8 +145,32 @@ class _LoginModalDialogState extends State<LoginModalDialog> {
                     key: const ValueKey('otp_screen'),
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
-                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                      child: isEmail ? const EmailLoginDialog() : const PhoneLoginDialog(),
+                      keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                      child: isEmail
+                          ? CommonOtpDialog(
+                        phoneNumber: controller.identifier,
+                        title: TranslationKeys.verifyCode.tr,
+                        subtitle: TranslationKeys.weSentCodeTo.tr,
+                        onBack: () {
+                          controller.showOtpScreen.value = false;
+                          controller.isOtpLoading.value = false;
+                          controller.otpController.clear();
+                        },
+                        onSuccess: () {},
+                      )
+                          : PhoneOtpDialog(
+                        phoneNumber:
+                        "${controller.selectedCountryCode.value}${controller.phoneController.text.trim()}",
+                        onBack: () {
+                          controller.showOtpScreen.value = false;
+                          controller.isOtpLoading.value = false;
+                          controller.otpController.clear();
+                          controller.otpError.value = null;
+                          controller.otpSecondsLeft.value = 60;
+                          controller.otpCanResend.value = false;
+                        },
+                      ),
                     ),
                   );
                 } else if (showRegister) {

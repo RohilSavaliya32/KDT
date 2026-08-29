@@ -19,42 +19,6 @@ class PhoneLoginDialog extends StatelessWidget {
     final c = Get.find<LoginController>();
 
     return Obx(() {
-      // ============ SHOW OTP SCREEN ============
-      if (c.showOtpScreen.value) {
-        return PhoneOtpDialog(
-          phoneNumber: "${c.selectedCountryCode.value}${c.phoneController.text.trim()}",
-          onBack: () {
-            // Hide OTP screen and show phone entry screen
-            c.showOtpScreen.value = false;
-            c.isOtpLoading.value = false;
-            c.otpController.clear();
-            c.otpError.value = null;
-            // Reset timer
-            c.otpSecondsLeft.value = 60;
-            c.otpCanResend.value = false;
-          },
-        );
-      }
-
-      // Show Forgot Password
-      if (c.showForgotPasswordScreen.value) {
-        return const ForgotPasswordDialog();
-      }
-
-      // Show Register
-      if (c.showRegisterScreen.value) {
-        return const RegisterDialog();
-      }
-
-      // Show Password Screen (User exists)
-      if (c.showPasswordScreen.value) {
-        return PasswordLoginDialog(
-          onLoginSuccess: () {
-            Navigator.of(context, rootNavigator: true).pop();
-          },
-        );
-      }
-
       return FadeSlideIn(
         duration: const Duration(milliseconds: 400),
         slideOffset: 15,

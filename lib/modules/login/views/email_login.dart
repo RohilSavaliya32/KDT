@@ -19,38 +19,6 @@ class EmailLoginDialog extends StatelessWidget {
     final c = Get.find<LoginController>();
 
     return Obx(() {
-      // Show OTP screen if needed
-      if (c.showOtpScreen.value) {
-        return CommonOtpDialog(
-          phoneNumber: c.identifier,
-          title: TranslationKeys.verifyCode.tr,
-          subtitle: TranslationKeys.weSentCodeTo.tr,
-          onBack: () {
-            c.showOtpScreen.value = false;
-            c.isOtpLoading.value = false;
-            c.otpController.clear();
-          },
-          onSuccess: () {
-            // OTP verified - user already logged in
-          },
-        );
-      }
-
-      // Show Forgot Password
-      if (c.showForgotPasswordScreen.value) {
-        return const ForgotPasswordDialog();
-      }
-
-      // Show Register
-      if (c.showRegisterScreen.value) {
-        return const RegisterDialog();
-      }
-
-      // Show Password Screen (User exists)
-      if (c.showPasswordScreen.value) {
-        return const PasswordLoginDialog();
-      }
-
       return FadeSlideIn(
         duration: const Duration(milliseconds: 400),
         slideOffset: 15,

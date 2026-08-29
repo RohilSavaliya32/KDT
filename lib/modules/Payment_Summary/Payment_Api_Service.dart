@@ -123,6 +123,49 @@ class PaymentConfirmationApiService {
   }
 
   /// ===========================
+  /// SUBMIT PAYMENT PROOF ONLY
+  /// ===========================
+  Future<Map<String, dynamic>> submitPaymentProof({
+    required String orderId,
+    required String screenshotPath,
+    required String utrNumber,
+    required String bankName,
+    required String amount,
+    required String transferDate,
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        "utrNumber": utrNumber,
+        "bankName": bankName,
+        "amount": amount,
+        "transferDate": transferDate,
+        "screenshot": await MultipartFile.fromFile(
+          screenshotPath,
+          filename: p.basename(screenshotPath),
+        ),
+      });
+
+      final response = await _dio.post(
+        ApiConstants.uploadPaymentProof(orderId),
+        data: formData,
+        options: await _authOptions(
+          contentType: Headers.multipartFormDataContentType,
+        ),
+      );
+
+      return _toMap(response.data);
+    } on DioException catch (e) {
+      final data = e.response?.data;
+      if (data is Map && data["message"] != null) {
+        throw Exception(data["message"]);
+      }
+      throw Exception(e.message ?? "Payment proof upload failed");
+    } catch (e) {
+      throw Exception("Payment proof upload failed: $e");
+    }
+  }
+
+  /// ===========================
   /// ORDER DETAILS
   /// ===========================
   Future<Map<String, dynamic>> getOrderDetails(

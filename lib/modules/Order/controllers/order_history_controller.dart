@@ -30,21 +30,46 @@ class OrderHistoryController extends GetxController {
 
   final RxInt currentPage = 1.obs;
   final RxInt totalPages = 1.obs;
+  final int limit = 10;
 
   final RxList<OrderModel> orders = <OrderModel>[].obs;
   final Rxn<OrderModel> selectedOrder = Rxn<OrderModel>();
+
+  final ScrollController scrollController = ScrollController();
 
   @override
   void onInit() {
     super.onInit();
     fetchOrders(refresh: true);
+    scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
+  }
+
+  void _onScroll() {
+    if (scrollController.position.pixels >=
+        scrollController.position.maxScrollExtent - 200) {
+      if (!isMoreLoading.value &&
+          !isLoading.value &&
+          currentPage.value <= totalPages.value &&
+          orders.isNotEmpty) {
+        fetchOrders();
+      }
+    }
   }
 
   Future<void> fetchOrders({bool refresh = false}) async {
     if (refresh) {
       currentPage.value = 1;
       orders.clear();
+      totalPages.value = 1;
     }
+
+    if (!refresh && currentPage.value > totalPages.value) return;
 
     try {
       if (orders.isEmpty) {
@@ -61,6 +86,7 @@ class OrderHistoryController extends GetxController {
         '/orders/myorders',
         queryParameters: {
           'page': currentPage.value,
+          'limit': limit,
         },
         options: Options(
           headers: {
@@ -81,7 +107,11 @@ class OrderHistoryController extends GetxController {
         )
             .toList();
 
-        orders.addAll(dataList);
+        if (refresh) {
+          orders.assignAll(dataList);
+        } else {
+          orders.addAll(dataList);
+        }
 
         final meta = raw['meta'];
         if (meta is Map) {
@@ -90,7 +120,7 @@ class OrderHistoryController extends GetxController {
           totalPages.value = 1;
         }
 
-        if (currentPage.value < totalPages.value) {
+        if (currentPage.value <= totalPages.value) {
           currentPage.value++;
         }
       }
@@ -200,7 +230,7 @@ class OrderHistoryController extends GetxController {
 
   String formatCurrency(num? value) {
     final amount = (value ?? 0).toDouble();
-    return '\$${NumberFormat('#,##0', 'en_US').format(amount)}';
+    return '\$${NumberFormat('#,##0.00', 'en_US').format(amount)}';
   }
 
   Color statusColor(String? status) {

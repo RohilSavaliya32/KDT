@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:kdt/utils/app_decorations.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_text_style.dart';
@@ -11,6 +12,8 @@ class OptimizedField extends StatefulWidget {
   final TextInputAction textInputAction;
   final TextInputType keyboardType;
   final int? maxLength;
+  final List<TextInputFormatter>? inputFormatters;
+  final String? errorText;
 
   const OptimizedField({
     super.key,
@@ -21,6 +24,8 @@ class OptimizedField extends StatefulWidget {
     this.textInputAction = TextInputAction.next,
     this.keyboardType = TextInputType.text,
     this.maxLength,
+    this.inputFormatters,
+    this.errorText,
   });
 
   @override
@@ -29,8 +34,6 @@ class OptimizedField extends StatefulWidget {
 
 class _OptimizedFieldState extends State<OptimizedField> {
   final FocusNode _focusNode = FocusNode();
-
-  bool _hasError = false;
 
   @override
   void initState() {
@@ -50,7 +53,7 @@ class _OptimizedFieldState extends State<OptimizedField> {
   }
 
   Color get _borderColor {
-    if (_hasError) return AppColors.error;
+    if (widget.errorText != null) return AppColors.error;
     if (_focusNode.hasFocus) return AppColors.primaryDark;
     return AppColors.borderGray;
   }
@@ -60,7 +63,7 @@ class _OptimizedFieldState extends State<OptimizedField> {
   }
 
   Color get _cursorColor {
-    if (_hasError) return AppColors.error;
+    if (widget.errorText != null) return AppColors.error;
     return AppColors.primaryDark;
   }
 
@@ -87,30 +90,17 @@ class _OptimizedFieldState extends State<OptimizedField> {
             textInputAction: widget.textInputAction,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             maxLength: widget.maxLength,
-            cursorColor: _cursorColor,
+            inputFormatters: widget.inputFormatters,
+            cursorColor: AppColors.primaryDark,
             style: AppTextStyles.poppins(
               fontSize: AppFontSizes.s14,
               fontWeight: FontWeight.w400,
               color: AppColors.textPrimary,
             ),
-            validator: (value) {
-              final result = widget.validator?.call(value);
-
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!mounted) return;
-
-                final hasError = result != null;
-
-                if (_hasError != hasError) {
-                  setState(() {
-                    _hasError = hasError;
-                  });
-                }
-              });
-
-              return result;
-            },
-            decoration: _buildInputDecoration(),
+            validator: widget.validator,
+            decoration: _buildInputDecoration().copyWith(
+              errorText: widget.errorText,
+            ),
           ),
         ],
       ),
@@ -136,16 +126,16 @@ class _OptimizedFieldState extends State<OptimizedField> {
 
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppDecorations.inputRadius),
-        borderSide: BorderSide(
-          color: _borderColor,
+        borderSide: const BorderSide(
+          color: AppColors.borderGray,
           width: 1,
         ),
       ),
 
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppDecorations.inputRadius),
-        borderSide: BorderSide(
-          color: _borderColor,
+        borderSide: const BorderSide(
+          color: AppColors.borderGray,
           width: 1,
         ),
       ),
@@ -153,7 +143,7 @@ class _OptimizedFieldState extends State<OptimizedField> {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppDecorations.inputRadius),
         borderSide: BorderSide(
-          color: _hasError
+          color: widget.errorText != null
               ? AppColors.error
               : AppColors.primaryDark,
           width: 1.5,

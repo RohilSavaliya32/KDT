@@ -28,6 +28,7 @@ class AppTextStyles {
     double? height,
     double? letterSpacing,
     TextDecoration? decoration,
+    FontStyle? fontStyle,
   }) {
     return GoogleFonts.poppins(
       fontSize: fontSize,
@@ -35,7 +36,8 @@ class AppTextStyles {
       color: color,
       height: height,
       letterSpacing: letterSpacing,
-      decoration: decoration
+      decoration: decoration,
+      fontStyle: fontStyle,
     );
   }
 
@@ -47,7 +49,7 @@ class AppTextStyles {
     double? height,
     double? letterSpacing,
     TextDecoration? decoration,
-
+    FontStyle? fontStyle,
   }) {
     return GoogleFonts.lora(
       fontSize: fontSize,
@@ -55,7 +57,8 @@ class AppTextStyles {
       color: color,
       height: height,
       letterSpacing: letterSpacing,
-      decoration: decoration
+      decoration: decoration,
+      fontStyle: fontStyle,
     );
   }
 }

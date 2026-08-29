@@ -10,6 +10,8 @@ class OrderModel {
   final num? subtotalUsd;
   final num? displaySubtotal;
   final num? displayTotal;
+  final num? discount;
+  final String? couponCode;
 
   final String? status;
   final String? paymentMethod;
@@ -35,6 +37,8 @@ class OrderModel {
     this.subtotalUsd,
     this.displaySubtotal,
     this.displayTotal,
+    this.discount,
+    this.couponCode,
     this.status,
     this.paymentMethod,
     this.paymentStatus,
@@ -69,6 +73,8 @@ class OrderModel {
       subtotalUsd: _num(json['subtotalUsd']),
       displaySubtotal: _num(json['displaySubtotal']),
       displayTotal: _num(json['displayTotal']),
+      discount: _num(json['discount']),
+      couponCode: json['couponCode']?.toString(),
       status: json['status']?.toString(),
       paymentMethod: json['paymentMethod']?.toString(),
       paymentStatus: json['paymentStatus']?.toString(),
@@ -99,6 +105,8 @@ class OrderModel {
     num? subtotalUsd,
     num? displaySubtotal,
     num? displayTotal,
+    num? discount,
+    String? couponCode,
     String? status,
     String? paymentMethod,
     String? paymentStatus,
@@ -121,6 +129,8 @@ class OrderModel {
       subtotalUsd: subtotalUsd ?? this.subtotalUsd,
       displaySubtotal: displaySubtotal ?? this.displaySubtotal,
       displayTotal: displayTotal ?? this.displayTotal,
+      discount: discount ?? this.discount,
+      couponCode: couponCode ?? this.couponCode,
       status: status ?? this.status,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       paymentStatus: paymentStatus ?? this.paymentStatus,

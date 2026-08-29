@@ -22,10 +22,10 @@ class OrderCancellationCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.lightGreen,
+        color: const Color(0xFFFFF5F5),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: AppColors.accentDisabled,
+          color: const Color(0xFFFEE2E2),
         ),
       ),
       child: Column(

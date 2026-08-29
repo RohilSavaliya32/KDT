@@ -10,7 +10,7 @@ class PaymentConfirmationController extends GetxController {
   final RxString orderId = ''.obs;
   final RxString bankName = ''.obs;
   final RxString utrNumber = ''.obs;
-  final RxDouble amount = 0.0.obs;
+  final RxString amount = '0.00'.obs;
   final RxString transferDate = ''.obs;
   final RxString currency = 'USD'.obs;
   final RxString status = 'pending'.obs;
@@ -27,12 +27,7 @@ class PaymentConfirmationController extends GetxController {
       orderId.value = args['orderId']?.toString() ?? '';
       bankName.value = args['bankName']?.toString() ?? '';
       utrNumber.value = args['utrNumber']?.toString() ?? '';
-      final amountArg = args['amount'];
-      if (amountArg is num) {
-        amount.value = amountArg.toDouble();
-      } else {
-        amount.value = double.tryParse(amountArg?.toString() ?? '0') ?? 0.0;
-      }
+      amount.value = args['amount']?.toString() ?? '0.00';
       transferDate.value = args['transferDate']?.toString() ?? '';
       currency.value = args['currency']?.toString() ?? 'USD';
       status.value = args['status']?.toString() ?? 'pending';

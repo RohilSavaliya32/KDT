@@ -3,6 +3,7 @@
 // ============================================================
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:kdt/utils/app_decorations.dart';
 import '../../../data/Setting_Cont.dart';
@@ -235,12 +236,13 @@ class _ReceiptFormFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        OptimizedField(
+        Obx(() => OptimizedField(
           title: "Transaction ID / UTR",
           controller: controller.transactionIdController,
           textInputAction: TextInputAction.next,
           hint: "Enter UTR or Reference No.",
           maxLength: 100,
+          errorText: controller.transactionIdError.value.isEmpty ? null : controller.transactionIdError.value,
           validator: (value) {
             final v = value?.trim() ?? '';
             if (v.isEmpty) {
@@ -249,14 +251,15 @@ class _ReceiptFormFields extends StatelessWidget {
             if (v.length > 100) return "Transaction ID too long";
             return null;
           },
-        ),
+        )),
 
-        OptimizedField(
+        Obx(() => OptimizedField(
           title: "Bank Name",
           controller: controller.bankNameController,
           textInputAction: TextInputAction.next,
           hint: "Bank Name",
           maxLength: 100,
+          errorText: controller.bankNameError.value.isEmpty ? null : controller.bankNameError.value,
           validator: (value) {
             final v = value?.trim() ?? '';
             if (v.isEmpty) {
@@ -265,21 +268,28 @@ class _ReceiptFormFields extends StatelessWidget {
             if (v.length > 100) return "Bank name too long";
             return null;
           },
-        ),
+        )),
 
-        OptimizedField(
+        Obx(() => OptimizedField(
           title: "Transfer Amount",
           controller: controller.transferAmountController,
           textInputAction: TextInputAction.next,
-          keyboardType: TextInputType.number,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+          ],
           hint: "Amount transferred",
+          errorText: controller.transferAmountError.value.isEmpty ? null : controller.transferAmountError.value,
           validator: (value) {
             final v = value?.trim() ?? '';
             if (v.isEmpty) return "Please enter transfer amount";
-            if (double.tryParse(v) == null) return "Enter valid amount";
+            
+            final amount = double.tryParse(v);
+            if (amount == null) return "Enter a valid numeric amount";
+            if (amount <= 0) return "Amount must be greater than zero";
             return null;
           },
-        ),
+        )),
 
         _DatePickerField(
           controller: controller.transferDateController,

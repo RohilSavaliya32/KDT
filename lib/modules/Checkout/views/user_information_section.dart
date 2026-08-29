@@ -4,7 +4,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import '../../../utils/app_colors.dart';
+import '../../../utils/app_text_style.dart';
 import '../../translations/Translation_key/translation_keys.dart';
 import '../controllers/checkout_controller.dart';
 import 'address_selector.dart';
@@ -102,20 +104,68 @@ class UserInformationSection extends StatelessWidget {
             return null;
           },
         ),
-        OptimizedField(
-          title: TranslationKeys.phoneNumber.tr,
-          controller: controller.phoneController,
-          textInputAction: TextInputAction.next,
-          keyboardType: TextInputType.phone,
-          hint: "Enter your phone number",
-          validator: (value) {
-            final v = value?.trim() ?? '';
-            if (v.isEmpty) return "Please enter phone number";
-            if (!RegExp(r'^[0-9+\s()-]{8,20}$').hasMatch(v)) {
-              return "Please enter a valid phone number";
-            }
-            return null;
-          },
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              TranslationKeys.phoneNumber.tr,
+              style: AppTextStyles.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.foreground,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Obx(() => IntlPhoneField(
+              key: ValueKey(controller.selectedCountryIso.value),
+              controller: controller.phoneController,
+              initialCountryCode: controller.selectedCountryIso.value,
+              onCountryChanged: (country) {
+                controller.updateCountry(
+                  country.flag,
+                  '+${country.dialCode}',
+                  country.name,
+                  country.code,
+                );
+              },
+              cursorColor: AppColors.primaryDark,
+              dropdownTextStyle: AppTextStyles.poppins(fontSize: 14),
+              style: AppTextStyles.poppins(fontSize: 15),
+              decoration: InputDecoration(
+                hintText: "Enter your phone number",
+                hintStyle: AppTextStyles.poppins(
+                  color: AppColors.mutedForeground,
+                  fontSize: 14,
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: AppColors.borderGray),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: AppColors.borderGray),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: AppColors.primaryDark, width: 1.5),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Colors.red, width: 1),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Colors.red, width: 1.5),
+                ),
+              ),
+              languageCode: "en",
+              onChanged: (phone) {
+                // Controller listener handles validation
+              },
+            )),
+            const SizedBox(height: 16),
+          ],
         ),
       ],
     );

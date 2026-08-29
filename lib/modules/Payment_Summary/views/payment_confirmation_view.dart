@@ -125,7 +125,7 @@ class PaymentConfirmationView  extends GetView<PaymentConfirmationController> {
             color: Colors.black87,
           ),          children: [
             TextSpan(
-              text: "#${controller.orderId.value}",
+              text: "#${controller.orderId.value.split('-').first}",
               style: AppTextStyles.poppins(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
@@ -183,25 +183,25 @@ class PaymentConfirmationView  extends GetView<PaymentConfirmationController> {
 
           // Bank Name
           _buildDetailRow(
-            label: "Bank Name",
+            label: "Bank Name:",
             value: controller.bankName.value,
           ),
 
           // UTR/Transaction ID
           _buildDetailRow(
-            label: "UTR/Transaction ID",
+            label: "UTR/Transaction ID:",
             value: controller.utrNumber.value,
           ),
 
           // Amount
           _buildDetailRow(
-            label: "Amount",
-            value: "${controller.currency.value} ${controller.amount.value.toStringAsFixed(2)}",
+            label: "Amount:",
+            value: "${controller.currency.value} ${controller.amount.value}",
           ),
 
           // Transfer Date
           _buildDetailRow(
-            label: "Transfer Date",
+            label: "Transfer Date:",
             value: controller.transferDate.value,
           ),
         ],
