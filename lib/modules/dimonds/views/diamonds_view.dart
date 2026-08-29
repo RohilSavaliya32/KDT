@@ -218,8 +218,8 @@ class _DiamondsViewState extends State<DiamondsView> with AutomaticKeepAliveClie
                       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.only(
-                        left: 18,
-                        right: 18,
+                        left: 20,
+                        right: 20,
                         top: 30,
                         // Add extra bottom padding when keyboard is open
                         bottom: viewInsets.bottom > 0
@@ -447,7 +447,48 @@ class _DiamondsViewState extends State<DiamondsView> with AutomaticKeepAliveClie
             );
           }),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
+        Obx(() {
+          final hasFilters = controller.selectedShapes.isNotEmpty ||
+              controller.selectedCertifications.isNotEmpty ||
+              controller.labGrownFilter.value != null ||
+              controller.selectedType.value.isNotEmpty ||
+              controller.selectedCuts.isNotEmpty ||
+              controller.selectedColors.isNotEmpty ||
+              controller.selectedClarities.isNotEmpty ||
+              controller.minCarat.value > 0 ||
+              controller.maxCarat.value < 999999999.0;
+
+          if (!hasFilters) return const SizedBox.shrink();
+
+          return Container(
+            height: 42,
+            margin: const EdgeInsets.only(right: 4),
+            child: OutlinedButton.icon(
+              onPressed: _resetFilters,
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                foregroundColor: AppColors.mutedForeground,
+                side: BorderSide(color: AppColors.borderGray, width: 1.2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 0,
+                backgroundColor: AppColors.white,
+              ),
+              icon: const Icon(Icons.refresh_rounded, size: 16, color: AppColors.accent),
+              label: Text(
+                TranslationKeys.clear.tr.toUpperCase(),
+                style: AppTextStyles.poppins(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          );
+        }),
+        const SizedBox(width: 8),
         _buildSortDropdown(),
       ],
     );
@@ -456,10 +497,13 @@ class _DiamondsViewState extends State<DiamondsView> with AutomaticKeepAliveClie
   Widget _buildSortDropdown() {
     return PopupMenuButton<int>(
       color: AppColors.white,
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+      elevation: 4,
+      offset: const Offset(0, 45),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: AppColors.divider, width: 0.5),
+      ),
       onSelected: (value) {
-        // Dismiss keyboard when selecting sort option
         FocusScope.of(context).unfocus();
         if (value != selectedSortIndex) {
           setState(() {
@@ -478,17 +522,30 @@ class _DiamondsViewState extends State<DiamondsView> with AutomaticKeepAliveClie
       return PopupMenuItem<int>(
         value: index,
         padding: EdgeInsets.zero,
+        height: 48,
         child: Container(
-          width: 200,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          color: selected ? AppColors.foreground : AppColors.white,
-          child: Text(
-            sortOptions[index],
-            style: AppTextStyles.lora(
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-              color: selected ? AppColors.white : AppColors.textPrimary,
-            ),
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          color: selected ? AppColors.accent.withOpacity(0.08) : Colors.transparent,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  sortOptions[index],
+                  style: AppTextStyles.poppins(
+                    fontSize: 14,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                    color: selected ? AppColors.accent : AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              if (selected)
+                const Icon(
+                  Icons.check_rounded,
+                  size: 18,
+                  color: AppColors.accent,
+                ),
+            ],
           ),
         ),
       );
@@ -497,28 +554,42 @@ class _DiamondsViewState extends State<DiamondsView> with AutomaticKeepAliveClie
 
   Widget _buildSortDropdownButton() {
     return Container(
-      width: 180,
-      height: 38,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      width: 170,
+      height: 42,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
         color: AppColors.white,
-        border: Border.all(color: AppColors.borderGray),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.borderGray, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
+          Icon(
+            Icons.sort_rounded,
+            size: 18,
+            color: AppColors.accent,
+          ),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
               sortOptions[selectedSortIndex],
               style: AppTextStyles.poppins(
                 fontSize: 13,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w500,
                 color: AppColors.textPrimary,
               ),
               overflow: TextOverflow.ellipsis,
             ),
           ),
           Icon(
-            Icons.keyboard_arrow_down,
+            Icons.keyboard_arrow_down_rounded,
             size: 20,
             color: AppColors.textSecondary,
           ),

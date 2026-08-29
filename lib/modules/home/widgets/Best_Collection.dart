@@ -26,7 +26,7 @@ class CollectionsSection extends StatelessWidget {
 
       return Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: isMobile ? 16.0 : 20.0,
+          horizontal: 0,
           vertical: isMobile ? 30.0 : 40.0,
         ),
         child: Column(

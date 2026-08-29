@@ -185,10 +185,7 @@ class _ViewModel {
 
   // Padding
   double get horizontalPadding {
-    if (isVerySmall) return 16;
-    if (isMobile) return 20;
-    if (isTablet) return 40;
-    return 60;
+    return 0;
   }
 
   double get verticalPadding {

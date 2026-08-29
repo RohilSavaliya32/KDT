@@ -56,7 +56,7 @@ class HomeView extends GetView<HomeController> {
                     // ---------------------------------------------------------
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: FadeSlideIn(
                           delay: const Duration(milliseconds: 0),
                           slideOffset: 18,
@@ -75,7 +75,7 @@ class HomeView extends GetView<HomeController> {
                     // ---------------------------------------------------------
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: FadeSlideIn(
                           delay: const Duration(milliseconds: 80),
                           slideOffset: 18,
@@ -94,7 +94,7 @@ class HomeView extends GetView<HomeController> {
                     // ---------------------------------------------------------
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: FadeSlideIn(
                           delay: const Duration(milliseconds: 160),
                           slideOffset: 18,
@@ -112,7 +112,7 @@ class HomeView extends GetView<HomeController> {
                     // ---------------------------------------------------------
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: FadeSlideIn(
                           delay: const Duration(milliseconds: 160),
                           slideOffset: 18,
@@ -131,7 +131,7 @@ class HomeView extends GetView<HomeController> {
                     // ---------------------------------------------------------
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: FadeSlideIn(
                           delay: const Duration(milliseconds: 160),
                           slideOffset: 18,
@@ -149,7 +149,7 @@ class HomeView extends GetView<HomeController> {
                     // ---------------------------------------------------------
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: FadeSlideIn(
                           delay: const Duration(milliseconds: 240),
                           slideOffset: 18,
@@ -170,7 +170,7 @@ class HomeView extends GetView<HomeController> {
                     // ---------------------------------------------------------
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: FadeSlideIn(
                           delay: const Duration(milliseconds: 320),
                           slideOffset: 18,
@@ -191,7 +191,7 @@ class HomeView extends GetView<HomeController> {
                     // ---------------------------------------------------------
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: FadeSlideIn(
                           delay: const Duration(milliseconds: 400),
                           slideOffset: 18,
@@ -212,7 +212,7 @@ class HomeView extends GetView<HomeController> {
                     // ---------------------------------------------------------
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: FadeSlideIn(
                           delay: const Duration(milliseconds: 480),
                           slideOffset: 18,
@@ -279,7 +279,7 @@ class HomeView extends GetView<HomeController> {
                     // ---------------------------------------------------------
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: FadeSlideIn(
                           delay: const Duration(milliseconds: 640),
                           slideOffset: 18,
@@ -706,7 +706,7 @@ class _HomeShimmer extends StatelessWidget {
       builder: (context, constraints) {
         final vm = _ViewModel(constraints.maxWidth);
         final width = constraints.maxWidth;
-        final horizontalPadding = 16.0;
+        final horizontalPadding = 20.0;
 
         // Banner Height calculation matching BannerWidget
         final bannerHeight = (width * 0.78).clamp(280.0, 420.0);

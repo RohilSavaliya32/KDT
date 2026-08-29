@@ -391,7 +391,7 @@ class _WishlistDiamondCard extends StatelessWidget {
                   ),
 
                   Text(
-                    "${diamond.cut} • ${diamond.color} • ${diamond.clarity}",
+                    "${diamond.carat.toStringAsFixed(2)} Ct • ${diamond.cut} • ${diamond.color} • ${diamond.clarity}",
                     maxLines: 2,
                     overflow:
                     TextOverflow.ellipsis,
@@ -406,7 +406,7 @@ class _WishlistDiamondCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          diamond.certNumber,
+                          "${diamond.certification} ${diamond.certNumber}",
                           overflow:
                           TextOverflow.ellipsis,
                           maxLines: 1,
@@ -437,7 +437,7 @@ class _WishlistDiamondCard extends StatelessWidget {
                   ),
 
                   const Divider(
-                    height: 16,
+                    height: 12,
                   ),
 
                   Column(
@@ -459,7 +459,7 @@ class _WishlistDiamondCard extends StatelessWidget {
                       ),
 
                       const SizedBox(
-                        height: 4,
+                        height: 2,
                       ),
 
                       Row(
@@ -891,13 +891,12 @@ class _ViewModel {
     return 12;
   }
 
-  double get cardHeight {
-    if (isVerySmall) return 324;
-    if (isMobile) return 344;
-    if (isTablet) return 444;
+  double get cardWidth =>
+      (width - (gridPadding * 2) - (crossAxisCount - 1) * gridSpacing) / crossAxisCount;
 
-    return 445;
-  }
+  double get contentHeight => isVerySmall ? 125 : (isMobile ? 135 : 148);
+
+  double get cardHeight => cardWidth + contentHeight;
 
   double get cardRadius {
     return AppDecorations.cardRadius;

@@ -55,10 +55,10 @@ class WishlistItem {
   final String cut;
   final String sku;
   final String slug;
-  final int carat;
+  final double carat;
   final String color;
   final String image;
-  final int price;
+  final double price;
   final String shape;
   final String title;
   final List<String> images;
@@ -75,13 +75,13 @@ class WishlistItem {
   final int ratingCount;
   final int reviewCount;
   final String? seoKeywords;
-  final int depthPercent;
+  final double depthPercent;
   final String fluorescence;
   final Measurements measurements;
-  final int tablePercent;
-  final int averageRating;
+  final double tablePercent;
+  final double averageRating;
   final String certification;
-  final int originalPrice;
+  final double originalPrice;
   final String? seoDescription;
   final String? certificateFile;
   final int discountPercent;
@@ -131,10 +131,10 @@ class WishlistItem {
       cut: _asString(json['cut']),
       sku: _asString(json['sku']),
       slug: _asString(json['slug']),
-      carat: _asInt(json['carat']),
+      carat: _asDouble(json['carat']),
       color: _asString(json['color']),
       image: _asString(json['image']),
-      price: _asInt(json['price']),
+      price: _asDouble(json['price']),
       shape: _asString(json['shape']),
       title: _asString(json['title']),
       images: _asStringList(json['images']),
@@ -151,13 +151,13 @@ class WishlistItem {
       ratingCount: _asInt(json['ratingCount']),
       reviewCount: _asInt(json['reviewCount']),
       seoKeywords: _asNullableString(json['seoKeywords']),
-      depthPercent: _asInt(json['depthPercent']),
+      depthPercent: _asDouble(json['depthPercent']),
       fluorescence: _asString(json['fluorescence']),
       measurements: Measurements.fromJson(_asMap(json['measurements'])),
-      tablePercent: _asInt(json['tablePercent']),
-      averageRating: _asInt(json['averageRating']),
+      tablePercent: _asDouble(json['tablePercent']),
+      averageRating: _asDouble(json['averageRating']),
       certification: _asString(json['certification']),
-      originalPrice: _asInt(json['originalPrice']),
+      originalPrice: _asDouble(json['originalPrice']),
       seoDescription: _asNullableString(json['seoDescription']),
       certificateFile: _asNullableString(json['certificateFile']),
       discountPercent: _asInt(json['discountPercent']),
@@ -206,17 +206,17 @@ class WishlistItem {
     };
   }
 
-  int get discountPrice => price - originalPrice;
+  double get discountPrice => price - originalPrice;
   int get availableQuantity => quantity;
   bool get isOutOfStock => quantity <= 0;
   bool get isInStock => quantity > 0;
-  double get ratingAverage => averageRating.toDouble();
+  double get ratingAverage => averageRating;
 }
 
 class Measurements {
-  final int depth;
-  final int width;
-  final int length;
+  final double depth;
+  final double width;
+  final double length;
 
   Measurements({
     required this.depth,
@@ -226,9 +226,9 @@ class Measurements {
 
   factory Measurements.fromJson(Map<String, dynamic> json) {
     return Measurements(
-      depth: _asInt(json['depth']),
-      width: _asInt(json['width']),
-      length: _asInt(json['length']),
+      depth: _asDouble(json['depth']),
+      width: _asDouble(json['width']),
+      length: _asDouble(json['length']),
     );
   }
 
@@ -318,6 +318,13 @@ int _asInt(dynamic value) {
   if (value is double) return value.round();
   if (value is String) return int.tryParse(value) ?? 0;
   return 0;
+}
+
+double _asDouble(dynamic value) {
+  if (value is double) return value;
+  if (value is int) return value.toDouble();
+  if (value is String) return double.tryParse(value) ?? 0.0;
+  return 0.0;
 }
 
 DateTime _asDateTime(dynamic value) {

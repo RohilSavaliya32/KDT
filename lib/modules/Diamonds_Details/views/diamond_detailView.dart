@@ -224,7 +224,7 @@ class _DiamondDetailBody extends StatelessWidget {
         final authController = Get.find<AuthController>();
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -253,7 +253,7 @@ class _DiamondDetailBody extends StatelessWidget {
                 reviewController: reviewController,
                 authController: authController,
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 10),
             ],
           ),
         );
@@ -270,7 +270,7 @@ class _DiamondDetailBody extends StatelessWidget {
             Container(
               width: double.infinity,
               height: imageBoxHeight,
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.zero,
               child: Center(
                 child: images.isEmpty
                     ? Padding(
@@ -284,14 +284,16 @@ class _DiamondDetailBody extends StatelessWidget {
                         physics: const BouncingScrollPhysics(),
                         itemCount: images.length,
                         onPageChanged: (index) {
-                          controller.selectedImageIndex.value = index;
+                          // Only update if not currently performing a programmatic jump
+                          // to avoid the "flickering" highlight effect
+                          if (controller.imagePageController.page == index.toDouble()) {
+                            controller.selectedImageIndex.value = index;
+                          }
                         },
                         itemBuilder: (context, index) {
-                          return Center(
-                            child: _buildDiamondImage(
-                              images[index],
-                              key: ValueKey(images[index]),
-                            ),
+                          return _buildDiamondImage(
+                            images[index],
+                            key: ValueKey(images[index]),
                           );
                         },
                       ),
@@ -335,18 +337,19 @@ class _DiamondDetailBody extends StatelessWidget {
                   onTap: () async {
                     if (controller.selectedImageIndex.value == index) return;
 
+                    // Immediately update highlight for responsiveness
                     controller.selectedImageIndex.value = index;
 
                     await controller.imagePageController.animateToPage(
                       index,
-                      duration: const Duration(milliseconds: 350),
-                      curve: Curves.easeInOut,
+                      duration: const Duration(milliseconds: 450),
+                      curve: Curves.easeInOutCubic,
                     );
                   },
                   child: Container(
                     width: 70,
                     margin: const EdgeInsets.only(right: 10),
-                    padding: const EdgeInsets.all(6),
+                    padding: EdgeInsets.zero,
                     decoration: BoxDecoration(
                       color: AppColors.white,
                       borderRadius: BorderRadius.circular(8),
@@ -357,8 +360,11 @@ class _DiamondDetailBody extends StatelessWidget {
                         width: isSelected ? 2 : 1,
                       ),
                     ),
-                    child: _buildDiamondImage(images[index],
-                        key: ValueKey('thumb_${index}_${images[index]}')),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: _buildDiamondImage(images[index],
+                          key: ValueKey('thumb_${index}_${images[index]}')),
+                    ),
                   ),
                 );
               },
@@ -481,7 +487,7 @@ class _DiamondDetailBody extends StatelessWidget {
 
   Widget _buildSpecSection(BuildContext context, dynamic diamond) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: AppColors.lightGray,
         borderRadius: BorderRadius.circular(20),
@@ -526,7 +532,7 @@ class _DiamondDetailBody extends StatelessWidget {
 
   Widget _buildCertificateSection(BuildContext context, dynamic diamond) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: AppColors.white,
         border: Border.all(color: AppColors.borderGray),
@@ -653,7 +659,7 @@ class _DiamondDetailBody extends StatelessWidget {
 
   Widget _buildContactSection(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(8),
@@ -839,16 +845,24 @@ class _DiamondDetailBody extends StatelessWidget {
 
   Widget _buildDiamondImage(String src, {Key? key}) {
     final diamondId = controller.diamond.value?.id ?? '';
-    
+
     Widget image;
     if (src.startsWith('assets/')) {
-      image = Image.asset(src,
-          key: key, fit: BoxFit.contain, gaplessPlayback: true);
+      image = Image.asset(
+        src,
+        key: key,
+        fit: BoxFit.fill,
+        width: double.infinity,
+        height: double.infinity,
+        gaplessPlayback: true,
+      );
     } else {
       image = Image.network(
         src,
         key: key,
-        fit: BoxFit.contain,
+        fit: BoxFit.fill,
+        width: double.infinity,
+        height: double.infinity,
         gaplessPlayback: true,
         errorBuilder: (context, error, stackTrace) => Padding(
           padding: const EdgeInsets.all(20.0),
@@ -1361,7 +1375,7 @@ class _SpecTabsSectionState extends State<_SpecTabsSection> {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: AppColors.white,
         border: Border.all(color: AppColors.borderGray),

@@ -187,7 +187,7 @@ class _CollectionState extends State<Collection> {
 
         return Container(
           margin: const EdgeInsets.symmetric(
-            horizontal: 10,
+            horizontal: 0,
             vertical: 10,
           ),
           clipBehavior: Clip.antiAlias,
@@ -421,9 +421,9 @@ class _CollectionState extends State<Collection> {
 
       return Padding(
         padding: const EdgeInsets.fromLTRB(
-          0,
+          18,
           20,
-          0,
+          18,
           18,
         ),
         child: Column(
@@ -435,7 +435,6 @@ class _CollectionState extends State<Collection> {
                 controller: _scrollController,
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
                   vertical: 2,
                 ),
                 itemCount: itemCount,
@@ -462,29 +461,24 @@ class _CollectionState extends State<Collection> {
 
             const SizedBox(height: 16),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 18,
-              ),
-              child: Row(
-                children: [
-                  _buildCircleIconButton(
-                    Icons.arrow_back_ios_new_rounded,
-                    onTap: () => _scroll(false),
-                  ),
+            Row(
+              children: [
+                _buildCircleIconButton(
+                  Icons.arrow_back_ios_new_rounded,
+                  onTap: () => _scroll(false),
+                ),
 
-                  const SizedBox(width: 10),
+                const SizedBox(width: 10),
 
-                  _buildCircleIconButton(
-                    Icons.arrow_forward_ios_rounded,
-                    onTap: () => _scroll(true),
-                  ),
+                _buildCircleIconButton(
+                  Icons.arrow_forward_ios_rounded,
+                  onTap: () => _scroll(true),
+                ),
 
-                  const Spacer(),
+                const Spacer(),
 
-                  _buildShopNowButton(),
-                ],
-              ),
+                _buildShopNowButton(),
+              ],
             ),
           ],
         ),
@@ -540,24 +534,30 @@ class _CollectionState extends State<Collection> {
 
             const SizedBox(height: 10),
 
-            CurrencyPriceText(
-              usdAmount: price,
-              style: AppTextStyles.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: AppColors.foreground,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: CurrencyPriceText(
+                usdAmount: price,
+                style: AppTextStyles.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.foreground,
+                ),
               ),
             ),
 
             const SizedBox(height: 2),
 
-            Text(
-              description,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.poppins(
-                fontSize: 10,
-                color: AppColors.mutedForeground,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
+                description,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.poppins(
+                  fontSize: 10,
+                  color: AppColors.mutedForeground,
+                ),
               ),
             ),
           ],

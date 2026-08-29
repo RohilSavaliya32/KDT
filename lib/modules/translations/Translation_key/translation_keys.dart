@@ -90,6 +90,7 @@ class TranslationKeys {
   static const back = 'back';
   static const next = 'next';
   static const done = 'done';
+  static const clear = 'clear';
 
   // ================= Validation =================
   static const requiredField = 'requiredField';

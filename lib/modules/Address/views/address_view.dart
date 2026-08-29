@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:kdt/modules/fade_slide_in.dart';
 import 'package:kdt/utils/app_colors.dart';
 import '../../../utils/app_text_style.dart';
 import '../address_model.dart';
 import '../controllers/address_controller.dart';
-import '../../translations/Translation_key/translation_keys.dart';
 
 class AddressView extends GetView<AddressController> {
   const AddressView({super.key});
@@ -134,137 +132,134 @@ class AddressView extends GetView<AddressController> {
       Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Container(
-          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
+          height: MediaQuery.of(context).size.height * 0.7,
           decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
           ),
-          child: Material(
-            color: Colors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            child: SafeArea(
-              top: true,
-              child: Column(
-                children: [
-                  // Handle
-                  const SizedBox(height: 12),
-                  Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
                   ),
-
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 10),
-                    child: Row(
+                ),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      isEdit ? "Edit Address" : "Add Address",
+                      style: AppTextStyles.poppins(
+                        fontSize: AppFontSizes.s20,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.foreground,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Form(
+                    key: controller.formKey,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          isEdit ? "Update Address" : "Add New Address",
-                          style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(),
-
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-                      child: Form(
-                        key: controller.formKey,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Obx(() => Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: AppColors.lightGreen.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: AppColors.accent.withOpacity(0.1)),
+                              ),
+                              child: TextButton.icon(
+                                onPressed: controller.isLoading.value ? null : controller.getCurrentLocation,
+                                icon: controller.isLoading.value
+                                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent))
+                                    : const Icon(Icons.my_location, size: 18, color: AppColors.accent),
+                                label: Text(
+                                  controller.isLoading.value ? "Fetching location..." : "Use current location",
+                                  style: AppTextStyles.poppins(fontSize: AppFontSizes.s14, fontWeight: FontWeight.w600, color: AppColors.accent),
+                                ),
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                ),
+                              ),
+                            )),
+                        const SizedBox(height: 24),
+                        _buildInputField(controller.fullNameController, "Full Name", "Enter your full name", validator: controller.fullNameValidator),
+                        _buildPhoneField(),
+                        Row(
                           children: [
-                            // Location Button
-                            Obx(() => OutlinedButton.icon(
-                                  onPressed: controller.isLoading.value ? null : controller.getCurrentLocation,
-                                  icon: controller.isLoading.value ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent)) : const Icon(Icons.near_me_outlined, size: 18),
-                                  label: Text(controller.isLoading.value ? "Fetching location..." : "Use my current location"),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.foreground,
-                                    minimumSize: const Size(double.infinity, 52),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                    side: BorderSide(color: AppColors.border),
-                                  ),
-                                )),
-                            const SizedBox(height: 24),
+                            Expanded(child: _buildInputField(controller.cityController, "City", "City", validator: controller.cityValidator)),
+                            const SizedBox(width: 16),
+                            Expanded(child: _buildInputField(controller.zipCodeController, "Pincode", "Pincode", keyboardType: TextInputType.number, validator: controller.zipCodeValidator)),
+                          ],
+                        ),
+                        _buildInputField(controller.stateController, "State", "State", validator: controller.stateValidator),
+                        _buildInputField(controller.streetController, "Address (House No, Building, Street)", "Enter detailed address", validator: controller.streetValidator),
 
-                            _buildInputField(controller.fullNameController, "Full name *", "Enter Full name", validator: controller.fullNameValidator),
-                            _buildPhoneField(),
-                            _buildInputField(controller.streetController, "Flat / House / Building *", "Enter Flat / House / Building", validator: controller.streetValidator),
-                            _buildInputField(controller.cityController, "City *", "Enter City", validator: controller.cityValidator),
-                            _buildInputField(controller.stateController, "State *", "Enter State", validator: controller.stateValidator),
-                            _buildInputField(controller.zipCodeController, "Pincode *", "Enter Pincode", keyboardType: TextInputType.number, validator: controller.zipCodeValidator),
+                        Obx(() => CheckboxListTile(
+                              value: controller.isDefault.value,
+                              onChanged: (v) => controller.isDefault.value = v ?? false,
+                              title: Text("Set as default address", style: AppTextStyles.poppins(fontSize: AppFontSizes.s14, fontWeight: FontWeight.w500)),
+                              contentPadding: EdgeInsets.zero,
+                              controlAffinity: ListTileControlAffinity.leading,
+                              activeColor: AppColors.accent,
+                              checkboxShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                            )),
 
-                            const SizedBox(height: 10),
-                            Obx(() => CheckboxListTile(
-                                  value: controller.isDefault.value,
-                                  onChanged: (v) => controller.isDefault.value = v ?? false,
-                                  title: Text("Set as default address", style: AppTextStyles.poppins(fontSize: 14)),
-                                  contentPadding: EdgeInsets.zero,
-                                  controlAffinity: ListTileControlAffinity.leading,
-                                  activeColor: AppColors.accent,
-                                )),
-
-                            const SizedBox(height: 24),
-                            ElevatedButton(
+                        const SizedBox(height: 24),
+                        Obx(() => ElevatedButton(
                               onPressed: controller.isLoading.value
                                   ? null
                                   : () async {
                                       await controller.saveAddress();
                                     },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.accent,
+                                backgroundColor: AppColors.foreground,
+                                foregroundColor: Colors.white,
                                 minimumSize: const Size(double.infinity, 56),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                elevation: 0,
                               ),
                               child: controller.isLoading.value
-                                  ? const CircularProgressIndicator(color: Colors.white)
-                                  : Text(isEdit ? "Update Address" : "Save Address", style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
-                            ),
-                            const SizedBox(height: 30),
-                          ],
-                        ),
-                      ),
+                                  ? const SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                    )
+                                  : Text(
+                                      isEdit ? "Update Address" : "Save Address",
+                                      style: AppTextStyles.poppins(fontSize: AppFontSizes.s16, fontWeight: FontWeight.w700),
+                                    ),
+                            )),
+                        const SizedBox(height: 16),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
-      ),
-      isScrollControlled: true,
-      ignoreSafeArea: false,
-    );
-  }
-
-  Widget _buildTypeOption(String type, IconData icon) {
-    final isSelected = controller.selectedType.value == type;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => controller.setAddressType(type),
-        child: Container(
-          height: 48,
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.lightGreen : AppColors.white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: isSelected ? AppColors.accent : AppColors.border),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 16, color: isSelected ? AppColors.accent : AppColors.iconGray),
-              const SizedBox(width: 8),
-              Text(type, style: GoogleFonts.inter(fontSize: 14, fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500, color: isSelected ? AppColors.accent : AppColors.iconGray)),
             ],
           ),
         ),
       ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
     );
   }
 
@@ -272,35 +267,120 @@ class AddressView extends GetView<AddressController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Phone number *", style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.foreground)),
+        Text("Phone Number", style: AppTextStyles.poppins(fontSize: AppFontSizes.s14, fontWeight: FontWeight.w600, color: AppColors.foreground)),
         const SizedBox(height: 8),
         IntlPhoneField(
           controller: controller.phoneController,
           cursorColor: AppColors.accent,
           initialCountryCode: controller.selectedCountryIso.value,
+          keyboardType: TextInputType.number,
+
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+
           onCountryChanged: (country) {
             controller.selectedCountryCode.value = '+${country.dialCode}';
             controller.selectedCountryFlag.value = country.flag;
             controller.selectedCountryIso.value = country.code;
           },
-          validator: (phone) => controller.phoneValidator(phone?.completeNumber),
+
+          onChanged: (phone) {
+            if (phone.number.trim().isNotEmpty) {
+              controller.phoneError.value = '';
+            }
+          },
+
+          style: AppTextStyles.poppins(
+            fontSize: AppFontSizes.s14,
+            fontWeight: FontWeight.w500,
+          ),
+
           decoration: InputDecoration(
             counterText: "",
             hintText: "Enter phone number",
-            hintStyle: AppTextStyles.poppins(fontSize: 14, color: AppColors.mutedForeground),
-            errorStyle: AppTextStyles.poppins(fontSize: 12, color: AppColors.error),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.border)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.border)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.accent, width: 1.2)),
-            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error, width: 1)),
-            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error, width: 1.2)),
+
+            hintStyle: AppTextStyles.poppins(
+              fontSize: AppFontSizes.s14,
+              color: AppColors.mutedForeground,
+            ),
+
+            errorStyle: AppTextStyles.poppins(
+              fontSize: AppFontSizes.s12,
+              color: AppColors.error,
+            ),
+
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(
+                color: AppColors.border,
+              ),
+            ),
+
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(
+                color: AppColors.border,
+              ),
+            ),
+
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(
+                color: AppColors.accent,
+                width: 1.5,
+              ),
+            ),
+
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(
+                color: AppColors.error,
+                width: 1,
+              ),
+            ),
+
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(
+                color: AppColors.error,
+                width: 1.5,
+              ),
+            ),
+
             filled: true,
-            fillColor: AppColors.white,
+            fillColor: AppColors.lightGray.withOpacity(0.3),
           ),
-          dropdownTextStyle: AppTextStyles.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.foreground),
+
+          dropdownTextStyle: AppTextStyles.poppins(
+            fontSize: AppFontSizes.s14,
+            fontWeight: FontWeight.w600,
+            color: AppColors.foreground,
+          ),
+
+          dropdownIconPosition: IconPosition.trailing,
+          showCountryFlag: true,
         ),
-        const SizedBox(height: 16),
+        Obx(() {
+          if (controller.phoneError.value.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          return Padding(
+            padding: const EdgeInsets.only(left: 12, top: 6),
+            child: Text(
+              controller.phoneError.value,
+              style: AppTextStyles.poppins(
+                fontSize: AppFontSizes.s12,
+                color: AppColors.error,
+              ),
+            ),
+          );
+        }),
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -309,27 +389,28 @@ class AddressView extends GetView<AddressController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.foreground)),
+        Text(label, style: AppTextStyles.poppins(fontSize: AppFontSizes.s14, fontWeight: FontWeight.w600, color: AppColors.foreground)),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
           validator: validator,
+          style: AppTextStyles.poppins(fontSize: AppFontSizes.s14, fontWeight: FontWeight.w500),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: AppTextStyles.poppins(fontSize: 14, color: AppColors.mutedForeground),
-            errorStyle: AppTextStyles.poppins(fontSize: 12, color: AppColors.error),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.border)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.border)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.accent, width: 1.2)),
-            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error, width: 1)),
-            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error, width: 1.2)),
+            hintStyle: AppTextStyles.poppins(fontSize: AppFontSizes.s14, color: AppColors.mutedForeground),
+            errorStyle: AppTextStyles.poppins(fontSize: AppFontSizes.s12, color: AppColors.error),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: AppColors.border)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: AppColors.border)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.accent, width: 1.5)),
+            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.error, width: 1)),
+            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
             filled: true,
-            fillColor: AppColors.white,
+            fillColor: AppColors.lightGray.withOpacity(0.3),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -434,192 +515,181 @@ class _AddressCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: address.isDefault ? AppColors.accent : AppColors.border,
+          color: address.isDefault ? AppColors.accent.withOpacity(0.5) : AppColors.border,
           width: address.isDefault ? 1.5 : 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Left accent bar for default
-              if (address.isDefault)
-                Container(
-                  width: 6,
-                  color: AppColors.accent,
-                ),
-              
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(_getTypeIcon(address.type), size: 18, color: AppColors.iconGray),
-                          const SizedBox(width: 8),
-                          Text(
-                            address.type.isNotEmpty ? address.type.toUpperCase() : 'HOME',
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.5,
-                              color: AppColors.mutedForeground,
-                            ),
+                child: Row(
+                  children: [
+                    Text(
+                      address.fullName,
+                      style: AppTextStyles.poppins(
+                        fontSize: AppFontSizes.s16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.foreground,
+                      ),
+                    ),
+                    if (address.isDefault) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.lightGreen,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          "Default",
+                          style: AppTextStyles.poppins(
+                            fontSize: AppFontSizes.s10,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.accent,
                           ),
-                          if (address.isDefault) ...[
-                            const SizedBox(width: 12),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.accent,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                "DEFAULT",
-                                style: GoogleFonts.inter(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w900,
-                                  color: AppColors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                          const Spacer(),
-                          PopupMenuButton<String>(
-                            onSelected: (value) {
-                              if (value == 'edit') {
-                                onEdit();
-                              } else if (value == 'delete') {
-                                onDelete();
-                              }
-                            },
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 4,
-                            offset: const Offset(0, 40),
-                            color: Colors.white,
-                            surfaceTintColor: Colors.white,
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 'edit',
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                height: 40,
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.edit_outlined, size: 18, color: AppColors.iconGray),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      "Edit Address",
-                                      style: AppTextStyles.poppins(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: AppColors.foreground,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const PopupMenuDivider(height: 1),
-                              PopupMenuItem(
-                                value: 'delete',
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                height: 40,
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.delete_outline, size: 18, color: AppColors.error),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      "Delete",
-                                      style: AppTextStyles.poppins(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: AppColors.error,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: AppColors.lightGray,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppColors.border),
-                              ),
-                              child: const Icon(Icons.more_vert, size: 18, color: AppColors.iconGray),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        address.fullName,
-                        style: AppTextStyles.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.foreground,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        address.phone,
-                        style: AppTextStyles.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "${address.street}, ${address.city}, ${address.state} - ${address.zipCode}",
-                        style: AppTextStyles.poppins(
-                          fontSize: 13,
-                          color: AppColors.mutedForeground,
-                          height: 1.4,
-                        ),
-                      ),
-                      if (!address.isDefault) ...[
-                        const SizedBox(height: 12),
-                        const Divider(height: 1, color: AppColors.divider),
-                        const SizedBox(height: 12),
-                        InkWell(
-                          onTap: onSetDefault,
-                          child: Text(
-                            "Set as primary address",
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.accent,
-                            ),
+                    ],
+                  ],
+                ),
+              ),
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    onEdit();
+                  } else if (value == 'delete') {
+                    onDelete();
+                  }
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 4,
+                offset: const Offset(0, 40),
+                color: Colors.white,
+                surfaceTintColor: Colors.white,
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'edit',
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        const Icon(Icons.edit_outlined, size: 18, color: AppColors.foreground),
+                        const SizedBox(width: 12),
+                        Text(
+                          "Edit Address",
+                          style: AppTextStyles.poppins(
+                            fontSize: AppFontSizes.s14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.foreground,
                           ),
                         ),
                       ],
-                    ],
+                    ),
                   ),
+                  const PopupMenuDivider(height: 1),
+                  PopupMenuItem(
+                    value: 'delete',
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        const Icon(Icons.delete_outline, size: 18, color: AppColors.error),
+                        const SizedBox(width: 12),
+                        Text(
+                          "Delete",
+                          style: AppTextStyles.poppins(
+                            fontSize: AppFontSizes.s14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.error,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.lightGray,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: const Icon(Icons.more_vert, size: 18, color: AppColors.foreground),
                 ),
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              const Icon(Icons.phone_outlined, size: 14, color: AppColors.mutedForeground),
+              const SizedBox(width: 6),
+              Text(
+                address.phone,
+                style: AppTextStyles.poppins(
+                  fontSize: AppFontSizes.s13,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.mutedForeground,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "${address.street}, ${address.city}, ${address.state} - ${address.zipCode}",
+            style: AppTextStyles.poppins(
+              fontSize: AppFontSizes.s13,
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          if (!address.isDefault) ...[
+            const SizedBox(height: 12),
+            const Divider(height: 1),
+            const SizedBox(height: 8),
+            InkWell(
+              onTap: onSetDefault,
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.check_circle_outline, size: 16, color: AppColors.accent),
+                    const SizedBox(width: 8),
+                    Text(
+                      "Set as primary address",
+                      style: AppTextStyles.poppins(
+                        fontSize: AppFontSizes.s13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.accent,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
-  }
-
-  IconData _getTypeIcon(String type) {
-    switch (type.toLowerCase()) {
-      case 'work': return Icons.work_outline;
-      case 'other': return Icons.location_on_outlined;
-      default: return Icons.home_outlined;
-    }
   }
 }

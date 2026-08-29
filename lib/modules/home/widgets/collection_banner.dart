@@ -21,8 +21,8 @@ class CollectionBanner extends StatelessWidget {
             textScaler: const TextScaler.linear(1.0),
           ),
           child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: isMobile ? 16 : 32,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 0,
               vertical: 20,
             ),
             child: isMobile

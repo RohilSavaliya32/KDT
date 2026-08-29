@@ -197,10 +197,7 @@ class _ViewModel {
 
   // Main Padding
   double get horizontalPadding {
-    if (isVerySmall) return 12;
-    if (isMobile) return 16;
-    if (isTablet) return 24;
-    return 32;
+    return 0;
   }
 
   // Title

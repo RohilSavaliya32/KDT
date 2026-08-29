@@ -142,10 +142,7 @@ class _ViewModel {
   bool get isDesktop => width >= 1024;
 
   double get horizontalPadding {
-    if (isVerySmall) return 12;
-    if (isMobile) return 16;
-    if (isTablet) return 24;
-    return 32;
+    return 0;
   }
 
   double get verticalPadding {

@@ -378,7 +378,7 @@ class _DiamondCardViewState extends State<DiamondCardView> {
                   ),
                   SizedBox(height: vm.tinySpacing),
                   Text(
-                    "${diamond.cut} • ${diamond.color} • ${diamond.clarity}",
+                    "${diamond.carat.toStringAsFixed(2)} Ct • ${diamond.cut} • ${diamond.color} • ${diamond.clarity}",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.poppins(
@@ -392,7 +392,7 @@ class _DiamondCardViewState extends State<DiamondCardView> {
                     children: [
                       Expanded(
                         child: Text(
-                          diamond.certNumber,
+                          "${diamond.certification} ${diamond.certNumber}",
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: AppTextStyles.poppins(color: AppColors.giaBlue, fontSize: 8),
@@ -413,7 +413,7 @@ class _DiamondCardViewState extends State<DiamondCardView> {
                       ),
                     ],
                   ),
-                  const Divider(height: 16),
+                  const Divider(height: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -425,7 +425,7 @@ class _DiamondCardViewState extends State<DiamondCardView> {
                           color: Colors.black,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Row(
                         children: [
                           if (diamond.originalPrice > diamond.price)
@@ -565,7 +565,13 @@ class _ViewModel {
 
   int get crossAxisCount => (isVerySmall || isMobile) ? 2 : (isTablet ? 3 : 4);
   double get gridSpacing => isVerySmall ? 8 : (isMobile ? 10 : 12);
-  double get cardHeight => isVerySmall ? 325 : (isMobile ? 345 : 445);
+
+  double get cardWidth =>
+      (width - (crossAxisCount - 1) * gridSpacing) / crossAxisCount;
+
+  double get contentHeight => isVerySmall ? 125 : (isMobile ? 135 : 148);
+
+  double get cardHeight => cardWidth + contentHeight;
   double get cardRadius => AppDecorations.cardRadius;
   double get contentPadding => isVerySmall ? 6 : (isMobile ? 8 : 10);
   double get tinySpacing => isVerySmall ? 2 : (isMobile ? 3 : 4);

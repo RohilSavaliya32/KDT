@@ -9,15 +9,28 @@ import '../address_repository.dart';
 
 class AddressController extends GetxController {
   final AddressRepository repository;
+
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   AddressController(this.repository);
 
+  // =========================
+  // Loading / Error
+  // =========================
+
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
 
+  // =========================
+  // Address Data
+  // =========================
+
   final RxList<AddressModel> addresses = <AddressModel>[].obs;
   final Rxn<AddressModel> editingAddress = Rxn<AddressModel>();
+
+  // =========================
+  // Controllers
+  // =========================
 
   final fullNameController = TextEditingController();
   final phoneController = TextEditingController();
@@ -26,6 +39,16 @@ class AddressController extends GetxController {
   final stateController = TextEditingController();
   final countryController = TextEditingController();
   final zipCodeController = TextEditingController();
+
+  // =========================
+  // Validation
+  // =========================
+
+  final RxString phoneError = ''.obs;
+
+  // =========================
+  // Address Options
+  // =========================
 
   final RxBool isDefault = false.obs;
 
@@ -49,39 +72,54 @@ class AddressController extends GetxController {
     stateController.dispose();
     countryController.dispose();
     zipCodeController.dispose();
+
     super.onClose();
   }
+
+  // =========================
+  // Address Type
+  // =========================
 
   void setAddressType(String type) {
     selectedType.value = type;
   }
 
+  // =========================
+  // Current Location
+  // =========================
+
   Future<void> getCurrentLocation() async {
     try {
       isLoading.value = true;
 
-      // 1. Check if location services are enabled
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      // 1. Check location service
+      final bool serviceEnabled =
+      await Geolocator.isLocationServiceEnabled();
+
       if (!serviceEnabled) {
         Get.snackbar(
           "Location Services Disabled",
           "Please enable location services in your device settings to use this feature.",
           snackPosition: SnackPosition.TOP,
         );
+
         return;
       }
 
-      // 2. Check and request permission using Geolocator directly (often more reliable on iOS)
-      LocationPermission permission = await Geolocator.checkPermission();
-      
+      // 2. Check permission
+      LocationPermission permission =
+      await Geolocator.checkPermission();
+
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
+
         if (permission == LocationPermission.denied) {
           Get.snackbar(
             "Location Permission Denied",
             "Location access is required to automatically fill your address details.",
             snackPosition: SnackPosition.TOP,
           );
+
           return;
         }
       }
@@ -96,38 +134,44 @@ class AddressController extends GetxController {
             child: const Text("Settings"),
           ),
         );
+
         return;
       }
 
       // 3. Get current position
-      Position position = await Geolocator.getCurrentPosition(
+      final Position position =
+      await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      // 4. Get address from coordinates
-      List<Placemark> placemarks = await placemarkFromCoordinates(
+      // 4. Reverse geocode
+      final List<Placemark> placemarks =
+      await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
       );
 
       if (placemarks.isNotEmpty) {
-        Placemark place = placemarks[0];
+        final Placemark place = placemarks[0];
 
-        // Format street: House number + Street name
-        String street = [
+        final String street = [
           place.name,
           place.subLocality,
-          place.thoroughfare
-        ].where((e) => e != null && e.isNotEmpty).join(", ");
+          place.thoroughfare,
+        ]
+            .where((e) => e != null && e.isNotEmpty)
+            .join(", ");
 
         streetController.text = street;
         cityController.text = place.locality ?? "";
-        stateController.text = place.administrativeArea ?? "";
+        stateController.text =
+            place.administrativeArea ?? "";
         countryController.text = place.country ?? "";
         zipCodeController.text = place.postalCode ?? "";
       }
     } catch (e) {
       debugPrint("Location Error: $e");
+
       Get.snackbar(
         "Location Error",
         "We couldn't fetch your current location. Please enter the details manually.",
@@ -138,12 +182,17 @@ class AddressController extends GetxController {
     }
   }
 
+  // =========================
+  // Get Addresses
+  // =========================
+
   Future<void> getAddresses() async {
     try {
       isLoading.value = true;
       errorMessage.value = '';
 
       final result = await repository.getAddresses();
+
       addresses.assignAll(result);
     } catch (e) {
       errorMessage.value = e.toString();
@@ -152,21 +201,39 @@ class AddressController extends GetxController {
     }
   }
 
+  // =========================
+  // Fill Form - Edit
+  // =========================
+
   void fillForm(AddressModel address) {
     editingAddress.value = address;
+
     fullNameController.text = address.fullName;
+
     phoneController.text = address.phone;
+
     streetController.text = address.street;
     cityController.text = address.city;
     stateController.text = address.state;
     countryController.text = address.country;
     zipCodeController.text = address.zipCode;
+
     isDefault.value = address.isDefault;
-    selectedType.value = address.type.isNotEmpty ? address.type : 'Home';
+
+    selectedType.value =
+    address.type.isNotEmpty ? address.type : 'Home';
+
+    // Clear old validation error
+    phoneError.value = '';
   }
+
+  // =========================
+  // Clear Form
+  // =========================
 
   void clearForm() {
     editingAddress.value = null;
+
     fullNameController.clear();
     phoneController.clear();
     streetController.clear();
@@ -174,17 +241,74 @@ class AddressController extends GetxController {
     stateController.clear();
     countryController.clear();
     zipCodeController.clear();
+
+    phoneError.value = '';
+
     formKey.currentState?.reset();
+
     isDefault.value = false;
+
     selectedType.value = 'Home';
+
     selectedCountryCode.value = '+91';
     selectedCountryFlag.value = '🇮🇳';
     selectedCountryIso.value = 'IN';
   }
 
+  // =========================
+  // SAVE ADDRESS
+  // =========================
+
   Future<void> saveAddress() async {
+    if (isLoading.value) return;
+
     final formState = formKey.currentState;
-    if (formState == null || !formState.validate()) return;
+
+    if (formState == null) return;
+
+    // -------------------------
+    // Validate normal fields
+    // -------------------------
+
+    final bool isValid = formState.validate();
+
+    // -------------------------
+    // Validate phone manually
+    // -------------------------
+
+    final String phone = phoneController.text.trim();
+
+    if (phone.isEmpty) {
+      phoneError.value = 'Please enter your phone number';
+
+      // Make other form fields show their errors
+      formState.validate();
+
+      return;
+    }
+
+    final String? phoneValidationError =
+    phoneValidator(phone);
+
+    if (phoneValidationError != null) {
+      phoneError.value = phoneValidationError;
+
+      formState.validate();
+
+      return;
+    }
+
+    // Phone is valid
+    phoneError.value = '';
+
+    // Stop if any normal field is invalid
+    if (!isValid) {
+      return;
+    }
+
+    // -------------------------
+    // Create / Update
+    // -------------------------
 
     if (editingAddress.value == null) {
       await createAddress();
@@ -193,8 +317,28 @@ class AddressController extends GetxController {
     }
   }
 
+  // =========================
+  // UPDATE ADDRESS
+  // =========================
+
   Future<void> updateAddress() async {
     if (editingAddress.value == null) return;
+
+    // Double safety validation
+    final String phone = phoneController.text.trim();
+
+    if (phone.isEmpty) {
+      phoneError.value = 'Please enter your phone number';
+      return;
+    }
+
+    final String? phoneValidationError =
+    phoneValidator(phone);
+
+    if (phoneValidationError != null) {
+      phoneError.value = phoneValidationError;
+      return;
+    }
 
     try {
       isLoading.value = true;
@@ -203,7 +347,8 @@ class AddressController extends GetxController {
         id: editingAddress.value!.id,
         type: selectedType.value,
         fullName: fullNameController.text.trim(),
-        phone: "${selectedCountryCode.value}${phoneController.text.trim()}",
+        phone:
+        "${selectedCountryCode.value}${phoneController.text.trim()}",
         street: streetController.text.trim(),
         city: cityController.text.trim(),
         state: stateController.text.trim(),
@@ -213,9 +358,13 @@ class AddressController extends GetxController {
       );
 
       await repository.updateAddress(model);
+
       await getAddresses();
+
       clearForm();
+
       Get.back();
+
       Get.snackbar(
         'Address Updated',
         'Your address changes have been saved successfully.',
@@ -232,7 +381,27 @@ class AddressController extends GetxController {
     }
   }
 
+  // =========================
+  // CREATE ADDRESS
+  // =========================
+
   Future<void> createAddress() async {
+    // Double safety validation
+    final String phone = phoneController.text.trim();
+
+    if (phone.isEmpty) {
+      phoneError.value = 'Please enter your phone number';
+      return;
+    }
+
+    final String? phoneValidationError =
+    phoneValidator(phone);
+
+    if (phoneValidationError != null) {
+      phoneError.value = phoneValidationError;
+      return;
+    }
+
     try {
       isLoading.value = true;
 
@@ -240,7 +409,8 @@ class AddressController extends GetxController {
         id: '',
         type: selectedType.value,
         fullName: fullNameController.text.trim(),
-        phone: "${selectedCountryCode.value}${phoneController.text.trim()}",
+        phone:
+        "${selectedCountryCode.value}${phoneController.text.trim()}",
         street: streetController.text.trim(),
         city: cityController.text.trim(),
         state: stateController.text.trim(),
@@ -250,9 +420,13 @@ class AddressController extends GetxController {
       );
 
       await repository.createAddress(model);
+
       await getAddresses();
+
       clearForm();
+
       Get.back();
+
       Get.snackbar(
         'Address Added',
         'Your new delivery address has been saved successfully.',
@@ -269,14 +443,27 @@ class AddressController extends GetxController {
     }
   }
 
+  // =========================
+  // DELETE ADDRESS
+  // =========================
+
   Future<void> deleteAddress(String id) async {
     await repository.deleteAddress(id);
-    addresses.removeWhere((e) => e.id == id);
+
+    addresses.removeWhere(
+          (e) => e.id == id,
+    );
   }
+
+  // =========================
+  // SET DEFAULT
+  // =========================
 
   Future<void> setAsDefault(String id) async {
     try {
-      final address = addresses.firstWhereOrNull((e) => e.id == id);
+      final address =
+      addresses.firstWhereOrNull((e) => e.id == id);
+
       if (address == null) return;
 
       final model = AddressModel(
@@ -293,6 +480,7 @@ class AddressController extends GetxController {
       );
 
       await repository.updateAddress(model);
+
       await getAddresses();
     } catch (e) {
       Get.snackbar(
@@ -303,51 +491,101 @@ class AddressController extends GetxController {
     }
   }
 
+  // =========================
+  // VALIDATORS
+  // =========================
+
   String? fullNameValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter full name';
-    if (v.length < 3) return 'Full name must be at least 3 characters';
+
+    if (v.isEmpty) {
+      return 'Please enter your full name';
+    }
+
+    if (v.length < 3) {
+      return 'Name must be at least 3 characters long';
+    }
+
     return null;
   }
 
   String? phoneValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter phone number';
-    if (!RegExp(r'^[0-9]{10,15}$').hasMatch(v)) {
-      return 'Please enter a valid phone number';
+
+    if (v.isEmpty) {
+      return 'Please enter your phone number';
     }
+
+    if (!RegExp(r'^[0-9]+$').hasMatch(v)) {
+      return 'Phone number must contain only digits';
+    }
+
+    if (v.length < 10 || v.length > 12) {
+      return 'Please enter a valid 10-12 digit phone number';
+    }
+
     return null;
   }
 
   String? streetValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter street address';
-    if (v.length < 5) return 'Street address is too short';
+
+    if (v.isEmpty) {
+      return 'Please enter your detailed address';
+    }
+
+    if (v.length < 5) {
+      return 'Please enter a more detailed address';
+    }
+
     return null;
   }
 
   String? cityValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter city';
+
+    if (v.isEmpty) {
+      return 'Please enter your city';
+    }
+
     return null;
   }
 
   String? stateValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter state';
+
+    if (v.isEmpty) {
+      return 'Please enter your state';
+    }
+
     return null;
   }
 
   String? countryValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter country';
+
+    if (v.isEmpty) {
+      return 'Please enter your country';
+    }
+
     return null;
   }
 
   String? zipCodeValidator(String? value) {
     final v = value?.trim() ?? '';
-    if (v.isEmpty) return 'Please enter zip code';
-    if (v.length < 4) return 'Please enter a valid zip code';
+
+    if (v.isEmpty) {
+      return 'Please enter your pincode';
+    }
+
+    if (!RegExp(r'^[0-9]+$').hasMatch(v)) {
+      return 'Pincode must contain only digits';
+    }
+
+    if (v.length < 4 || v.length > 8) {
+      return 'Please enter a valid pincode';
+    }
+
     return null;
   }
 }

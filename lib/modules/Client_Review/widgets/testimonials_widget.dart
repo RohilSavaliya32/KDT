@@ -93,7 +93,7 @@ class _TestimonialsWidgetState extends State<TestimonialsWidget> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
         vertical: 40,
-        horizontal: 16,
+        horizontal: 0,
       ),
       color: AppColors.app_back,
       child: Column(
