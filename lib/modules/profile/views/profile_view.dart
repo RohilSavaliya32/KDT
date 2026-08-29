@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:kdt/utils/app_colors.dart';
 import 'package:kdt/utils/app_text_style.dart';
 import 'package:kdt/widgets/kdt_shimmer.dart';
@@ -89,33 +90,37 @@ class ProfileView extends GetView<ProfileController> {
                                           color: AppColors.glassWhite,
                                           width: 3,
                                         ),
-                                        image: imageUrl.isNotEmpty
-                                            ? DecorationImage(
-                                          image: NetworkImage(imageUrl),
-                                          fit: BoxFit.cover,
-                                        )
-                                            : null,
                                       ),
-                                      child: imageUrl.isEmpty
-                                          ? Center(
-                                        child: Text(
-                                          controller.name.value
-                                              .trim()
-                                              .isNotEmpty
-                                              ? controller.name.value
-                                              .trim()[0]
-                                              .toUpperCase()
-                                              : "GU",
-                                          style:
-                                          AppTextStyles.poppins(
-                                            fontSize: 28,
-                                            fontWeight: FontWeight.w400,
-                                            color:
-                                            AppColors.foreground,
-                                          ),
-                                        ),
-                                      )
-                                          : null,
+                                      child: ClipOval(
+                                        child: imageUrl.isNotEmpty
+                                            ? CachedNetworkImage(
+                                                imageUrl: imageUrl,
+                                                fit: BoxFit.cover,
+                                                placeholder: (context, url) =>
+                                                    const KdtShimmer(
+                                                  child: KdtSkeleton.circle(),
+                                                ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(Icons.error),
+                                              )
+                                            : Center(
+                                                child: Text(
+                                                  controller.name.value
+                                                          .trim()
+                                                          .isNotEmpty
+                                                      ? controller.name.value
+                                                          .trim()[0]
+                                                          .toUpperCase()
+                                                      : "GU",
+                                                  style: AppTextStyles.poppins(
+                                                    fontSize: 28,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: AppColors.foreground,
+                                                  ),
+                                                ),
+                                              ),
+                                      ),
                                     );
                                   }),
 

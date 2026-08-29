@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:kdt/utils/app_decorations.dart';
 import 'package:kdt/modules/fade_slide_in.dart';
+import 'package:kdt/widgets/kdt_shimmer.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_text_style.dart';
 import '../../Loader/Helper/Loader_helper.dart';
@@ -527,24 +529,25 @@ class _WishlistDiamondCard extends StatelessWidget {
                 const EdgeInsets.all(1),
                 child: Hero(
                   tag: 'diamond_${diamond.id}',
-                  child: Image.network(
-                    _formatImageUrl(diamond.image),
+                  child: CachedNetworkImage(
+                    imageUrl: _formatImageUrl(diamond.image),
                     width: double.infinity,
                     height: double.infinity,
                     fit: BoxFit.fill,
-                    errorBuilder: (
-                        context,
-                        error,
-                        stackTrace,
-                        ) {
-                      return Padding(
-                        padding: const EdgeInsets.all(30.0),
-                        child: Image.asset(
-                          'assets/shapes/logo.png',
-                          fit: BoxFit.contain,
-                        ),
-                      );
-                    },
+                    placeholder: (context, url) => const KdtShimmer(
+                      child: KdtSkeleton(
+                        width: double.infinity,
+                        height: double.infinity,
+                        borderRadius: 0,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Image.asset(
+                        'assets/shapes/logo.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
                 ),
               ),

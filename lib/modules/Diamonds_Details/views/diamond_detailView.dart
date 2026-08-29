@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:kdt/modules/fade_slide_in.dart';
+import 'package:kdt/widgets/kdt_shimmer.dart';
 
 import '../../../data/Setting_Cont.dart';
 import '../../../routes/app_routes.dart';
@@ -879,14 +881,20 @@ class _DiamondDetailBody extends StatelessWidget {
         gaplessPlayback: true,
       );
     } else {
-      image = Image.network(
-        src,
+      image = CachedNetworkImage(
+        imageUrl: src,
         key: key,
         fit: BoxFit.fill,
         width: double.infinity,
         height: double.infinity,
-        gaplessPlayback: true,
-        errorBuilder: (context, error, stackTrace) => Padding(
+        placeholder: (context, url) => const KdtShimmer(
+          child: KdtSkeleton(
+            width: double.infinity,
+            height: double.infinity,
+            borderRadius: 0,
+          ),
+        ),
+        errorWidget: (context, url, error) => Padding(
           padding: const EdgeInsets.all(20.0),
           child: Image.asset('assets/shapes/logo.png', fit: BoxFit.contain),
         ),

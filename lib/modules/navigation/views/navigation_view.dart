@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:kdt/modules/dimonds/views/diamonds_view.dart';
 import 'package:kdt/utils/app_decorations.dart';
 import 'package:kdt/utils/app_text_style.dart';
+import 'package:kdt/widgets/kdt_shimmer.dart';
 import '../../../utils/app_colors.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../cart/views/cart_view.dart';
@@ -213,21 +215,32 @@ class NavigationView extends StatelessWidget {
 
     return isLoggedIn
         ? CircleAvatar(
-      radius: 18,
-      backgroundColor: const Color(0xFFE5E5E5),
-      backgroundImage:
-      imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
-      child: imageUrl.isEmpty
-          ? Text(
-        _getProfileInitial(userName),
-        style: const TextStyle(
-          color: Colors.black87,
-          fontSize: AppFontSizes.s16,
-          fontWeight: FontWeight.w600,
-        ),
-      )
-          : null,
-    )
+            radius: 18,
+            backgroundColor: const Color(0xFFE5E5E5),
+            child: ClipOval(
+              child: imageUrl.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      width: 36,
+                      height: 36,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const KdtShimmer(
+                        child: KdtSkeleton.circle(),
+                      ),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                    )
+                  : Center(
+                      child: Text(
+                        _getProfileInitial(userName),
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: AppFontSizes.s16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+            ),
+          )
         : Container(
       height: 36,
       padding: const EdgeInsets.symmetric(horizontal: 14),
