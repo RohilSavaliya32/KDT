@@ -16,6 +16,7 @@ import '../../Review/Model/Review_Model.dart';
 import '../../Review/Review_Controller/Review_Controller.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../home/widgets/feature_row.dart';
+import '../../login/views/login_view.dart';
 import '../../profile/controllers/profile_controller.dart';
 import '../../translations/Translation_key/translation_keys.dart';
 import '../controllers/DiamondDetailView_controller.dart';
@@ -29,11 +30,13 @@ class DiamondDetailView extends StatefulWidget {
 
 class _DiamondDetailViewState extends State<DiamondDetailView> {
   late final DiamondDetailViewController controller;
+  String? _initialId;
 
   @override
   void initState() {
     super.initState();
 
+    _initialId = _extractIdFromArgs(Get.arguments);
     controller = Get.find<DiamondDetailViewController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -48,6 +51,15 @@ class _DiamondDetailViewState extends State<DiamondDetailView> {
         );
       } catch (_) {}
     });
+  }
+
+  String? _extractIdFromArgs(dynamic arguments) {
+    if (arguments is String) return arguments;
+    if (arguments is Map) {
+      final value = arguments['id'] ?? arguments['diamondId'];
+      return value?.toString();
+    }
+    return null;
   }
 
   @override
@@ -147,9 +159,13 @@ class _DiamondDetailViewState extends State<DiamondDetailView> {
       }
 
       return FadeSlideIn(
+        key: ValueKey(controller.diamond.value?.id ?? 'body'),
         duration: const Duration(milliseconds: 500),
         slideOffset: 15,
-        child: _DiamondDetailBody(controller: controller),
+        child: _DiamondDetailBody(
+          controller: controller,
+          initialId: _initialId,
+        ),
       );
     });
   }
@@ -200,9 +216,13 @@ class _DiamondDetailViewState extends State<DiamondDetailView> {
 }
 
 class _DiamondDetailBody extends StatelessWidget {
-  const _DiamondDetailBody({required this.controller});
+  const _DiamondDetailBody({
+    required this.controller,
+    this.initialId,
+  });
 
   final DiamondDetailViewController controller;
+  final String? initialId;
 
   @override
   Widget build(BuildContext context) {
@@ -211,11 +231,10 @@ class _DiamondDetailBody extends StatelessWidget {
         textScaler: const TextScaler.linear(1.0),
       ),
       child: Obx(() {
-        final diamond = controller.diamond.value!;
+        final diamond = controller.diamond.value;
+        if (diamond == null) return const SizedBox.shrink();
+
         final images = controller.images;
-        final safeIndex = images.isEmpty
-            ? 0
-            : controller.selectedImageIndex.value.clamp(0, images.length - 1);
 
         final screenSize = MediaQuery.of(context).size;
         final imageBoxHeight = (screenSize.width * 0.6).clamp(240.0, 360.0);
@@ -231,11 +250,10 @@ class _DiamondDetailBody extends StatelessWidget {
               _buildImageSection(
                 context,
                 images,
-                safeIndex,
                 imageBoxHeight,
               ),
               const SizedBox(height: 24),
-              _buildHeaderSection(context, diamond),
+              _buildHeaderSection(context, diamond, reviewController),
               const SizedBox(height: 20),
               _buildSpecSection(context, diamond),
               const SizedBox(height: 20),
@@ -261,45 +279,52 @@ class _DiamondDetailBody extends StatelessWidget {
     );
   }
 
-  Widget _buildImageSection(BuildContext context, List<String> images,
-      int safeIndex, double imageBoxHeight) {
+  Widget _buildImageSection(
+      BuildContext context, List<String> images, double imageBoxHeight) {
     return Column(
       children: [
         Stack(
           children: [
-            Container(
-              width: double.infinity,
-              height: imageBoxHeight,
-              padding: EdgeInsets.zero,
-              child: Center(
-                child: images.isEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.all(40.0),
-                        child: Image.asset('assets/shapes/logo.png',
-                            fit: BoxFit.contain),
-                      )
-                    : PageView.builder(
-                        key: const PageStorageKey("diamond_images"),
-                        controller: controller.imagePageController,
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: images.length,
-                        onPageChanged: (index) {
-                          // Only update if not currently performing a programmatic jump
-                          // to avoid the "flickering" highlight effect
-                          if (controller.imagePageController.page == index.toDouble()) {
-                            controller.selectedImageIndex.value = index;
-                          }
-                        },
-                        itemBuilder: (context, index) {
-                          return _buildDiamondImage(
-                            images[index],
-                            key: ValueKey(images[index]),
-                          );
-                        },
-                      ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                width: double.infinity,
+                height: imageBoxHeight,
+                padding: EdgeInsets.zero,
+                decoration: BoxDecoration(
+                  color: AppColors.lightGray.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
+                  child: images.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.all(40.0),
+                          child: Image.asset('assets/shapes/logo.png',
+                              fit: BoxFit.contain),
+                        )
+                      : PageView.builder(
+                          key: const PageStorageKey("diamond_images"),
+                          controller: controller.imagePageController,
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: images.length,
+                          onPageChanged: (index) {
+                            if (controller.imagePageController.page ==
+                                index.toDouble()) {
+                              controller.selectedImageIndex.value = index;
+                            }
+                          },
+                          itemBuilder: (context, index) {
+                            return _buildDiamondImage(
+                              images[index],
+                              key: ValueKey(images[index]),
+                              useHero: index == 0,
+                            );
+                          },
+                        ),
+                ),
               ),
             ),
-            if (controller.diamond.value!.isLabGrown)
+            if (controller.diamond.value?.isLabGrown ?? false)
               Positioned(
                 top: 12,
                 left: 12,
@@ -326,57 +351,61 @@ class _DiamondDetailBody extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         if (images.length > 1)
-          SizedBox(
-            height: 72,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: images.length,
-              itemBuilder: (context, index) {
-                final isSelected = safeIndex == index;
-                return GestureDetector(
-                  onTap: () async {
-                    if (controller.selectedImageIndex.value == index) return;
+          Obx(() {
+            final safeIndex = controller.selectedImageIndex.value
+                .clamp(0, images.length - 1);
 
-                    // Immediately update highlight for responsiveness
-                    controller.selectedImageIndex.value = index;
+            return SizedBox(
+              height: 72,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: images.length,
+                itemBuilder: (context, index) {
+                  final isSelected = safeIndex == index;
+                  return GestureDetector(
+                    onTap: () async {
+                      if (controller.selectedImageIndex.value == index) return;
 
-                    await controller.imagePageController.animateToPage(
-                      index,
-                      duration: const Duration(milliseconds: 450),
-                      curve: Curves.easeInOutCubic,
-                    );
-                  },
-                  child: Container(
-                    width: 70,
-                    margin: const EdgeInsets.only(right: 10),
-                    padding: EdgeInsets.zero,
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: isSelected
-                            ? AppColors.primaryDark
-                            : AppColors.borderGray,
-                        width: isSelected ? 2 : 1,
+                      controller.selectedImageIndex.value = index;
+
+                      await controller.imagePageController.animateToPage(
+                        index,
+                        duration: const Duration(milliseconds: 450),
+                        curve: Curves.easeInOutCubic,
+                      );
+                    },
+                    child: Container(
+                      width: 70,
+                      margin: const EdgeInsets.only(right: 10),
+                      padding: EdgeInsets.zero,
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isSelected
+                              ? AppColors.primaryDark
+                              : AppColors.borderGray,
+                          width: isSelected ? 2 : 1,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: _buildDiamondImage(images[index],
+                            key: ValueKey('thumb_${index}_${images[index]}'),
+                            useHero: false),
                       ),
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: _buildDiamondImage(images[index],
-                          key: ValueKey('thumb_${index}_${images[index]}')),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+                  );
+                },
+              ),
+            );
+          }),
       ],
     );
   }
 
-  Widget _buildHeaderSection(BuildContext context, dynamic diamond) {
-    final reviewController = Get.find<ReviewController>();
-
+  Widget _buildHeaderSection(
+      BuildContext context, dynamic diamond, ReviewController reviewController) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -499,13 +528,13 @@ class _DiamondDetailBody extends StatelessWidget {
             children: [
               _buildSpecItem(
                 context,
-                TranslationKeys.carat.tr.toUpperCase(),
-                diamond.carat.toString(),
+                "CTS",
+                "${diamond.carat} ct",
               ),
               _buildSpecItem(
                 context,
-                TranslationKeys.cutGrade.tr.toUpperCase(),
-                diamond.cut,
+                TranslationKeys.color.tr.toUpperCase(),
+                diamond.color,
               ),
             ],
           ),
@@ -515,13 +544,13 @@ class _DiamondDetailBody extends StatelessWidget {
             children: [
               _buildSpecItem(
                 context,
-                TranslationKeys.color.tr.toUpperCase(),
-                diamond.color,
+                TranslationKeys.clarity.tr.toUpperCase(),
+                diamond.clarity,
               ),
               _buildSpecItem(
                 context,
-                TranslationKeys.clarity.tr.toUpperCase(),
-                diamond.clarity,
+                TranslationKeys.cutGrade.tr.toUpperCase(),
+                diamond.cut,
               ),
             ],
           ),
@@ -658,72 +687,65 @@ class _DiamondDetailBody extends StatelessWidget {
   }
 
   Widget _buildContactSection(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: _contactBox(
-                  context: context,
-                  title: TranslationKeys.whatsapp.tr,
-                  onTap: controller.openWhatsApp,
-                  iconWidget: SvgPicture.asset(
-                    "assets/icon/2.svg",
-                    height: 22,
-                    width: 22,
-                  ),
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _contactBox(
+                context: context,
+                title: TranslationKeys.whatsapp.tr,
+                onTap: controller.openWhatsApp,
+                iconWidget: SvgPicture.asset(
+                  "assets/icon/2.svg",
+                  height: 22,
+                  width: 22,
                 ),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _contactBox(
-                  context: context,
-                  title: TranslationKeys.kakaoTalk.tr,
-                  onTap: () {
-                    final settings = Get.find<SettingsDataController>().contact;
-                    if (settings != null) {
-                      controller.openKakao(settings);
-                    }
-                  },
-                  iconWidget: SvgPicture.asset(
-                    "assets/icon/1.svg",
-                    height: 22,
-                    width: 22,
-                  ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _contactBox(
+                context: context,
+                title: TranslationKeys.kakaoTalk.tr,
+                onTap: () {
+                  final settings = Get.find<SettingsDataController>().contact;
+                  if (settings != null) {
+                    controller.openKakao(settings);
+                  }
+                },
+                iconWidget: SvgPicture.asset(
+                  "assets/icon/1.svg",
+                  height: 22,
+                  width: 22,
                 ),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _contactBox(
-                  context: context,
-                  title: TranslationKeys.wechat.tr,
-                  onTap: () {
-                    final settings = Get.find<SettingsDataController>().contact;
-                    if (settings != null) {
-                      controller.openWechat(settings);
-                    }
-                  },
-                  iconWidget: SvgPicture.asset(
-                    "assets/icon/3.svg",
-                    height: 22,
-                    width: 22,
-                  ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _contactBox(
+                context: context,
+                title: TranslationKeys.wechat.tr,
+                onTap: () {
+                  final settings = Get.find<SettingsDataController>().contact;
+                  if (settings != null) {
+                    controller.openWechat(settings);
+                  }
+                },
+                iconWidget: SvgPicture.asset(
+                  "assets/icon/3.svg",
+                  height: 22,
+                  width: 22,
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _buildPhoneCallSection(context),
-          const SizedBox(height: 12),
-          _buildAppointmentButton(context),
-        ],
-      ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _buildPhoneCallSection(context),
+        const SizedBox(height: 12),
+        _buildAppointmentButton(context),
+      ],
     );
   }
 
@@ -843,7 +865,7 @@ class _DiamondDetailBody extends StatelessWidget {
     );
   }
 
-  Widget _buildDiamondImage(String src, {Key? key}) {
+  Widget _buildDiamondImage(String src, {Key? key, bool useHero = false}) {
     final diamondId = controller.diamond.value?.id ?? '';
 
     Widget image;
@@ -871,9 +893,9 @@ class _DiamondDetailBody extends StatelessWidget {
       );
     }
 
-    // Only apply Hero to the first image (or if there's only one image) 
-    // to match the list view's hero tag
-    if (diamondId.isNotEmpty && controller.images.isNotEmpty && src == controller.images.first) {
+    // Fix: Only apply Hero if diamondId matches the initialId intended for this page.
+    // This prevents Hero tag collisions when multiple DiamondDetailViews share a controller (GetX lazyPut).
+    if (useHero && diamondId.isNotEmpty && (initialId == null || diamondId == initialId)) {
       return Hero(
         tag: 'diamond_$diamondId',
         child: image,
@@ -978,6 +1000,7 @@ class _SpecTabsSection extends StatefulWidget {
 
 class _SpecTabsSectionState extends State<_SpecTabsSection> {
   int _selectedTab = 0;
+  bool _showReviewEditor = false;
 
   @override
   Widget build(BuildContext context) {
@@ -988,6 +1011,8 @@ class _SpecTabsSectionState extends State<_SpecTabsSection> {
         const Divider(height: 1),
         const SizedBox(height: 20),
         _buildTabContent(context),
+        const SizedBox(height: 32),
+        _buildReviewsTab(context),
       ],
     );
   }
@@ -1000,11 +1025,6 @@ class _SpecTabsSectionState extends State<_SpecTabsSection> {
           _tabButton(context, 0, TranslationKeys.fullSpecifications.tr),
           _tabButton(context, 1, TranslationKeys.certification.tr),
           _tabButton(context, 2, TranslationKeys.shippingAndReturns.tr),
-          Obx(() => _tabButton(
-                context,
-                3,
-                '${TranslationKeys.customerReviews.tr} (${widget.reviewController.reviews.length})',
-              )),
         ],
       ),
     );
@@ -1045,8 +1065,6 @@ class _SpecTabsSectionState extends State<_SpecTabsSection> {
         return _buildCertificationTab(context);
       case 2:
         return _buildShippingReturnsTab(context);
-      case 3:
-        return _buildReviewsTab(context);
       default:
         return const SizedBox.shrink();
     }
@@ -1272,6 +1290,7 @@ class _SpecTabsSectionState extends State<_SpecTabsSection> {
       final hasUserReview =
           reviewController.reviews.any((r) => r.userId == currentUserId);
       final myReview = reviewController.myReview;
+      final reviewCount = reviewController.reviews.length;
 
       final reviewsToShow = (isEditing && myReview != null)
           ? reviewController.reviews
@@ -1282,17 +1301,80 @@ class _SpecTabsSectionState extends State<_SpecTabsSection> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!isLoggedIn) ...[
-            Text(
-              TranslationKeys.pleaseLoginToWriteReview.tr,
-              style: AppTextStyles.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: AppColors.darkGray,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '${TranslationKeys.customerReviews.tr} ',
+                        style: AppTextStyles.lora(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '($reviewCount)',
+                        style: AppTextStyles.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.darkGray,
+                        ),
+                      ),
+                    ],
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-          ] else if (!hasUserReview || isEditing) ...[
+              const SizedBox(width: 8),
+              OutlinedButton(
+                onPressed: () {
+                  if (!isLoggedIn) {
+                    showLoginModalDialog(context);
+                    return;
+                  }
+
+                  if (!_showReviewEditor &&
+                      !isEditing &&
+                      hasUserReview &&
+                      myReview != null) {
+                    reviewController.startEditReview(myReview);
+                  }
+
+                  setState(() {
+                    _showReviewEditor = !_showReviewEditor;
+                    if (!_showReviewEditor && isEditing) {
+                      reviewController.cancelEdit();
+                    }
+                  });
+                },
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.borderGray),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4)),
+                ),
+                child: Text(
+                  (_showReviewEditor || isEditing)
+                      ? TranslationKeys.cancel.tr
+                      : (hasUserReview
+                          ? TranslationKeys.editYourReview.tr
+                          : TranslationKeys.writeAReview.tr),
+                  style: AppTextStyles.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          if (_showReviewEditor || isEditing) ...[
             _buildReviewEditor(
               context: context,
               reviewController: reviewController,
@@ -1306,54 +1388,10 @@ class _SpecTabsSectionState extends State<_SpecTabsSection> {
             ),
             const SizedBox(height: 20),
           ],
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                TranslationKeys.allReviews.tr,
-                style: AppTextStyles.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              if (isLoggedIn && hasUserReview && myReview != null && !isEditing)
-                ElevatedButton.icon(
-                  onPressed: () => reviewController.startEditReview(myReview),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.foreground,
-                    foregroundColor: AppColors.white,
-                    elevation: 0,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                  ),
-                  icon: const Icon(Icons.edit_outlined,
-                      size: 16, color: AppColors.white),
-                  label: Text(
-                    TranslationKeys.editReview.tr,
-                    style: AppTextStyles.poppins(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.white,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 12),
           if (reviewController.isLoading.value)
             const Center(child: CircularProgressIndicator())
-          else if (reviewsToShow.isEmpty)
-            Text(
-              TranslationKeys.noReviewsYet.tr,
-              style: AppTextStyles.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: AppColors.darkGray,
-              ),
-            )
+          else if (reviewsToShow.isEmpty && !isEditing && !_showReviewEditor)
+            _buildEmptyReviewsView(context)
           else
             Column(
                 children: reviewsToShow
@@ -1362,6 +1400,39 @@ class _SpecTabsSectionState extends State<_SpecTabsSection> {
         ],
       );
     });
+  }
+
+  Widget _buildEmptyReviewsView(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      decoration: BoxDecoration(
+        color: AppColors.lightGray.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Text(
+            TranslationKeys.noReviewsYet.tr,
+            style: AppTextStyles.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            TranslationKeys.beTheFirstToReview.tr,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: AppColors.darkGray,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildReviewItem(BuildContext context, ReviewModel review) {
@@ -1431,39 +1502,42 @@ class _SpecTabsSectionState extends State<_SpecTabsSection> {
                   ],
                 ),
               ),
-            Row(
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(5, (index) {
-          final starValue = index + 1.0;
-          IconData icon;
-
-          if (review.rating >= starValue) {
-            icon = Icons.star;
-          } else if (review.rating >= starValue - 0.5) {
-            icon = Icons.star_half;
-          } else {
-            icon = Icons.star_border;
-          }
-
-          return Icon(
-            icon,
-            size: 18,
-            color: AppColors.starColor,
-          );
-        }),
-      ),
             ],
           ),
-          const SizedBox(height: 10),
-          Text(
-            review.comment,
-            style: AppTextStyles.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              height: 1.5,
-              color: AppColors.textSecondary,
-            ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(5, (index) {
+              final starValue = index + 1.0;
+              IconData icon;
+
+              if (review.rating >= starValue) {
+                icon = Icons.star;
+              } else if (review.rating >= starValue - 0.5) {
+                icon = Icons.star_half;
+              } else {
+                icon = Icons.star_border;
+              }
+
+              return Icon(
+                icon,
+                size: 18,
+                color: AppColors.starColor,
+              );
+            }),
           ),
+          if (review.comment.trim().isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Text(
+              review.comment,
+              style: AppTextStyles.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -1518,180 +1592,155 @@ class _SpecTabsSectionState extends State<_SpecTabsSection> {
     required String title,
     required String buttonText,
   }) {
-    final profileController = Get.find<ProfileController>();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Obx(() {
-              final imageUrl = profileController.profileImage.value;
-              final userName = profileController.name.value;
-              final initial =
-                  userName.isNotEmpty ? userName[0].toUpperCase() : 'U';
-
-              return CircleAvatar(
-                radius: 18,
-                backgroundColor: AppColors.lightGray,
-                backgroundImage:
-                    imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
-                child: imageUrl.isEmpty
-                    ? Text(
-                        initial,
-                        style: AppTextStyles.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      )
-                    : null,
-              );
-            }),
-            const SizedBox(width: 10),
-            Text(
-              title,
-              style: AppTextStyles.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.lightGray.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Write a review",
+            style: AppTextStyles.lora(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textPrimary,
             ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Obx(() {
-          // Register dependency on selectedRating.value
-          final rating = reviewController.selectedRating.value;
-
-          return Row(
-            children: List.generate(5, (index) {
-              final starIndex = index + 1;
-              return Builder(builder: (starContext) {
-                return MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: GestureDetector(
-                    onTapDown: (details) {
-                      final RenderBox? box =
-                          starContext.findRenderObject() as RenderBox?;
-                      if (box != null) {
-                        final double starWidth = box.size.width;
-                        final double tapX = details.localPosition.dx;
-
-                        double newRating = starIndex.toDouble();
-                        if (tapX < starWidth / 2) {
-                          newRating -= 0.5;
-                        }
-                        reviewController.selectedRating.value = newRating;
-                      }
-                    },
-                    child: Icon(
-                      rating >= starIndex
-                          ? Icons.star
-                          : (rating >= starIndex - 0.5
-                              ? Icons.star_half
-                              : Icons.star_border),
-                      color: AppColors.starColor,
-                      size: 32,
-                    ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            "Rating",
+            style: AppTextStyles.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Obx(() {
+            final rating = reviewController.selectedRating.value;
+            return Row(
+              children: List.generate(5, (index) {
+                final starIndex = index + 1;
+                return GestureDetector(
+                  onTap: () {
+                    reviewController.selectedRating.value = starIndex.toDouble();
+                  },
+                  child: Icon(
+                    rating >= starIndex ? Icons.star : Icons.star_border,
+                    color: AppColors.starColor,
+                    size: 32,
                   ),
                 );
-              });
-            }),
-          );
-        }),
-        const SizedBox(height: 12),
-        TextField(
-          controller: reviewController.commentController,
-          maxLines: 4,
-          style: AppTextStyles.poppins(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: AppColors.foreground,
+              }),
+            );
+          }),
+          const SizedBox(height: 20),
+          Text(
+            "Review (Optional)",
+            style: AppTextStyles.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
           ),
-          cursorColor: AppColors.accent,
-          decoration: InputDecoration(
-            hintText: TranslationKeys.writeReviewHere.tr,
-            hintStyle: AppTextStyles.poppins(
+          const SizedBox(height: 8),
+          TextField(
+            controller: reviewController.commentController,
+            maxLines: 4,
+            style: AppTextStyles.poppins(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: AppColors.darkGray,
+              color: AppColors.foreground,
             ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.borderGray),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
-            ),
-            contentPadding: const EdgeInsets.all(14),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: SizedBox(
-                height: 48,
-                child: Obx(() {
-                  final hasRating = reviewController.selectedRating.value > 0;
-                  final hasComment =
-                      reviewController.commentController.text.trim().isNotEmpty;
-                  final canSubmit = hasRating && hasComment;
-                  final isSubmitting = reviewController.isSubmitting.value;
-
-                  return ElevatedButton(
-                    onPressed: (!canSubmit || isSubmitting)
-                        ? null
-                        : () => reviewController.submitReview(diamondId),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: canSubmit
-                          ? AppColors.primaryDark
-                          : AppColors.disabledGray,
-                      disabledBackgroundColor: AppColors.disabledGray,
-                      foregroundColor: AppColors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                    ),
-                    child: isSubmitting
-                        ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2, color: AppColors.white),
-                          )
-                        : Text(
-                            buttonText,
-                            style: AppTextStyles.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: canSubmit
-                                  ? AppColors.white
-                                  : AppColors.darkGray,
-                            ),
-                          ),
-                  );
-                }),
+            cursorColor: AppColors.accent,
+            decoration: InputDecoration(
+              hintText: "What did you like or dislike?",
+              hintStyle: AppTextStyles.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: AppColors.darkGray,
               ),
+              filled: true,
+              fillColor: AppColors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: AppColors.borderGray),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: AppColors.borderGray),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
+              ),
+              contentPadding: const EdgeInsets.all(14),
             ),
-            if (reviewController.isEditing) ...[
-              const SizedBox(width: 10),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
               TextButton(
-                onPressed: reviewController.cancelEdit,
+                onPressed: () {
+                  reviewController.cancelEdit();
+                  setState(() => _showReviewEditor = false);
+                },
                 child: Text(
                   TranslationKeys.cancel.tr,
                   style: AppTextStyles.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.foreground,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ),
+              const SizedBox(width: 12),
+              Obx(() {
+                final isSubmitting = reviewController.isSubmitting.value;
+                return ElevatedButton(
+                  onPressed: isSubmitting
+                      ? null
+                      : () async {
+                          final success = await reviewController.submitReview(diamondId);
+                          if (success) {
+                            setState(() => _showReviewEditor = false);
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.foreground,
+                    foregroundColor: AppColors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: isSubmitting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.white,
+                          ),
+                        )
+                      : Text(
+                          "Submit",
+                          style: AppTextStyles.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                );
+              }),
             ],
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }

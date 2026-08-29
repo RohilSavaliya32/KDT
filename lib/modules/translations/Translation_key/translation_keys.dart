@@ -238,6 +238,10 @@ class TranslationKeys {
   static const String allReviews = 'All Reviews';
   static const String noReviewsYet = 'No reviews yet.';
   static const String writeReviewHere = 'Write your review here...';
+  static const String writeAReview = 'writeAReview';
+  static const String editYourReview = 'editYourReview';
+  static const String beTheFirstToReview = 'beTheFirstToReview';
+  static const String loginRequired = 'loginRequired';
   static const String anonymous = 'Anonymous';
   // ================= Address View =================
   static const String myAddresses = 'myAddresses';

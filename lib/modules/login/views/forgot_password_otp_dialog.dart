@@ -62,8 +62,14 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
       setState(() => _otpError = '');
     }
 
-    if (value.length == 1 && index < 5) {
-      _otpFocusNodes[index + 1].requestFocus();
+    if (value.isNotEmpty) {
+      if (value.length > 1) {
+        _otpControllers[index].text = value.substring(value.length - 1);
+      }
+      
+      if (index < 5) {
+        _otpFocusNodes[index + 1].requestFocus();
+      }
     } else if (value.isEmpty && index > 0) {
       _otpFocusNodes[index - 1].requestFocus();
     }
@@ -71,7 +77,8 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
 
   Future<void> _submit() async {
     // Validate OTP
-    if (_otp.length < 6) {
+    final otpToVerify = _otp;
+    if (otpToVerify.length < 6) {
       setState(() => _otpError = 'Please enter complete 6-digit code');
       return;
     }
@@ -93,11 +100,23 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
       _isSubmitting = true;
     });
 
-    final success = await c.resetPassword(_otp, newPassword);
+    final success = await c.resetPassword(otpToVerify, newPassword);
     setState(() => _isSubmitting = false);
 
     if (success) {
       c.backToLogin();
+    } else {
+      setState(() {
+        _otpError = c.otpError.value ?? 'Wrong OTP. Please enter the correct OTP.';
+        
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (!mounted) return;
+          for (final controller in _otpControllers) {
+            controller.clear();
+          }
+          _otpFocusNodes.first.requestFocus();
+        });
+      });
     }
   }
 
@@ -198,50 +217,58 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
             return SizedBox(
               width: 48,
               height: 48,
-              child: TextFormField(
-                controller: _otpControllers[index],
-                focusNode: _otpFocusNodes[index],
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                maxLength: 1,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  counterText: '',
-                  contentPadding: EdgeInsets.zero,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(
-                      color: _otpError.isNotEmpty ? Colors.red : Colors.grey.shade300,
-                      width: _otpError.isNotEmpty ? 2 : 1,
-                    ),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(
-                      color: AppColors.accent,
-                      width: 2,
-                    ),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: const BorderSide(color: Colors.red, width: 2),
-                  ),
-                ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(1),
-                ],
-                onChanged: (value) {
-                  _onOtpChanged(value, index);
-                  setState(() {});
+              child: RawKeyboardListener(
+                focusNode: FocusNode(),
+                onKey: (event) {
+                  if (event is RawKeyDownEvent && 
+                      event.logicalKey == LogicalKeyboardKey.backspace &&
+                      _otpControllers[index].text.isEmpty &&
+                      index > 0) {
+                    _otpFocusNodes[index - 1].requestFocus();
+                  }
                 },
+                child: TextFormField(
+                  controller: _otpControllers[index],
+                  focusNode: _otpFocusNodes[index],
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  maxLength: 1,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: InputDecoration(
+                    counterText: '',
+                    contentPadding: EdgeInsets.zero,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide(
+                        color: _otpError.isNotEmpty ? Colors.red : Colors.grey.shade300,
+                        width: _otpError.isNotEmpty ? 2 : 1,
+                      ),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                      borderSide: BorderSide(
+                        color: AppColors.accent,
+                        width: 2,
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: const BorderSide(color: Colors.red, width: 2),
+                    ),
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(1),
+                  ],
+                  onChanged: (value) => _onOtpChanged(value, index),
+                ),
               ),
             );
           }),

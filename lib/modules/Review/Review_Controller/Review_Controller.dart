@@ -89,33 +89,47 @@ class ReviewController extends GetxController {
     }
   }
 
-  Future<void> submitReview(String diamondId) async {
+  Future<bool> submitReview(String diamondId) async {
+    if (diamondId.isEmpty) {
+      Get.snackbar('Error', 'Product ID is missing.');
+      return false;
+    }
+
     final rating = selectedRating.value;
     final comment = commentController.text.trim();
 
     if (rating == 0) {
-      return;
-    }
-
-    if (comment.isEmpty) {
-      return;
+      Get.snackbar(
+        'Rating Required',
+        'Please select a rating before submitting.',
+        snackPosition: SnackPosition.TOP,
+      );
+      return false;
     }
 
     try {
       isSubmitting.value = true;
+      debugPrint('Submitting Review...');
+      debugPrint('Diamond ID: $diamondId');
+      debugPrint('Rating: $rating');
+      debugPrint('Comment: $comment');
 
       final reviewId =
       editingReview.value != null ? editingReview.value!.id.trim() : null;
+      
+      if (reviewId != null) {
+        debugPrint('Updating existing review: $reviewId');
+      }
 
       final saved = await _api.submitOrUpdateReview(
         diamondId: diamondId,
-        rating: rating.toInt(), // API might expect int, but model is double. 
-        // If API supports double, change to rating.
+        rating: rating,
         comment: comment,
         reviewId: reviewId,
       );
 
       if (saved != null) {
+        debugPrint('Review saved successfully: ${saved.id}');
         await loadReviews(diamondId);
 
         if (editingReview.value != null) {
@@ -126,7 +140,20 @@ class ReviewController extends GetxController {
         }
 
         hasReviewed.value = true;
+        
+        Get.snackbar(
+          'Review Submitted',
+          'Thank you! Your review has been saved.',
+          snackPosition: SnackPosition.TOP,
+        );
+        return true;
       } else {
+        Get.snackbar(
+          'Error',
+          'Failed to save review. Please try again.',
+          snackPosition: SnackPosition.TOP,
+        );
+        return false;
       }
     } catch (e) {
       debugPrint('SUBMIT/UPDATE REVIEW ERROR => $e');
@@ -135,6 +162,7 @@ class ReviewController extends GetxController {
         'We couldn’t save your review. Please check your connection and try again.',
         snackPosition: SnackPosition.TOP,
       );
+      return false;
     } finally {
       isSubmitting.value = false;
     }

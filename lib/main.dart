@@ -123,12 +123,37 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _saveLinkForNavigation(Uri uri) {
+    // 1. Basic host check
+    if (!uri.host.contains('kdtdiamond.com')) return;
+
+    // 2. Ignore Firebase Auth/reCAPTCHA and other auth paths
+    final path = uri.path.toLowerCase();
+    if (path.contains('auth') || 
+        path.contains('__/auth') || 
+        path.contains('firebase') || 
+        path.contains('google') ||
+        path.contains('facebook')) {
+      debugPrint("🚫 Ignoring Auth/System Link: $path");
+      return;
+    }
+
     final segments = uri.pathSegments.where((s) => s.isNotEmpty).toList();
     if (segments.isEmpty) return;
     
     final slug = segments.last.trim();
-    if (slug == 'navigation' || slug == 'home') return;
+    
+    // 3. Ignore generic/navigation keywords
+    // "link" is often used in Firebase Auth redirects (e.g. /__/auth/handler?link=...)
+    if (slug == 'navigation' || 
+        slug == 'home' || 
+        slug == 'link' || 
+        slug == 'handler' ||
+        slug == 'callback') {
+      debugPrint("🚫 Ignoring Generic Link Segment: $slug");
+      return;
+    }
 
+    debugPrint("📥 Saving Potential Diamond Slug: $slug");
     Get.put<String>(slug, tag: 'pending_deeplink', permanent: true);
     
     try {

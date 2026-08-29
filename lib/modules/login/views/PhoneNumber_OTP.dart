@@ -69,29 +69,59 @@ class _PhoneOtpDialogState extends State<PhoneOtpDialog> {
       setState(() => _otpError = '');
     }
 
-    if (value.length == 1 && index < 5) {
-      _otpFocusNodes[index + 1].requestFocus();
+    if (value.isNotEmpty) {
+      if (value.length > 1) {
+        // Handle paste or multiple chars
+        _otpControllers[index].text = value.substring(value.length - 1);
+      }
+      
+      if (index < 5) {
+        _otpFocusNodes[index + 1].requestFocus();
+      }
     } else if (value.isEmpty && index > 0) {
+      // Focus moves back on clear
       _otpFocusNodes[index - 1].requestFocus();
     }
 
-    // ============ ADD THIS: Check OTP completion ============
     _checkOtpCompletion();
   }
 
   Future<void> _verifyOtp() async {
-    if (_otp.length < 6) {
+    final otpToVerify = _otp;
+    if (otpToVerify.length < 6) {
       setState(() => _otpError = 'Please enter complete 6-digit code');
       return;
     }
 
     setState(() => _otpError = '');
-    await c.verifyPhoneOtp(_otp);
+    await c.verifyPhoneOtp(otpToVerify);
+
+    // Give the controller a moment to process navigation
+    await Future.delayed(const Duration(milliseconds: 300));
 
     if (c.otpError.value == null) {
-      Navigator.of(context, rootNavigator: true).pop();
+      if (mounted) {
+        // Try to pop if the controller hasn't already closed it or navigated away
+        try {
+          Navigator.of(context, rootNavigator: true).pop();
+        } catch (_) {
+          // Dialog might already be gone, which is fine
+        }
+      }
     } else {
-      setState(() => _otpError = c.otpError.value ?? '');
+      setState(() {
+        _otpError = c.otpError.value ?? 'Wrong OTP. Please enter the correct OTP.';
+        
+        // Use a small delay to ensure focus and clear work correctly with the keyboard
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (!mounted) return;
+          for (final controller in _otpControllers) {
+            controller.clear();
+          }
+          _isOtpComplete.value = false;
+          _otpFocusNodes.first.requestFocus();
+        });
+      });
     }
   }
 
@@ -103,7 +133,7 @@ class _PhoneOtpDialogState extends State<PhoneOtpDialog> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ============ HEADER: KDT BADGE (Center) + CLOSE ICON (Right) ============
+        // ... (Header remains same)
         Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -142,7 +172,7 @@ class _PhoneOtpDialogState extends State<PhoneOtpDialog> {
         ),
         const SizedBox(height: 16),
 
-        // ============ TITLE ============
+        // ... (Titles and phone display remains same)
         Text(
             "Welcome Back",
             style:AppTextStyles.lora(
@@ -152,7 +182,6 @@ class _PhoneOtpDialogState extends State<PhoneOtpDialog> {
         ),
         const SizedBox(height: 6),
 
-        // ============ SUBTITLE ============
         Text(
           "Verify your mobile number to sign in.",
           style: TextStyle(
@@ -162,7 +191,6 @@ class _PhoneOtpDialogState extends State<PhoneOtpDialog> {
         ),
         const SizedBox(height: 6),
 
-        // ============ PHONE NUMBER DISPLAY ============
         Center(
           child: RichText(
             textAlign: TextAlign.center,
@@ -193,47 +221,58 @@ class _PhoneOtpDialogState extends State<PhoneOtpDialog> {
             return SizedBox(
               width: 48,
               height: isSmallScreen ? 44 : 48,
-              child: TextFormField(
-                controller: _otpControllers[index],
-                focusNode: _otpFocusNodes[index],
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                maxLength: 1,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  counterText: '',
-                  contentPadding: EdgeInsets.zero,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+              child: RawKeyboardListener(
+                focusNode: FocusNode(), // Wrap in listener for backspace on empty
+                onKey: (event) {
+                  if (event is RawKeyDownEvent && 
+                      event.logicalKey == LogicalKeyboardKey.backspace &&
+                      _otpControllers[index].text.isEmpty &&
+                      index > 0) {
+                    _otpFocusNodes[index - 1].requestFocus();
+                  }
+                },
+                child: TextFormField(
+                  controller: _otpControllers[index],
+                  focusNode: _otpFocusNodes[index],
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  maxLength: 1,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(
-                      color: _otpError.isNotEmpty ? Colors.red : Colors.grey.shade300,
-                      width: _otpError.isNotEmpty ? 2 : 1,
+                  decoration: InputDecoration(
+                    counterText: '',
+                    contentPadding: EdgeInsets.zero,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide(
+                        color: _otpError.isNotEmpty ? Colors.red : Colors.grey.shade300,
+                        width: _otpError.isNotEmpty ? 2 : 1,
+                      ),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                      borderSide: BorderSide(
+                        color: Color(0xff006241),
+                        width: 2,
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: const BorderSide(color: Colors.red, width: 2),
                     ),
                   ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(
-                      color: Color(0xff006241),
-                      width: 2,
-                    ),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: const BorderSide(color: Colors.red, width: 2),
-                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(1),
+                  ],
+                  onChanged: (value) => _onOtpChanged(value, index),
                 ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(1),
-                ],
-                onChanged: (value) => _onOtpChanged(value, index),
               ),
             );
           }),

@@ -10,6 +10,7 @@ class ReviewApiService {
       baseUrl: ApiConstants.baseUrl,
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'x-language': 'en',
       },
       connectTimeout: const Duration(seconds: 20),
@@ -61,7 +62,7 @@ class ReviewApiService {
 
   Future<ReviewModel?> submitOrUpdateReview({
     required String diamondId,
-    required int rating,
+    required double rating,
     required String comment,
     String? reviewId,
   }) async {
@@ -91,14 +92,29 @@ class ReviewApiService {
       );
 
       print('Status Code => ${response.statusCode}');
-      print('Response => ${response.data}');
+      print('Response Data => ${response.data}');
+
+      if (response.data == null) {
+        print('Error: Response data is null');
+        return null;
+      }
 
       final result = ReviewSingleResponse.fromJson(
         response.data as Map<String, dynamic>,
       );
+      
+      if (!result.success) {
+        print('API Error Message: ${result.message}');
+      }
+      
       return result.data;
+    } on DioException catch (e) {
+      print('SUBMIT/UPDATE REVIEW API DIO ERROR => ${e.type}');
+      print('Error Response => ${e.response?.data}');
+      print('Error Status => ${e.response?.statusCode}');
+      rethrow;
     } catch (e) {
-      print('SUBMIT/UPDATE REVIEW API ERROR => $e');
+      print('SUBMIT/UPDATE REVIEW API UNKNOWN ERROR => $e');
       rethrow;
     }
   }

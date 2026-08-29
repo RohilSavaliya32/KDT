@@ -247,6 +247,10 @@ class AppTranslations extends Translations {
     TranslationKeys.updateReview: 'Update Review',
     TranslationKeys.allReviews: 'All Reviews',
     TranslationKeys.noReviewsYet: 'No reviews yet.',
+    TranslationKeys.writeAReview: 'Write a Review',
+    TranslationKeys.editYourReview: 'Edit your Review',
+    TranslationKeys.beTheFirstToReview: 'Be the first to review this product!',
+    TranslationKeys.loginRequired: 'Login Required',
     TranslationKeys.writeReviewHere: 'Write your review here...',
     TranslationKeys.anonymous: 'Anonymous',
     // No Data Found
@@ -670,6 +674,10 @@ class AppTranslations extends Translations {
     TranslationKeys.updateReview: 'レビューを更新',
     TranslationKeys.allReviews: 'すべてのレビュー',
     TranslationKeys.noReviewsYet: 'まだレビューはありません。',
+    TranslationKeys.writeAReview: 'レビューを書く',
+    TranslationKeys.editYourReview: 'レビューを編集する',
+    TranslationKeys.beTheFirstToReview: 'この製品の最初のレビューを書きましょう！',
+    TranslationKeys.loginRequired: 'ログインが必要です',
     TranslationKeys.writeReviewHere: 'ここにレビューを書いてください...',
     TranslationKeys.anonymous: '匿名',
     // No Data Found
@@ -1091,6 +1099,10 @@ class AppTranslations extends Translations {
     TranslationKeys.updateReview: '리뷰 업데이트',
     TranslationKeys.allReviews: '모든 리뷰',
     TranslationKeys.noReviewsYet: '아직 리뷰가 없습니다.',
+    TranslationKeys.writeAReview: '리뷰 작성하기',
+    TranslationKeys.editYourReview: '리뷰 수정하기',
+    TranslationKeys.beTheFirstToReview: '이 제품의 첫 번째 리뷰어가 되어보세요!',
+    TranslationKeys.loginRequired: '로그인 필요',
     TranslationKeys.writeReviewHere: '리뷰를 작성하세요...',
     TranslationKeys.anonymous: '익명',
     // No Data Found

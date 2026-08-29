@@ -459,13 +459,10 @@ class LoginController extends GetxController {
   }
 
   Future<void> verifyPhoneOtp(String otp) async {
+    otpError.value = null;
+
     if (_verificationId == null) {
       otpError.value = "OTP session expired. Please resend code.";
-      Get.snackbar(
-        "OTP Expired",
-        "This OTP is no longer valid. Please resend the OTP.",
-        snackPosition: SnackPosition.TOP,
-      );
       return;
     }
 
@@ -477,18 +474,11 @@ class LoginController extends GetxController {
       );
       await _signInWithPhoneCredential(credential);
     } on FirebaseAuthException catch (e) {
-      otpError.value = e.message ?? e.code;
-      Get.snackbar(
-        "Invalid OTP",
-        "The OTP you entered is incorrect. Please try again.",
-        snackPosition: SnackPosition.TOP,
-      );
+      debugPrint("❌ verifyPhoneOtp Firebase Error: ${e.code}");
+      otpError.value = "Wrong OTP. Please enter the correct OTP.";
     } catch (e) {
-      Get.snackbar(
-        "Something Went Wrong",
-        "An unexpected error occurred. Please try again.",
-        snackPosition: SnackPosition.TOP,
-      );
+      debugPrint("❌ verifyPhoneOtp Error: $e");
+      otpError.value = "Something went wrong. Please try again.";
     } finally {
       isOtpLoading.value = false;
     }
@@ -549,11 +539,7 @@ class LoginController extends GetxController {
 
     } catch (e) {
       debugPrint("❌ _signInWithPhoneCredential error: $e");
-      Get.snackbar(
-        "Verification Failed",
-        "We couldn't complete the sign-in process. Please try again.",
-        snackPosition: SnackPosition.TOP,
-      );
+      otpError.value = "Wrong OTP. Please enter the correct OTP.";
       rethrow;
     } finally {
       isOtpLoading.value = false;
@@ -566,53 +552,28 @@ class LoginController extends GetxController {
   // ============ ✅ NEW: CLOSE DIALOG AND NAVIGATE ============
   Future<void> _closeLoginDialogAndNavigate() async {
     try {
-      // Method 1: Try to close dialog using Get.back()
-      if (Get.isDialogOpen ?? false) {
-        debugPrint("✅ Closing login dialog...");
-        Get.back(); // Close the dialog
-        await Future.delayed(const Duration(milliseconds: 200)); // Wait for dialog to close
+      debugPrint("🚀 Closing login dialog and navigating...");
+
+      // Method 1: Try standard Navigator pop first (most robust for showDialog)
+      final context = Get.overlayContext;
+      if (context != null) {
+        Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst || route is! PopupRoute);
       }
 
-      // Method 2: Alternative - close all overlays
-      if (Get.isDialogOpen ?? false) {
-        debugPrint("⚠️ Dialog still open, force closing...");
-        Navigator.of(Get.overlayContext!).pop();
-        await Future.delayed(const Duration(milliseconds: 100));
+      // Method 2: Fallback to Get.back()
+      if (Get.isDialogOpen == true) {
+        Get.back();
       }
 
-      // Check if we're already on the navigation route
-      final currentRoute = Get.currentRoute;
-      if (currentRoute != "/navigation") {
-        debugPrint("✅ Navigating to /navigation");
-        // Use AppNavigator for common loader support
-        AppNavigator.offAll("/navigation");
-      } else {
-        debugPrint("✅ Already on /navigation route");
-        // Just refresh the current route
-        Get.forceAppUpdate();
-      }
+      await Future.delayed(const Duration(milliseconds: 300));
 
+      // Navigate to main screen
+      debugPrint("✅ Navigating to /navigation");
+      AppNavigator.offAll("/navigation");
+      
     } catch (e) {
       debugPrint("❌ Error in _closeLoginDialogAndNavigate: $e");
-
-      // Fallback: Try navigation with delay
-      try {
-        await Future.delayed(const Duration(milliseconds: 300));
-        if (Get.isDialogOpen ?? false) {
-          Get.back();
-        }
-        await Future.delayed(const Duration(milliseconds: 100));
-        AppNavigator.offAll("/navigation");
-      } catch (e2) {
-        debugPrint("❌ Fallback navigation failed: $e2");
-        // Last resort
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (Get.isDialogOpen ?? false) {
-            Navigator.of(Get.overlayContext!).pop();
-          }
-          AppNavigator.offAll("/navigation");
-        });
-      }
+      AppNavigator.offAll("/navigation");
     }
   }
 
@@ -715,12 +676,7 @@ class LoginController extends GetxController {
       debugPrint(e.toString());
       debugPrint(s.toString());
 
-      Get.snackbar(
-        "Error",
-        e.toString(),
-        snackPosition: SnackPosition.TOP,
-      );
-
+      otpError.value = "Wrong OTP. Please enter the correct OTP.";
       return false;
     } finally {
       isOtpLoading.value = false;
